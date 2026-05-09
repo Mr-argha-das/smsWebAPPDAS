@@ -426,6 +426,8 @@ const ExamAPI = {
   create:         (d)     => API.post('/exams', d),
   seedDefaults:   (sid,ayid) => API.post(`/exams/seed-defaults?school_id=${sid}&academic_year_id=${ayid}`, {}),
   list:           (p)     => API.get('/exams', p),
+  update:         (id,d)  => API.put(`/exams/${id}`, d),
+  delete:         (id)    => API.delete(`/exams/${id}`),
   updateStatus:   (id,status)  => API.patch(`/exams/${id}/status?status=${encodeURIComponent(status)}`, {}),
   getRollNumbers: (p)     => API.get('/exams/roll-numbers', p),
   saveRollNumbers:(d)     => API.post('/exams/roll-numbers', d),

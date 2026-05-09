@@ -126,9 +126,53 @@ async def list_exams(
         "display_order": e.display_order,
         "start_date": e.start_date.isoformat() if e.start_date else None,
         "end_date": e.end_date.isoformat() if e.end_date else None,
-        "classes": [c.name for c in e.classrooms]
+        "classes": [c.name for c in e.classrooms],
+        "classroom_ids": [str(c.id) for c in e.classrooms]
     } for e in query.order_by('display_order', '-created_at')]
     return success_response(result)
+
+
+@exam_router.put("/{exam_id}")
+async def update_exam(exam_id: str, data: ExamCreate, current_user: User = Depends(get_current_user)):
+    try:
+        exam = Exam.objects.get(id=exam_id, is_active=True)
+    except Exam.DoesNotExist:
+        raise HTTPException(404, "Exam not found")
+
+    school = School.objects.get(id=data.school_id)
+    ay = AcademicYear.objects.get(id=data.academic_year_id)
+    exam.school = school
+    exam.academic_year = ay
+    exam.name = data.name
+    exam.exam_type = data.exam_type
+    exam.max_marks = data.max_marks or 100
+    exam.passing_marks = data.passing_marks or 33
+    exam.display_order = data.display_order or 0
+    exam.start_date = data.start_date
+    exam.end_date = data.end_date
+    exam.classrooms = []
+    for cid in data.classroom_ids:
+        classroom = ClassRoom.objects(id=cid).first()
+        if classroom:
+            exam.classrooms.append(classroom)
+    exam.sections = []
+    for sid in data.section_ids:
+        section = Section.objects(id=sid).first()
+        if section:
+            exam.sections.append(section)
+    exam.updated_at = datetime.utcnow()
+    exam.save()
+    return success_response({"id": str(exam.id), "name": exam.name}, "Exam updated successfully")
+
+
+@exam_router.delete("/{exam_id}")
+async def delete_exam(exam_id: str, current_user: User = Depends(get_current_user)):
+    try:
+        exam = Exam.objects.get(id=exam_id, is_active=True)
+        exam.update(is_active=False, updated_at=datetime.utcnow())
+        return success_response(message="Exam deleted successfully")
+    except Exam.DoesNotExist:
+        raise HTTPException(404, "Exam not found")
 
 
 @exam_router.patch("/{exam_id}/status")

@@ -198,7 +198,7 @@
                 </select>
               </div>
               <div class="flex gap-2">
-                <button onclick="document.getElementById('examModal').style.display='flex';loadExamClasses()"
+                <button onclick="openExamModal()"
                   class="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg">+
                   Create Exam</button>
               </div>
@@ -302,7 +302,7 @@
   <div id="examModal" class="modal-overlay" style="display:none">
     <div class="modal-box w-full max-w-md">
       <div class="flex justify-between items-center px-6 py-4 border-b">
-        <h3 class="font-bold text-gray-900">Create Exam</h3><button
+        <h3 id="examModalTitle" class="font-bold text-gray-900">Create Exam</h3><button
           onclick="document.getElementById('examModal').style.display='none'"
           class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button>
       </div>
@@ -333,7 +333,7 @@
       <div class="flex gap-3 px-6 py-4 border-t justify-end">
         <button onclick="document.getElementById('examModal').style.display='none'"
           class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
-        <button onclick="saveExam()"
+        <button id="examSubmitBtn" onclick="saveExam()"
           class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Create</button>
       </div>
     </div>
@@ -354,6 +354,8 @@
     let rollStudents = [];
     let dateSheetRows = [];
     let examClasses = [];
+    let examList = [];
+    let editingExamId = '';
 
     function switchExTab(idx) {
       document.querySelectorAll('.extab').forEach((b, i) => { b.classList.toggle('border-blue-600', i === idx); b.classList.toggle('text-blue-600', i === idx); b.classList.toggle('border-transparent', i !== idx); b.classList.toggle('text-gray-500', i !== idx); });
@@ -370,14 +372,56 @@
       try { const r = await ClassAPI.list(schoolId, ayId); examClasses = r?.data || []; document.getElementById('exClassCheckboxes').innerHTML = examClasses.map(c => `<label class="flex items-center gap-2 cursor-pointer hover:bg-gray-50 rounded-lg p-1"><input type="checkbox" value="${c.id}" class="exam-cls w-4 h-4 accent-blue-600"/><span class="text-sm text-gray-700">${c.name}</span></label>`).join(''); } catch (e) { }
     }
 
+    function resetExamModal() {
+      editingExamId = '';
+      document.getElementById('examModalTitle').textContent = 'Create Exam';
+      document.getElementById('examSubmitBtn').textContent = 'Create';
+      document.getElementById('ex_name').value = '';
+      document.getElementById('ex_type').value = '';
+      document.getElementById('ex_max').value = '100';
+      document.getElementById('ex_pass').value = '33';
+      document.getElementById('ex_order').value = '0';
+      document.getElementById('ex_start').value = '';
+      document.getElementById('ex_end').value = '';
+      document.querySelectorAll('.exam-cls').forEach(cb => cb.checked = false);
+    }
+
+    async function openExamModal(examId = '') {
+      document.getElementById('examModal').style.display = 'flex';
+      await loadExamClasses();
+      resetExamModal();
+      if (!examId) return;
+      const exam = examList.find(item => item.id === examId);
+      if (!exam) { showToast('Exam not found', 'error'); return; }
+      editingExamId = examId;
+      document.getElementById('examModalTitle').textContent = 'Edit Exam';
+      document.getElementById('examSubmitBtn').textContent = 'Update';
+      document.getElementById('ex_name').value = exam.name || '';
+      document.getElementById('ex_type').value = exam.exam_type || '';
+      document.getElementById('ex_max').value = exam.max_marks || 100;
+      document.getElementById('ex_pass').value = exam.passing_marks || 33;
+      document.getElementById('ex_order').value = exam.display_order || 0;
+      document.getElementById('ex_start').value = exam.start_date ? String(exam.start_date).slice(0, 10) : '';
+      document.getElementById('ex_end').value = exam.end_date ? String(exam.end_date).slice(0, 10) : '';
+      const selectedClassIds = new Set(exam.classroom_ids || []);
+      document.querySelectorAll('.exam-cls').forEach(cb => cb.checked = selectedClassIds.has(cb.value));
+    }
+
     async function saveExam() {
       if (!schoolId || !ayId) { showToast('Configure school and academic year', 'error'); return; }
       const name = document.getElementById('ex_name').value.trim(), type = document.getElementById('ex_type').value;
       if (!name || !type) { showToast('Name and type required', 'error'); return; }
       const clsIds = Array.from(document.querySelectorAll('.exam-cls:checked')).map(c => c.value);
       try {
-        await ExamAPI.create({ school_id: schoolId, academic_year_id: ayId, name, exam_type: type, max_marks: parseFloat(document.getElementById('ex_max').value) || 100, passing_marks: parseFloat(document.getElementById('ex_pass').value) || 33, display_order: parseInt(document.getElementById('ex_order').value) || 0, start_date: document.getElementById('ex_start').value ? new Date(document.getElementById('ex_start').value).toISOString() : null, end_date: document.getElementById('ex_end').value ? new Date(document.getElementById('ex_end').value).toISOString() : null, classroom_ids: clsIds });
-        showToast('Exam created!'); document.getElementById('examModal').style.display = 'none'; loadExams();
+        const payload = { school_id: schoolId, academic_year_id: ayId, name, exam_type: type, max_marks: parseFloat(document.getElementById('ex_max').value) || 100, passing_marks: parseFloat(document.getElementById('ex_pass').value) || 33, display_order: parseInt(document.getElementById('ex_order').value) || 0, start_date: document.getElementById('ex_start').value ? new Date(document.getElementById('ex_start').value).toISOString() : null, end_date: document.getElementById('ex_end').value ? new Date(document.getElementById('ex_end').value).toISOString() : null, classroom_ids: clsIds };
+        if (editingExamId) {
+          await ExamAPI.update(editingExamId, payload);
+          showToast('Exam updated!');
+        } else {
+          await ExamAPI.create(payload);
+          showToast('Exam created!');
+        }
+        document.getElementById('examModal').style.display = 'none'; loadExams();
       } catch (e) { showToast('Error: ' + e.message, 'error'); }
     }
 
@@ -396,6 +440,7 @@
       const type = document.getElementById('examTypeFilter').value; if (type) params.exam_type = type;
       try {
         const r = await ExamAPI.list(params); const exams = r?.data || [];
+        examList = exams;
         const hdrs = ['Exam', 'Type', 'Max', 'Min', 'Order', 'Classes', 'Status', 'Actions'];
         const rows = exams.map(e => `
       <td class="px-4 py-3 font-medium text-gray-900 text-sm">${e.name}</td>
@@ -405,20 +450,44 @@
       <td class="px-4 py-3 text-sm text-gray-700">${e.display_order || '-'}</td>
       <td class="px-4 py-3 text-xs text-gray-500">${(e.classes || []).join(', ') || '-'}</td>
       <td class="px-4 py-3">${tdBadge(e.status, e.status === 'Results Published' ? 'green' : e.status === 'Completed' ? 'blue' : e.status === 'Ongoing' ? 'orange' : 'gray')}</td>
-      <td class="px-4 py-3"><div class="flex gap-1">
-        <select onchange="updateExamStatus('${e.id}',this.value)" class="text-xs px-2 py-1.5 rounded-lg border border-gray-200 bg-gray-50">
-          <option value="">Change Status</option>
-          <option value="Scheduled">Scheduled</option><option value="Ongoing">Ongoing</option><option value="Completed">Completed</option><option value="Results Published">Publish Results</option>
-        </select>
-      </div></td>
+      <td class="px-4 py-3 relative">
+        <button onclick="toggleExamActionMenu('${e.id}')" class="px-3 py-2 rounded-lg border border-gray-200 bg-gray-50 text-xs font-semibold text-slate-700 hover:bg-gray-100">Action</button>
+        <div id="examAction_${e.id}" class="hidden absolute right-4 z-20 mt-2 w-44 rounded-xl border border-gray-200 bg-white shadow-xl overflow-hidden">
+          <button onclick="openExamModal('${e.id}')" class="block w-full px-4 py-2.5 text-left text-sm text-slate-700 hover:bg-slate-50">Edit</button>
+          <button onclick="deleteExam('${e.id}')" class="block w-full px-4 py-2.5 text-left text-sm text-red-600 hover:bg-red-50">Delete</button>
+          <div class="border-t border-gray-100 px-3 py-2">
+            <label class="block text-[11px] font-semibold uppercase tracking-wide text-slate-400 mb-1">Status</label>
+            <select onchange="updateExamStatus('${e.id}',this.value)" class="w-full text-xs px-2 py-1.5 rounded-lg border border-gray-200 bg-gray-50">
+              <option value="">Change Status</option>
+              <option value="Scheduled">Scheduled</option><option value="Ongoing">Ongoing</option><option value="Completed">Completed</option><option value="Results Published">Publish Results</option>
+            </select>
+          </div>
+        </div>
+      </td>
     `);
         document.getElementById('examTable').innerHTML = buildTable(hdrs, rows, 'No exams found. Create your first exam!');
       } catch (e) { document.getElementById('examTable').innerHTML = `<div class="text-center py-8 text-red-400">Error: ${e.message}</div>`; }
     }
 
+    function toggleExamActionMenu(id) {
+      document.querySelectorAll('[id^="examAction_"]').forEach(menu => {
+        if (menu.id !== `examAction_${id}`) menu.classList.add('hidden');
+      });
+      document.getElementById(`examAction_${id}`)?.classList.toggle('hidden');
+    }
+
     async function updateExamStatus(id, status) {
       if (!status) return;
       try { await ExamAPI.updateStatus(id, status); showToast('Status updated to ' + status); loadExams(); } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function deleteExam(id) {
+      if (!confirm('Delete this exam?')) return;
+      try {
+        await ExamAPI.delete(id);
+        showToast('Exam deleted');
+        loadExams();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
     }
 
     async function loadRollFormData() {
