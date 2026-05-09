@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+  <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+body{font-family:"DM Sans",sans-serif;background:#f0f2f8;color:#1e293b}
+h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
+.finput{width:100%;padding:.625rem .875rem;border-radius:.75rem;border:1.5px solid #e2e8f0;background:#f0f2f8;font-size:.875rem;outline:none;transition:all .15s;color:#1e293b}
+.finput:focus{background:#fff;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.12)}
+.lbl{display:block;font-size:.8125rem;font-weight:600;color:#475569;margin-bottom:.375rem}
+.modal-overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(15,23,42,.55);backdrop-filter:blur(4px)}
+.modal-box{background:#fff;border-radius:1.5rem;box-shadow:0 25px 50px rgba(0,0,0,.22);width:100%;overflow:hidden;animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.tab-bar{display:flex;border-bottom:2px solid #f1f5f9;overflow-x:auto;gap:.25rem;padding:0 1rem}
+.tab-bar::-webkit-scrollbar{display:none}
+.tab-btn{padding:.875rem 1.125rem;font-size:.8125rem;font-weight:600;background:none;border:none;cursor:pointer;white-space:nowrap;color:#94a3b8;border-bottom:2.5px solid transparent;margin-bottom:-2px;transition:all .15s;font-family:"DM Sans",sans-serif}
+.tab-btn.active{color:#6366f1;border-bottom-color:#6366f1}
+.tab-btn:not(.active):hover{color:#475569}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}
+.finput:focus{background:#fff;border-color:#3b82f6}
+.lbl{display:block;font-size:.875rem;font-weight:500;color:#374151;margin-bottom:.375rem}
+</style>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Staff - Scholar Desk</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+  <!-- ✅ Same layout pattern as students.html -->
+  <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+      <div class="p-6 space-y-6">
+
+        <div id="staffStats" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+
+        <div style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div class="flex border-b border-gray-100 px-2 gap-1">
+            <button id="staffTabAll" onclick="switchTab(0)" class="stab px-5 py-4 text-sm font-semibold border-b-2 border-blue-600 text-blue-600">All Staff</button>
+            <button id="staffTabAssignments" onclick="switchTab(1)" class="stab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700">Assign to Teacher</button>
+            <button id="staffTabLeave" onclick="switchTab(2)" class="stab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700">Leave</button>
+            <button id="staffTabSalary" onclick="switchTab(3)" class="stab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700">Salary</button>
+          </div>
+
+          <!-- All Staff -->
+          <div id="stab0" class="p-5">
+            <div class="flex flex-col sm:flex-row gap-3 justify-between mb-4">
+              <div class="flex gap-2 flex-wrap">
+                <input id="srchStaff" type="text" placeholder="Search staff..." class="px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-56"/>
+                <select id="filterType" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                  <option value="">All Types</option><option value="Teaching">Teaching</option><option value="Non-Teaching">Non-Teaching</option><option value="Administrative">Administrative</option>
+                </select>
+                <select id="filterActive" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                  <option value="">All Staff</option>
+                  <option value="active">Active Only</option>
+                  <option value="inactive">Inactive Only</option>
+                </select>
+              </div>
+              <button onclick="openStaffModal()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg whitespace-nowrap">+ Add Staff</button>
+            </div>
+            <div id="staffTable"></div>
+          </div>
+
+          <!-- Assign to Teacher -->
+          <div id="stab1" class="p-5 hidden">
+            <div class="flex justify-between mb-4">
+              <h4 class="font-bold text-gray-900">Assign to Teacher</h4>
+              <button onclick="openAssignModal()" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">+ Assign</button>
+            </div>
+            <div id="assignTable"></div>
+          </div>
+
+          <!-- Leave -->
+          <div id="stab2" class="p-5 hidden">
+            <div class="flex justify-between items-center mb-4">
+              <div>
+                <h4 class="font-bold text-gray-900">Leave Applications</h4>
+                <p id="leaveSubtitle" class="text-sm text-gray-500 mt-1">Staff leave requests and approvals</p>
+              </div>
+              <button id="applyLeaveBtn" onclick="openLeaveModal()" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">+ Apply Leave</button>
+            </div>
+            <div id="leaveTable"></div>
+          </div>
+
+          <!-- Salary -->
+          <div id="stab3" class="p-5 hidden">
+            <div class="flex justify-between mb-4">
+              <h4 class="font-bold text-gray-900">Salary Management</h4>
+              <button onclick="document.getElementById('salaryModal').style.display='flex'" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">Generate Slip</button>
+            </div>
+            <div id="salaryTable"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Add Staff Modal -->
+  <div id="addStaffModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center px-6 py-4 border-b sticky top-0 bg-white z-10">
+        <div>
+          <h3 id="staffModalTitle" class="font-bold text-gray-900 text-lg">Add Staff Member</h3>
+          <p id="staffModalHint" class="text-sm text-gray-500 mt-1">Create a new teaching or non-teaching staff profile.</p>
+        </div>
+        <button onclick="document.getElementById('addStaffModal').style.display='none'" class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button>
+      </div>
+      <div class="px-6 py-5">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="lbl">First Name *</label><input id="sf_fn" class="finput" placeholder="First name"/></div>
+          <div><label class="lbl">Last Name</label><input id="sf_ln" class="finput" placeholder="Last name"/></div>
+          <div><label class="lbl">Gender *</label><select id="sf_gnd" class="finput"><option value="">Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+          <div><label class="lbl">Date of Birth</label><input id="sf_dob" type="date" class="finput"/></div>
+          <div><label class="lbl">Phone *</label><input id="sf_ph" type="tel" class="finput" placeholder="Phone"/></div>
+          <div><label class="lbl">Email</label><input id="sf_em" type="email" class="finput" placeholder="Email"/></div>
+          <div><label class="lbl">Designation *</label><input id="sf_des" class="finput" placeholder="e.g. Math Teacher, Principal"/></div>
+          <div><label class="lbl">Department</label><input id="sf_dept" class="finput" placeholder="e.g. Science, Arts"/></div>
+          <div><label class="lbl">Staff Type *</label><select id="sf_type" class="finput"><option value="">Select</option><option value="Teaching">Teaching</option><option value="Non-Teaching">Non-Teaching</option><option value="Administrative">Administrative</option><option value="Support">Support</option></select></div>
+          <div><label class="lbl">Employment Type</label><select id="sf_emptype" class="finput"><option value="Permanent">Permanent</option><option value="Contract">Contract</option><option value="Part-Time">Part-Time</option><option value="Visiting">Visiting</option></select></div>
+          <div><label class="lbl">Joining Date *</label><input id="sf_join" type="date" class="finput"/></div>
+          <div><label class="lbl">Basic Salary (₹)</label><input id="sf_sal" type="number" class="finput" placeholder="0"/></div>
+          <div><label class="lbl">HRA (₹)</label><input id="sf_hra" type="number" class="finput" placeholder="0"/></div>
+          <div><label class="lbl">DA (₹)</label><input id="sf_da" type="number" class="finput" placeholder="0"/></div>
+          <div><label class="lbl">Other Allowances (₹)</label><input id="sf_oth" type="number" class="finput" placeholder="0"/></div>
+          <div><label class="lbl">Experience (Years)</label><input id="sf_exp" type="number" class="finput" placeholder="0" step="0.5"/></div>
+          <div class="sm:col-span-2"><label class="lbl">Address</label><textarea id="sf_addr" rows="2" class="finput resize-none" placeholder="Current address"></textarea></div>
+        </div>
+        <div class="mt-5 rounded-2xl border border-blue-100 bg-blue-50/70 p-4">
+          <label class="flex items-center gap-3 cursor-pointer">
+            <input id="sf_create_login" type="checkbox" class="w-4 h-4 accent-blue-600" onchange="toggleStaffLoginFields()" />
+            <span>
+              <span id="sf_login_title" class="block font-semibold text-gray-900">Create / Link Login Account</span>
+              <span id="sf_login_hint" class="block text-xs text-gray-500 mt-0.5">The teacher or staff member will use this username and password on the login page.</span>
+            </span>
+          </label>
+          <div id="sf_login_fields" class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 hidden">
+            <div><label class="lbl">Login Username</label><input id="sf_login_user" class="finput" placeholder="Email, employee ID or username"/></div>
+            <div><label class="lbl">Login Password</label><input id="sf_login_pass" type="password" class="finput" placeholder="New password"/></div>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end sticky bottom-0 bg-white">
+        <button onclick="document.getElementById('addStaffModal').style.display='none'" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button id="staffSubmitBtn" onclick="saveStaff()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium shadow-lg">Add Staff</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="staffDetailModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center px-6 py-4 border-b sticky top-0 bg-white z-10">
+        <h3 class="font-bold text-gray-900 text-lg">Staff Profile</h3>
+        <button onclick="document.getElementById('staffDetailModal').style.display='none'" class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button>
+      </div>
+      <div id="staffDetailContent" class="px-6 py-5"></div>
+    </div>
+  </div>
+
+  <!-- Assign Modal -->
+  <div id="assignModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b"><h3 id="assignModalTitle" class="font-bold text-gray-900">Assign to Teacher</h3><button onclick="document.getElementById('assignModal').style.display='none'" class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button></div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Teacher *</label><select id="as_teacher" class="finput"><option value="">Select teacher</option></select></div>
+        <div><label class="lbl">Class *</label><select id="as_cls" class="finput" onchange="loadAssignSections();loadAssignSubjects()"><option value="">Select class</option></select></div>
+        <div><label class="lbl">Section *</label><select id="as_sec" class="finput" onchange="loadAssignSubjects()"><option value="">Select section</option></select></div>
+        <div><label class="lbl">Subject *</label><select id="as_sub" class="finput"><option value="">Select subject</option></select></div>
+        <div><label class="lbl">Upload File</label><input id="as_file" type="file" class="finput" /></div>
+        <label class="flex items-center gap-2"><input type="checkbox" id="as_cls_teacher" class="w-4 h-4 accent-blue-600"/><span class="text-sm text-gray-700">Class Teacher</span></label>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('assignModal').style.display='none'" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button id="assignSubmitBtn" onclick="saveAssignment()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Salary Modal -->
+  <div id="salaryModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b"><h3 class="font-bold text-gray-900">Generate Salary Slip</h3><button onclick="document.getElementById('salaryModal').style.display='none'" class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button></div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Staff *</label><select id="sal_staff" class="finput"><option value="">Select staff</option></select></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="lbl">Month *</label><select id="sal_month" class="finput"><option value="1">January</option><option value="2">February</option><option value="3">March</option><option value="4">April</option><option value="5">May</option><option value="6">June</option><option value="7">July</option><option value="8">August</option><option value="9">September</option><option value="10">October</option><option value="11">November</option><option value="12">December</option></select></div>
+          <div><label class="lbl">Year *</label><input id="sal_year" type="number" class="finput" value="2024"/></div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="lbl">Working Days</label><input id="sal_wdays" type="number" class="finput" value="26"/></div>
+          <div><label class="lbl">Absent Days</label><input id="sal_adays" type="number" class="finput" value="0"/></div>
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('salaryModal').style.display='none'" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="generateSalary()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Generate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leave Apply Modal -->
+  <div id="leaveModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold text-gray-900">Apply Leave</h3>
+        <button onclick="document.getElementById('leaveModal').style.display='none'" class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Staff</label><input id="lv_staff_name" class="finput" readonly /></div>
+        <div><label class="lbl">Leave Type *</label><select id="lv_type" class="finput"><option value="">Select leave type</option></select></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="lbl">From Date *</label><input id="lv_from" type="date" class="finput" /></div>
+          <div><label class="lbl">To Date *</label><input id="lv_to" type="date" class="finput" /></div>
+        </div>
+        <div><label class="lbl">Substitute Staff</label><select id="lv_substitute" class="finput"><option value="">Optional substitute</option></select></div>
+        <div><label class="lbl">Reason *</label><textarea id="lv_reason" rows="3" class="finput resize-none" placeholder="Reason for leave"></textarea></div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('leaveModal').style.display='none'" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="submitLeaveApplication()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Submit Leave</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('staff');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('Staff & HR', 'Manage staff, assignments, leave and payroll');
+    let schoolId = localStorage.getItem('school_id');
+    const ayId = localStorage.getItem('ay_id');
+    const currentUser = getUser() || {};
+    const isTeacherSide = ['teacher', 'faculty', 'staff'].some(role => String(currentUser.role_name || '').toLowerCase().includes(role));
+    let editingStaffId = '';
+    let editingStaffHasLogin = false;
+    let editingAssignmentId = '';
+    let currentStaffProfile = null;
+
+    function switchTab(idx) {
+      document.querySelectorAll('.stab').forEach((b, i) => { b.classList.toggle('border-blue-600', i === idx); b.classList.toggle('text-blue-600', i === idx); b.classList.toggle('border-transparent', i !== idx); b.classList.toggle('text-gray-500', i !== idx); });
+      document.querySelectorAll('[id^="stab"]').forEach(t => { t.classList.toggle('hidden', parseInt(t.id.replace('stab', '')) !== idx); });
+      if (idx === 1) { loadAssignments(); loadAssignFormData(); }
+      if (idx === 2) loadLeaves();
+      if (idx === 3) loadSalaryStaff();
+    }
+
+    async function loadCurrentStaffProfile() {
+      if (!schoolId) return;
+      try {
+        const r = await StaffAPI.getMyProfile(schoolId);
+        currentStaffProfile = r?.data || null;
+      } catch (e) {
+        currentStaffProfile = null;
+      }
+    }
+
+   async function loadStaffStats() {
+  if (!schoolId) return;
+
+  try {
+    const r = await StaffAPI.list({ school_id: schoolId, per_page: 100, active_status: '' });
+    const all = r?.data || [];
+
+    const teaching = all.filter(s => s.staff_type === 'Teaching').length;
+    const nonTeaching = all.filter(s => s.staff_type === 'Non-Teaching').length;
+    const admin = all.filter(s => s.staff_type === 'Administrative').length;
+
+    document.getElementById('staffStats').innerHTML =
+      statCard('Total Staff', all.length, 'users', 'blue') +
+      statCard('Teaching', teaching, 'book-open', 'green') +
+      statCard('Non-Teaching', nonTeaching, 'briefcase', 'purple') +
+      statCard('Administrative', admin, 'clipboard-list', 'orange');
+
+    // 🔥 IMPORTANT
+    lucide.createIcons();
+
+  } catch (e) {}
+}
+
+    async function loadStaff() {
+      if (!schoolId) { document.getElementById('staffTable').innerHTML = '<div class="text-center py-12 text-gray-400">Configure school first</div>'; return; }
+      const params = { school_id: schoolId, per_page: 20 };
+      const srch = document.getElementById('srchStaff').value.trim();
+      const type = document.getElementById('filterType').value;
+      const activeStatus = document.getElementById('filterActive').value;
+      if (srch) params.search = srch;
+      if (type) params.staff_type = type;
+      if (activeStatus) params.active_status = activeStatus;
+      try {
+        const r = await StaffAPI.list(params); const staff = r?.data || [];
+        const hdrs = ['Emp ID', 'Name', 'Designation', 'Type', 'Dept', 'Phone', 'Salary', 'Status', 'Login', 'Access', ''];
+        const rows = staff.map(s => `
+          <td class="px-4 py-3 font-mono text-xs text-gray-500">${s.employee_id}</td>
+          <td class="px-4 py-3"><div class="flex items-center gap-2">
+            <div class="w-8 h-8 bg-violet-100 rounded-xl flex items-center justify-center text-violet-600 font-bold text-xs">${s.first_name.charAt(0).toUpperCase()}</div>
+            <div><div class="font-medium text-gray-900 text-sm">${s.full_name}</div><div class="text-xs text-gray-400">${s.email || ''}</div></div>
+          </div></td>
+          <td class="px-4 py-3 text-sm text-gray-700">${s.designation}</td>
+          <td class="px-4 py-3">${tdBadge(s.staff_type, s.staff_type === 'Teaching' ? 'green' : s.staff_type === 'Administrative' ? 'blue' : 'gray')}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${s.department || '-'}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${s.phone}</td>
+          <td class="px-4 py-3 text-sm font-medium text-gray-900">${formatCurrency(s.gross_salary)}</td>
+          <td class="px-4 py-3">${tdBadge(s.employment_status, s.employment_status === 'Active' ? 'green' : s.employment_status === 'On-Leave' ? 'yellow' : 'gray')}</td>
+          <td class="px-4 py-3"><div>${tdBadge(s.has_login ? (s.login_active ? 'Login Active' : 'Login Off') : 'No Login', s.has_login ? (s.login_active ? 'green' : 'red') : 'gray')}</div><div class="text-[11px] text-gray-400 mt-1">${s.login_username || ''}</div></td>
+          <td class="px-4 py-3">${tdBadge(s.is_active ? 'Active' : 'Inactive', s.is_active ? 'green' : 'red')}</td>
+          <td class="px-4 py-3"><div class="flex items-center gap-3"><button onclick="viewStaff('${s.id}')" class="text-xs text-blue-600 hover:underline">View</button><button onclick="editStaff('${s.id}')" class="text-xs text-emerald-600 hover:underline">Edit</button><button onclick="toggleStaffActive('${s.id}', ${s.is_active ? 'false' : 'true'})" class="text-xs ${s.is_active ? 'text-red-600' : 'text-emerald-600'} hover:underline">${s.is_active ? 'Deactivate' : 'Activate'}</button></div></td>
+        `);
+        document.getElementById('staffTable').innerHTML = buildTable(hdrs, rows, 'No staff found');
+      } catch (e) { document.getElementById('staffTable').innerHTML = `<div class="text-center py-8 text-red-400">Error: ${e.message}</div>`; }
+    }
+
+    async function toggleStaffActive(id, nextState) {
+      const activate = String(nextState) === 'true';
+      if (!confirm(`${activate ? 'Activate' : 'Deactivate'} this staff member?`)) return;
+      try {
+        await StaffAPI.setActive(id, { is_active: activate });
+        showToast(`Staff ${activate ? 'activated' : 'deactivated'} successfully`);
+        loadStaff();
+        loadStaffStats();
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    function resetStaffModal() {
+      editingStaffId = '';
+      editingStaffHasLogin = false;
+      document.getElementById('staffModalTitle').textContent = 'Add Staff Member';
+      document.getElementById('staffModalHint').textContent = 'Create a new teaching or non-teaching staff profile.';
+      document.getElementById('staffSubmitBtn').textContent = 'Add Staff';
+      document.querySelectorAll('#addStaffModal input,#addStaffModal select,#addStaffModal textarea').forEach(el => el.value = '');
+      document.getElementById('sf_create_login').checked = false;
+      document.getElementById('sf_login_user').value = '';
+      document.getElementById('sf_login_pass').value = '';
+      document.getElementById('sf_login_pass').placeholder = 'New password';
+      document.getElementById('sf_login_title').textContent = 'Create / Link Login Account';
+      document.getElementById('sf_login_hint').textContent = 'The teacher or staff member will use this username and password on the login page.';
+      document.getElementById('sf_emptype').value = 'Permanent';
+      toggleStaffLoginFields();
+    }
+
+    function toggleStaffLoginFields() {
+      document.getElementById('sf_login_fields').classList.toggle('hidden', !document.getElementById('sf_create_login').checked);
+    }
+
+    function openStaffModal() {
+      resetStaffModal();
+      document.getElementById('addStaffModal').style.display = 'flex';
+    }
+
+    function buildStaffPayload() {
+      return {
+        first_name: document.getElementById('sf_fn').value.trim(),
+        last_name: document.getElementById('sf_ln').value.trim(),
+        gender: document.getElementById('sf_gnd').value,
+        phone: document.getElementById('sf_ph').value.trim(),
+        date_of_birth: document.getElementById('sf_dob').value ? new Date(document.getElementById('sf_dob').value).toISOString() : null,
+        email: document.getElementById('sf_em').value || null,
+        designation: document.getElementById('sf_des').value.trim(),
+        department: document.getElementById('sf_dept').value || null,
+        staff_type: document.getElementById('sf_type').value,
+        employment_type: document.getElementById('sf_emptype').value,
+        joining_date: document.getElementById('sf_join').value ? new Date(document.getElementById('sf_join').value).toISOString() : null,
+        basic_salary: parseFloat(document.getElementById('sf_sal').value) || 0,
+        hra: parseFloat(document.getElementById('sf_hra').value) || 0,
+        da: parseFloat(document.getElementById('sf_da').value) || 0,
+        other_allowances: parseFloat(document.getElementById('sf_oth').value) || 0,
+        experience_years: parseFloat(document.getElementById('sf_exp').value) || 0,
+        current_address: document.getElementById('sf_addr').value || null,
+        create_login_account: document.getElementById('sf_create_login').checked,
+        login_username: document.getElementById('sf_login_user').value.trim() || null,
+        login_password: document.getElementById('sf_login_pass').value || null,
+        school_id: schoolId
+      };
+    }
+
+    async function saveStaff() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const fn = document.getElementById('sf_fn').value.trim(), ln = document.getElementById('sf_ln').value.trim();
+      const gnd = document.getElementById('sf_gnd').value, ph = document.getElementById('sf_ph').value.trim();
+      const des = document.getElementById('sf_des').value.trim(), type = document.getElementById('sf_type').value;
+      const join = document.getElementById('sf_join').value;
+      if (!fn || !gnd || !ph || !des || !type || !join) { showToast('Fill all required fields (*)', 'error'); return; }
+      if (document.getElementById('sf_create_login').checked && !editingStaffHasLogin && !document.getElementById('sf_login_pass').value) {
+        showToast('Login password required for new staff login', 'error');
+        return;
+      }
+      try {
+        const payload = buildStaffPayload();
+        const r = editingStaffId ? await StaffAPI.update(editingStaffId, payload) : await StaffAPI.create(payload);
+        showToast(editingStaffId ? 'Staff updated successfully' : 'Staff added! ID: ' + r.data.employee_id);
+        document.getElementById('addStaffModal').style.display = 'none';
+        loadStaff(); loadStaffStats();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function viewStaff(id) {
+      try {
+        const r = await StaffAPI.get(id); const s = r.data;
+        document.getElementById('staffDetailContent').innerHTML = `
+          <div class="space-y-5">
+            <div class="rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-700 to-blue-600 p-6 text-white">
+              <div class="flex items-start justify-between gap-4">
+                <div class="flex items-center gap-4">
+                  <div class="w-16 h-16 rounded-3xl bg-white/15 border border-white/20 flex items-center justify-center text-2xl font-bold">${(s.first_name || 'S').charAt(0).toUpperCase()}</div>
+                  <div>
+                    <h4 class="text-2xl font-bold">${s.full_name || '-'}</h4>
+                    <p class="text-sm text-white/80 mt-1">${s.employee_id || '-'} · ${s.designation || '-'}</p>
+                    <div class="flex flex-wrap gap-2 mt-3">
+                      <span class="px-3 py-1 rounded-xl bg-white/15 text-sm font-medium">${s.staff_type || '-'}</span>
+                      <span class="px-3 py-1 rounded-xl bg-white/15 text-sm font-medium">${s.employment_status || '-'}</span>
+                    </div>
+                  </div>
+                </div>
+                <button onclick="editStaff('${id}'); document.getElementById('staffDetailModal').style.display='none';" class="px-4 py-2 bg-white/15 hover:bg-white/25 rounded-xl text-sm font-medium">Edit Staff</button>
+              </div>
+            </div>
+            <div class="grid md:grid-cols-2 gap-5">
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5 space-y-3 text-sm">
+                <h5 class="font-bold text-slate-900">Profile</h5>
+                <div><span class="text-slate-400">Phone:</span> <span class="font-medium text-slate-900">${s.phone || '-'}</span></div>
+                <div><span class="text-slate-400">Email:</span> <span class="font-medium text-slate-900">${s.email || '-'}</span></div>
+                <div><span class="text-slate-400">Gender:</span> <span class="font-medium text-slate-900">${s.gender || '-'}</span></div>
+                <div><span class="text-slate-400">DOB:</span> <span class="font-medium text-slate-900">${formatDate(s.date_of_birth)}</span></div>
+                <div><span class="text-slate-400">Department:</span> <span class="font-medium text-slate-900">${s.department || '-'}</span></div>
+                <div><span class="text-slate-400">Login:</span> <span class="font-medium text-slate-900">${s.has_login ? `${s.login_username || '-'} (${s.login_active ? 'Active' : 'Inactive'})` : 'Not created'}</span></div>
+                <div><span class="text-slate-400">Experience:</span> <span class="font-medium text-slate-900">${s.experience_years || 0} years</span></div>
+                <div><span class="text-slate-400">Joining:</span> <span class="font-medium text-slate-900">${formatDate(s.joining_date)}</span></div>
+                <div><span class="text-slate-400">Address:</span> <span class="font-medium text-slate-900">${s.current_address || '-'}</span></div>
+              </div>
+              <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5 space-y-3 text-sm">
+                <h5 class="font-bold text-slate-900">Payroll</h5>
+                <div><span class="text-slate-400">Basic Salary:</span> <span class="font-medium text-slate-900">${formatCurrency(s.basic_salary || 0)}</span></div>
+                <div><span class="text-slate-400">HRA:</span> <span class="font-medium text-slate-900">${formatCurrency(s.hra || 0)}</span></div>
+                <div><span class="text-slate-400">DA:</span> <span class="font-medium text-slate-900">${formatCurrency(s.da || 0)}</span></div>
+                <div><span class="text-slate-400">Other Allowances:</span> <span class="font-medium text-slate-900">${formatCurrency(s.other_allowances || 0)}</span></div>
+                <div><span class="text-slate-400">Gross Salary:</span> <span class="font-medium text-emerald-600">${formatCurrency(s.gross_salary || 0)}</span></div>
+                <div><span class="text-slate-400">Employment Type:</span> <span class="font-medium text-slate-900">${s.employment_type || '-'}</span></div>
+              </div>
+            </div>
+          </div>`;
+        document.getElementById('staffDetailModal').style.display = 'flex';
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function editStaff(id) {
+      try {
+        resetStaffModal();
+        const r = await StaffAPI.get(id);
+        const s = r.data || {};
+        editingStaffId = id;
+        editingStaffHasLogin = !!s.has_login;
+        document.getElementById('staffModalTitle').textContent = 'Edit Staff Member';
+        document.getElementById('staffModalHint').textContent = 'Update staff profile, employment, salary and teacher login details.';
+        document.getElementById('staffSubmitBtn').textContent = 'Update Staff';
+        document.getElementById('sf_fn').value = s.first_name || '';
+        document.getElementById('sf_ln').value = s.last_name || '';
+        document.getElementById('sf_gnd').value = s.gender || '';
+        document.getElementById('sf_dob').value = s.date_of_birth ? String(s.date_of_birth).slice(0, 10) : '';
+        document.getElementById('sf_ph').value = s.phone || '';
+        document.getElementById('sf_em').value = s.email || '';
+        document.getElementById('sf_des').value = s.designation || '';
+        document.getElementById('sf_dept').value = s.department || '';
+        document.getElementById('sf_type').value = s.staff_type || '';
+        document.getElementById('sf_emptype').value = s.employment_type || 'Permanent';
+        document.getElementById('sf_join').value = s.joining_date ? String(s.joining_date).slice(0, 10) : '';
+        document.getElementById('sf_sal').value = s.basic_salary || 0;
+        document.getElementById('sf_hra').value = s.hra || 0;
+        document.getElementById('sf_da').value = s.da || 0;
+        document.getElementById('sf_oth').value = s.other_allowances || 0;
+        document.getElementById('sf_exp').value = s.experience_years || 0;
+        document.getElementById('sf_addr').value = s.current_address || '';
+        document.getElementById('sf_create_login').checked = !!s.has_login;
+        document.getElementById('sf_login_user').value = s.login_username || s.email || s.employee_id || '';
+        document.getElementById('sf_login_pass').value = '';
+        document.getElementById('sf_login_pass').placeholder = s.has_login ? 'Leave blank to keep current password' : 'New password';
+        document.getElementById('sf_login_title').textContent = s.has_login ? 'Update Teacher Login Account' : 'Create Teacher Login Account';
+        document.getElementById('sf_login_hint').textContent = s.has_login ? 'Login account already linked. Leave password blank to keep the current password.' : 'Tick this option to create a teacher login for this staff member.';
+        toggleStaffLoginFields();
+        document.getElementById('addStaffModal').style.display = 'flex';
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    async function loadAssignFormData() {
+      if (!schoolId) return;
+      try {
+        const [sr, cr] = await Promise.allSettled([StaffAPI.list({ school_id: schoolId, staff_type: 'Teaching', per_page: 100 }), ClassAPI.list(schoolId, ayId)]);
+        if (sr.status === 'fulfilled') { document.getElementById('as_teacher').innerHTML = '<option value="">Select teacher</option>' + (sr.value?.data || []).map(s => `<option value="${s.id}">${s.full_name} (${s.employee_id})</option>`).join(''); }
+        if (cr.status === 'fulfilled') { const cls = cr.value?.data || []; document.getElementById('as_cls').innerHTML = '<option value="">Select class</option>' + cls.map(c => `<option value="${c.id}" data-secs='${JSON.stringify(c.sections)}'>${c.name}</option>`).join(''); document.getElementById('sal_staff').innerHTML = '<option value="">Select staff</option>' + (sr.value?.data || []).map(s => `<option value="${s.id}">${s.full_name}</option>`).join(''); }
+        document.getElementById('as_sub').innerHTML = '<option value="">Select class first</option>';
+      } catch (e) {}
+    }
+
+    async function openAssignModal() {
+      editingAssignmentId = '';
+      document.getElementById('assignModalTitle').textContent = 'Assign to Teacher';
+      document.getElementById('assignSubmitBtn').textContent = 'Save';
+      document.getElementById('as_cls_teacher').checked = false;
+      document.getElementById('as_file').value = '';
+      await loadAssignFormData();
+      ['as_teacher', 'as_cls', 'as_sec', 'as_sub'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+      });
+      document.getElementById('assignModal').style.display = 'flex';
+    }
+
+    function loadAssignSections() {
+      const el = document.getElementById('as_cls'), se = document.getElementById('as_sec');
+      const opt = el.options[el.selectedIndex];
+      se.innerHTML = '<option value="">Select section</option>';
+      if (!opt || !opt.dataset.secs) return;
+      JSON.parse(opt.dataset.secs).forEach(s => se.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+    }
+
+    async function loadAssignSubjects(selectedSubjectId = '') {
+      const clsId = document.getElementById('as_cls').value;
+      const secId = document.getElementById('as_sec').value;
+      const subjectEl = document.getElementById('as_sub');
+      subjectEl.innerHTML = '<option value="">Loading subjects...</option>';
+      if (!schoolId || !ayId || !clsId) {
+        subjectEl.innerHTML = '<option value="">Select class first</option>';
+        return;
+      }
+      try {
+        const r = await SubjectAPI.list(schoolId, { academic_year_id: ayId, classroom_id: clsId, section_id: secId });
+        const subjects = r?.data || [];
+        subjectEl.innerHTML = subjects.length
+          ? '<option value="">Select subject</option>' + subjects.map(s => `<option value="${s.id}">${s.name}</option>`).join('')
+          : '<option value="">No subjects assigned</option>';
+        if (selectedSubjectId) subjectEl.value = selectedSubjectId;
+      } catch (e) {
+        subjectEl.innerHTML = '<option value="">No subjects assigned</option>';
+      }
+    }
+
+    async function saveAssignment() {
+      if (!schoolId || !ayId) { showToast('Configure school and academic year first', 'error'); return; }
+      const t = document.getElementById('as_teacher').value, c = document.getElementById('as_cls').value, s = document.getElementById('as_sec').value, sub = document.getElementById('as_sub').value;
+      if (!t || !c || !s || !sub) { showToast('Fill all fields', 'error'); return; }
+      try {
+        const payload = { school_id: schoolId, academic_year_id: ayId, teacher_id: t, classroom_id: c, section_id: s, subject_id: sub, is_class_teacher: document.getElementById('as_cls_teacher').checked };
+        const r = editingAssignmentId
+          ? await StaffAPI.updateAssignment(editingAssignmentId, payload)
+          : await StaffAPI.createAssignment(payload);
+        const file = document.getElementById('as_file').files?.[0];
+        if (file && r?.data?.id) {
+          const fd = new FormData();
+          fd.append('file', file);
+          await API.upload(`/staff/assignments/${r.data.id}/upload`, fd);
+        }
+        showToast(editingAssignmentId ? 'Assignment updated!' : 'Assignment created!');
+        editingAssignmentId = '';
+        document.getElementById('assignModal').style.display = 'none';
+        loadAssignments();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function editAssignmentFromEncoded(encoded) {
+      const assignment = JSON.parse(decodeURIComponent(encoded));
+      editingAssignmentId = assignment.id;
+      document.getElementById('assignModalTitle').textContent = 'Edit Teacher Assignment';
+      document.getElementById('assignSubmitBtn').textContent = 'Update';
+      await loadAssignFormData();
+      document.getElementById('as_teacher').value = assignment.teacher_id || '';
+      document.getElementById('as_cls').value = assignment.classroom_id || '';
+      loadAssignSections();
+      document.getElementById('as_sec').value = assignment.section_id || '';
+      await loadAssignSubjects(assignment.subject_id || '');
+      document.getElementById('as_cls_teacher').checked = !!assignment.is_class_teacher;
+      document.getElementById('as_file').value = '';
+      document.getElementById('assignModal').style.display = 'flex';
+    }
+
+    async function deleteAssignment(id) {
+      if (!confirm('Delete this teacher assignment?')) return;
+      try {
+        await StaffAPI.deleteAssignment(id);
+        showToast('Assignment deleted');
+        loadAssignments();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadAssignments() {
+      if (!schoolId) { document.getElementById('assignTable').innerHTML = '<p class="text-gray-400 text-sm p-4">Configure school first</p>'; return; }
+      try {
+        const r = await StaffAPI.getAssignments({ school_id: schoolId, academic_year_id: ayId || '' });
+        const data = r?.data || [];
+        const hdrs = ['Teacher', 'Class', 'Section', 'Subject', 'Class Teacher', 'Attachment', 'Actions'];
+        const rows = data.map(a => `
+          <td class="px-4 py-3 font-medium text-gray-900 text-sm">${a.teacher_name || '-'}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${a.classroom || '-'}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${a.section || '-'}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${a.subject || '-'}</td>
+          <td class="px-4 py-3">${a.is_class_teacher ? tdBadge('Yes', 'green') : ''}</td>
+          <td class="px-4 py-3">${a.assignment_file ? `<a href="${a.assignment_file}" target="_blank" class="text-xs text-blue-600 hover:underline">View File</a>` : '<span class="text-xs text-gray-400">-</span>'}</td>
+          <td class="px-4 py-3"><div class="flex items-center gap-3"><button onclick="editAssignmentFromEncoded('${encodeURIComponent(JSON.stringify(a))}')" class="text-xs text-emerald-600 hover:underline">Edit</button><button onclick="deleteAssignment('${a.id}')" class="text-xs text-red-600 hover:underline">Delete</button></div></td>
+        `);
+        document.getElementById('assignTable').innerHTML = buildTable(hdrs, rows, 'No assignments yet');
+      } catch (e) {}
+    }
+
+    async function loadLeaves() {
+      if (!schoolId) { document.getElementById('leaveTable').innerHTML = '<p class="text-gray-400 text-sm p-4">Configure school first</p>'; return; }
+      try {
+        const params = { school_id: schoolId };
+        if (isTeacherSide && currentStaffProfile?.id) params.staff_id = currentStaffProfile.id;
+        const r = await StaffAPI.getLeaves(params); const data = r?.data || [];
+        const hdrs = ['Staff', 'Leave Type', 'From', 'To', 'Days', 'Status', 'Actions'];
+        const rows = data.map(l => `
+          <td class="px-4 py-3 font-medium text-gray-900 text-sm">${l.staff_name || '-'}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${l.leave_type || '-'}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${formatDate(l.from_date)}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${formatDate(l.to_date)}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${l.total_days}</td>
+          <td class="px-4 py-3">${tdBadge(l.status, l.status === 'Approved' ? 'green' : l.status === 'Rejected' ? 'red' : l.status === 'Pending' ? 'yellow' : 'gray')}</td>
+          <td class="px-4 py-3"><div class="flex gap-1">
+            ${!isTeacherSide && l.status === 'Pending' ? `<button onclick="leaveAction('${l.id}','approve')" class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs font-medium hover:bg-emerald-200">Approve</button><button onclick="leaveAction('${l.id}','reject')" class="px-2 py-1 bg-red-100 text-red-700 rounded-lg text-xs font-medium hover:bg-red-200">Reject</button>` : '<span class="text-xs text-gray-400">-</span>'}
+          </div></td>
+        `);
+        document.getElementById('leaveTable').innerHTML = buildTable(hdrs, rows, 'No leave applications');
+      } catch (e) {}
+    }
+
+    async function leaveAction(id, action) {
+      try { await StaffAPI.leaveAction(id, { action }); showToast(`Leave ${action}d`); loadLeaves(); }
+      catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function openLeaveModal() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      await Promise.allSettled([loadCurrentStaffProfile(), loadLeaveTypes(), loadLeaveSubstitutes()]);
+      if (!currentStaffProfile) {
+        showToast('Current login is not linked with any staff profile', 'error');
+        return;
+      }
+      document.getElementById('lv_staff_name').value = `${currentStaffProfile.full_name || ''}${currentStaffProfile.employee_id ? ` (${currentStaffProfile.employee_id})` : ''}`;
+      document.getElementById('lv_from').value = '';
+      document.getElementById('lv_to').value = '';
+      document.getElementById('lv_reason').value = '';
+      document.getElementById('lv_type').value = '';
+      document.getElementById('lv_substitute').value = '';
+      document.getElementById('leaveModal').style.display = 'flex';
+    }
+
+    async function loadLeaveTypes() {
+      if (!schoolId) return;
+      try {
+        const r = await StaffAPI.getLeaveTypes(schoolId);
+        const types = r?.data || [];
+        document.getElementById('lv_type').innerHTML = '<option value="">Select leave type</option>' +
+          types.map(type => `<option value="${type.id}">${type.name} (${type.total_days} days)</option>`).join('');
+      } catch (e) {
+        document.getElementById('lv_type').innerHTML = '<option value="">No leave types</option>';
+      }
+    }
+
+    async function loadLeaveSubstitutes() {
+      if (!schoolId) return;
+      try {
+        const r = await StaffAPI.list({ school_id: schoolId, per_page: 100, active_status: 'active' });
+        const staff = (r?.data || []).filter(item => item.id !== currentStaffProfile?.id);
+        document.getElementById('lv_substitute').innerHTML = '<option value="">Optional substitute</option>' +
+          staff.map(item => `<option value="${item.id}">${item.full_name} (${item.designation || item.employee_id || ''})</option>`).join('');
+      } catch (e) {
+        document.getElementById('lv_substitute').innerHTML = '<option value="">Optional substitute</option>';
+      }
+    }
+
+    async function submitLeaveApplication() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      if (!currentStaffProfile?.id) { showToast('Current login is not linked with staff profile', 'error'); return; }
+      const leaveTypeId = document.getElementById('lv_type').value;
+      const fromDate = document.getElementById('lv_from').value;
+      const toDate = document.getElementById('lv_to').value;
+      const reason = document.getElementById('lv_reason').value.trim();
+      if (!leaveTypeId || !fromDate || !toDate || !reason) {
+        showToast('Fill all required leave fields', 'error');
+        return;
+      }
+      try {
+        const payload = {
+          school_id: schoolId,
+          staff_id: currentStaffProfile.id,
+          leave_type_id: leaveTypeId,
+          from_date: new Date(fromDate).toISOString(),
+          to_date: new Date(toDate).toISOString(),
+          reason,
+          substitute_id: document.getElementById('lv_substitute').value || null
+        };
+        const r = await StaffAPI.applyLeave(payload);
+        showToast(`Leave applied successfully for ${r?.data?.total_days || 0} day(s)`);
+        document.getElementById('leaveModal').style.display = 'none';
+        loadLeaves();
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    async function loadSalaryStaff() {
+      if (!schoolId) return;
+      try {
+        const r = await StaffAPI.list({ school_id: schoolId, per_page: 100 });
+        document.getElementById('sal_staff').innerHTML = '<option value="">Select staff</option>' + (r?.data || []).map(s => `<option value="${s.id}">${s.full_name} (${s.employee_id})</option>`).join('');
+        document.getElementById('salaryTable').innerHTML = '<div class="text-gray-400 text-sm p-4 text-center">Select a staff to generate salary slip</div>';
+      } catch (e) {}
+    }
+
+    async function generateSalary() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const staffId = document.getElementById('sal_staff').value;
+      if (!staffId) { showToast('Select staff', 'error'); return; }
+      try {
+        const r = await StaffAPI.generateSalary({ school_id: schoolId, staff_id: staffId, month: parseInt(document.getElementById('sal_month').value), year: parseInt(document.getElementById('sal_year').value), working_days: parseInt(document.getElementById('sal_wdays').value) || 26, absent_days: parseInt(document.getElementById('sal_adays').value) || 0 });
+        showToast('Salary slip generated! Net: ' + formatCurrency(r.data.net_salary));
+        document.getElementById('salaryModal').style.display = 'none';
+        const slips = await StaffAPI.getSalarySlips(staffId);
+        const hdrs = ['Month', 'Year', 'Gross', 'Deductions', 'Net Salary', 'Status'];
+        const rows = (slips?.data || []).map(s => `
+          <td class="px-4 py-3 text-sm text-gray-700">${['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][s.month]}</td>
+          <td class="px-4 py-3 text-sm text-gray-700">${s.year}</td>
+          <td class="px-4 py-3 text-sm text-gray-700">${formatCurrency(s.gross_earnings)}</td>
+          <td class="px-4 py-3 text-sm text-red-500">${formatCurrency(s.total_deductions)}</td>
+          <td class="px-4 py-3 font-bold text-emerald-600">${formatCurrency(s.net_salary)}</td>
+          <td class="px-4 py-3">${tdBadge(s.status, s.status === 'Paid' ? 'green' : 'blue')}</td>
+        `);
+        document.getElementById('salaryTable').innerHTML = buildTable(hdrs, rows, 'No salary slips');
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    const dbLoad = debounce(() => loadStaff());
+    document.getElementById('srchStaff').addEventListener('input', dbLoad);
+    document.getElementById('filterType').addEventListener('change', loadStaff);
+    document.getElementById('filterActive').addEventListener('change', loadStaff);
+    (async function initStaffPage() {
+      schoolId = await initializeSchoolContext() || schoolId;
+      await loadCurrentStaffProfile();
+      if (isTeacherSide) {
+        document.getElementById('staffTabAll').style.display = 'none';
+        document.getElementById('staffTabAssignments').style.display = 'none';
+        document.getElementById('staffTabSalary').style.display = 'none';
+        document.getElementById('stab0').classList.add('hidden');
+        document.getElementById('stab1').classList.add('hidden');
+        document.getElementById('stab3').classList.add('hidden');
+        switchTab(2);
+      }
+      document.getElementById('applyLeaveBtn').style.display = currentStaffProfile ? 'inline-flex' : 'none';
+      document.getElementById('leaveSubtitle').textContent = isTeacherSide
+        ? 'Apply leave and track your leave application status'
+        : 'Staff leave requests and approvals';
+      loadStaffStats();
+      loadStaff();
+    })();
+
+    function statCard(title, value, icon, color) {
+  return `
+    <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
+      
+      <div>
+        <p class="text-sm text-gray-400">${title}</p>
+        <h3 class="text-xl font-bold text-gray-900">${value}</h3>
+      </div>
+
+      <div class="p-3 rounded-xl bg-${color}-100 text-${color}-600">
+        <i data-lucide="${icon}" class="w-5 h-5"></i>
+      </div>
+
+    </div>
+  `;
+}
+
+lucide.createIcons();
+  </script>
+</body>
+</html>

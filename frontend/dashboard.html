@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Dashboard — Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f8fafc
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f8fafc;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .quick-btn {
+      display: flex;
+      align-items: center;
+      gap: .875rem;
+      padding: .875rem 1rem;
+      border-radius: .875rem;
+      text-decoration: none;
+      transition: all .15s;
+      border: 1.5px solid #f1f5f9
+    }
+
+    .quick-btn:hover {
+      border-color: #e0e7ff;
+      background: #f5f3ff;
+      transform: translateX(3px)
+    }
+  </style>
+</head>
+
+<body>
+  <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+      <div class="p-6 space-y-6">
+
+        <!-- Welcome Banner -->
+        <div
+          style="background:linear-gradient(135deg,#4f46e5 0%,#7c3aed 50%,#4f46e5 100%);background-size:200% auto;border-radius:1.5rem;padding:1.75rem 2rem;position:relative;overflow:hidden;animation:shimmer 4s linear infinite">
+          <style>
+            @keyframes shimmer {
+              0% {
+                background-position: 0% 50%
+              }
+
+              50% {
+                background-position: 100% 50%
+              }
+
+              100% {
+                background-position: 0% 50%
+              }
+            }
+          </style>
+          <div
+            style="position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:rgba(255,255,255,.06);border-radius:50%">
+          </div>
+          <div
+            style="position:absolute;bottom:-60px;right:80px;width:120px;height:120px;background:rgba(255,255,255,.04);border-radius:50%">
+          </div>
+          <div style="position:relative;display:flex;justify-content:space-between;align-items:center;flex-wrap:gap">
+            <div>
+              <p style="color:rgba(255,255,255,.65);font-size:.875rem;font-weight:500">Good morning,</p>
+              <h2 id="welcomeName"
+                style="color:#fff;font-family:Outfit,sans-serif;font-size:1.875rem;font-weight:800;margin:.25rem 0 .375rem">
+                Admin 👋</h2>
+              <p id="welcomeDate" style="color:rgba(255,255,255,.55);font-size:.875rem"></p>
+            </div>
+            <div class="hidden sm:flex gap-3">
+              <a id="welcomeStudentBtn" href="/students"
+                style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:.875rem;padding:.625rem 1.125rem;color:#fff;font-size:.875rem;font-weight:600;text-decoration:none;backdrop-filter:blur(8px);transition:all .15s"
+                onmouseover="this.style.background='rgba(255,255,255,.2)'"
+                onmouseout="this.style.background='rgba(255,255,255,.12)'">+ Admit Student</a>
+             <a id="welcomeReportsBtn" href="/reports"
+  style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);
+  border-radius:.875rem;padding:.625rem 1.125rem;color:#fff;font-size:.875rem;
+  font-weight:600;text-decoration:none;backdrop-filter:blur(8px);
+  transition:all .15s;display:flex;align-items:center;gap:6px"
+  onmouseover="this.style.background='rgba(255,255,255,.2)'"
+  onmouseout="this.style.background='rgba(255,255,255,.12)'">
+
+  <span data-lucide="bar-chart-3" style="width:18px;height:18px"></span>
+  Reports
+</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- KPI Cards -->
+        <div style="background:#fff;border-radius:1.25rem;padding:1rem 1.25rem;border:1.5px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+          <div>
+            <p style="font-size:.75rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.08em">Branch View</p>
+            <p id="branchContextLabel" style="font-size:.9375rem;font-weight:700;color:#0f172a;margin-top:.2rem">All branches in logged-in school</p>
+            
+            <!-- My Code -->
+           <div id="branchButtons" class="flex flex-wrap gap-3 mt-2"></div>
+          </div>
+          <div style="min-width:240px">
+            <select id="branchFilter" class="finput">
+              <option value="">All Branches</option>
+            </select>
+          </div>
+        </div>
+
+       <div id="overviewCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+  <!-- Total Students -->
+  <div id="overviewStudentsCard" class=" rounded-2xl p-6 bg-white  border border-grey-50  hover:shadow-sm cursor-pointer transition">
+    <div class="">
+     <div class="flex items-center justify-between">
+       <div>
+        <p class="text-black text-sm">Total Students</p>
+        <h2 id="overviewStudentsValue" class="text-3xl font-bold text-black mt-1">0</h2>
+      </div>
+        <div class="bg-blue-500/20 text-blue-400 p-3 rounded-xl">
+          <span id="icon-students"></span>
+        </div>
+      </div>
+      <span id="overviewStudentsText" class="text-xs text-gray-500">
+        Total number of students currently enrolled
+      </span>
+    </div>
+  </div>
+
+  <!-- Total Fee -->
+  <div id="overviewPendingFeeCard" class=" rounded-2xl p-6 bg-white  border border-grey-50  hover:shadow-sm cursor-pointer transition">
+ <div class="">
+     <div class="flex items-center justify-between">      <div>
+        <p class="text-black text-sm">Pending Fee</p>
+        <h2 id="overviewPendingFeeValue" class="text-3xl font-bold text-black mt-1">₹0</h2>
+      </div>
+      <div class="bg-green-500/20 text-xl text-green-400 p-2 px-4 rounded-xl">
+        ₹
+      </div>
+    </div>
+    <span id="overviewPendingFeeText" class="text-xs text-gray-500">
+      Total pending fee from students
+    </span>
+    </div>
+
+  </div>
+
+  <!-- Total Schools -->
+  <div id="overviewStaffCard" class=" rounded-2xl p-6 bg-white  border border-grey-50  hover:shadow-sm cursor-pointer transition">
+ <div class="">
+     <div class="flex items-center justify-between">       <div>
+        <p class="text-black text-sm">Total Staff</p>
+        <h2 id="overviewStaffValue" class="text-3xl font-bold text-black mt-1">0</h2>
+      </div>
+      <div class="bg-purple-500/20 text-purple-400 p-3 rounded-xl">
+        <span id="icon-staff"></span>
+      </div>
+    </div>
+      <span id="overviewStaffText" class="text-xs text-gray-500">
+        Total staff members in the system
+      </span>
+    </div>
+
+  </div>
+
+
+
+</div>
+
+        <!-- Middle row -->
+        <div class="grid lg:grid-cols-3 gap-5">
+          <!-- Quick Actions -->
+          <div style="background:#fff;border-radius:1.25rem;padding:1.5rem;border:1.5px solid #f1f5f9">
+            <h3 id="qaTitle" class="font-outfit flex gap-2 items-center"
+              style="font-weight:700;color:#0f172a;margin-bottom:1.25rem;font-size:1rem"></h3>
+            <div id="quickActions" class="space-y-2"></div>
+          </div>
+
+          <!-- Recent Students -->
+          <div style="background:#fff;border-radius:1.25rem;padding:1.5rem;border:1.5px solid #f1f5f9">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem">
+              <h3 class="font-outfit flex items-center gap-2" style="font-weight:700;color:#0f172a;font-size:1rem"><span id="icon-recent-students"></span>Recent Students</h3>
+              <a href="/students" style="font-size:.8125rem;color:#6366f1;font-weight:600;text-decoration:none">View all
+                →</a>
+            </div>
+          <div id="recentStudents"
+  style="display:flex;flex-direction:column;align-items:left;justify-content:start;padding:0rem;color:#94a3b8;text-align:left">
+  <div id="icon-empty-students"
+       style="margin-bottom:.75rem;display:flex;align-items:center;justify-content:center">
+  </div>
+
+  <p style="font-size:.875rem">No students yet</p>
+</div>
+          </div>
+
+          <!-- Fee Summary -->
+          <div id="feeSummaryCard" style="background:#fff;border-radius:1.25rem;padding:1.5rem;border:1.5px solid #f1f5f9">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem">
+              <h3 class="font-outfit" style="font-weight:700;color:#0f172a;font-size:1rem"> ₹ Fee Summary</h3>
+              <a href="/fees" style="font-size:.8125rem;color:#6366f1;font-weight:600;text-decoration:none">Details
+                →</a>
+            </div>
+            <div class="space-y-3">
+              <div>
+                <div style="display:flex;justify-content:space-between;font-size:.875rem;margin-bottom:.5rem">
+                  <span style="color:#64748b">Collection Progress</span>
+                  <span id="fsRate" style="font-weight:700;color:#0f172a">0%</span>
+                </div>
+                <div style="background:#f1f5f9;border-radius:999px;height:.625rem;overflow:hidden">
+                  <div id="fsBar"
+                    style="height:100%;width:0%;background:linear-gradient(90deg,#10b981,#06b6d4);border-radius:999px;transition:width .6s ease">
+                  </div>
+                </div>
+              </div>
+              <div class="flex flex-col gap-3">
+                <div
+                  style="background:#f0fdf4;border-radius:.875rem;padding:.875rem;text-align:center;border:1px solid #bbf7d0">
+                  <div id="fsCollected"
+                    style="font-family:Outfit,sans-serif;font-weight:800;font-size:1.0625rem;color:#15803d">₹0</div>
+                  <div style="font-size:.6875rem;color:#16a34a;font-weight:600;margin-top:.25rem">Collected</div>
+                </div>
+                <div
+                  style="background:#fef2f2;border-radius:.875rem;padding:.875rem;text-align:center;border:1px solid #fecaca">
+                  <div id="fsDue"
+                    style="font-family:Outfit,sans-serif;font-weight:800;font-size:1.0625rem;color:#b91c1c">₹0</div>
+                  <div style="font-size:.6875rem;color:#dc2626;font-weight:600;margin-top:.25rem">Pending</div>
+                </div>
+                <div
+                  style="background:#eff6ff;border-radius:.875rem;padding:.875rem;text-align:center;border:1px solid #bfdbfe">
+                  <div id="fsTotalBilled"
+                    style="font-family:Outfit,sans-serif;font-weight:800;font-size:1.0625rem;color:#1d4ed8">₹0</div>
+                  <div style="font-size:.6875rem;color:#2563eb;font-weight:600;margin-top:.25rem">Total</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('dashboard');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('Dashboard', 'School overview and quick actions');
+    const ayId = localStorage.getItem('ay_id');
+    const user = getUser();
+    let schoolId = null;
+    let schoolBranches = [];
+    let selectedBranchCode = '';
+    const canAccessFees = hasModuleAccess('fees');
+    document.getElementById('welcomeName').textContent = (user?.full_name || 'Admin') + ' 👋';
+    document.getElementById('welcomeDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    document.getElementById('branchFilter').addEventListener('change', async (e) => {
+      selectedBranchCode = e.target.value || '';
+      updateBranchContextLabel();
+      await load();
+    });
+    document.getElementById('overviewStudentsCard').addEventListener('click', () => {
+      const url = new URL('/students', window.location.origin);
+      if (selectedBranchCode) url.searchParams.set('branch_code', selectedBranchCode);
+      window.location.href = url.pathname + url.search;
+    });
+    if (canAccessFees) {
+      document.getElementById('overviewPendingFeeCard').addEventListener('click', () => {
+        const url = new URL('/fees', window.location.origin);
+        if (selectedBranchCode) url.searchParams.set('branch_code', selectedBranchCode);
+        url.searchParams.set('tab', 'dues');
+        window.location.href = url.pathname + url.search;
+      });
+    } else {
+      document.getElementById('overviewPendingFeeCard').style.display = 'none';
+      document.getElementById('feeSummaryCard').style.display = 'none';
+    }
+    document.getElementById('overviewStaffCard').addEventListener('click', () => {
+      window.location.href = '/staff';
+    });
+
+    document.getElementById('welcomeStudentBtn').style.display = hasModuleAccess('students') ? 'inline-flex' : 'none';
+    document.getElementById('welcomeReportsBtn').style.display = hasModuleAccess('reports') ? 'inline-flex' : 'none';
+
+    // Quick actions
+    const actions = [
+      { icon: getIcon('student'), label: 'Admit New Student', href: '/students', module: 'students', color: '#6366f1' },
+      { icon: getIcon('calendar'), label: 'Mark Attendance', href: '/attendance', module: 'attendance', color: '#10b981' },
+      { icon: getIcon('money'), label: 'Collect Fee', href: '/fees', module: 'fees', color: '#f59e0b' },
+      { icon: getIcon('exam'), label: 'Enter Exam Marks', href: '/exams', module: 'exams', color: '#ef4444' },
+      { icon: getIcon('staff'), label: 'Add Staff Member', href: '/staff', module: 'staff', color: '#8b5cf6' },
+      { icon: getIcon('certificate'), label: 'Issue Certificate', href: '/certificates', module: 'certificates', color: '#0ea5e9' },
+    ];
+    const filteredActions = actions.filter(a => hasModuleAccess(a.module));
+    document.getElementById('quickActions').innerHTML = filteredActions.map(a =>
+      `<a href="${a.href}" class="quick-btn">
+    <div style="width:2.25rem;height:2.25rem;background:${a.color}15;border-radius:.625rem;display:flex;align-items:center;justify-content:center;font-size:1.125rem;flex-shrink:0">${a.icon}</div>
+    <span style="font-size:.875rem;font-weight:600;color:#374151">${a.label}</span>
+    <svg style="width:1rem;height:1rem;color:#d1d5db;margin-left:auto;flex-shrink:0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M9 5l7 7-7 7"/></svg>
+  </a>`
+    ).join('') || '<div class="text-sm text-gray-400 text-center py-6">No quick actions available for this role</div>';
+
+    function updateBranchContextLabel() {
+      const selectedBranch = schoolBranches.find(branch => branch.code === selectedBranchCode);
+      document.getElementById('branchContextLabel').textContent = selectedBranch
+        ? `${selectedBranch.name} branch`
+        : 'All branches in logged-in school';
+    }
+
+    function renderDashboardStats(ds = {}, fs = {}) {
+      document.getElementById('overviewStudentsValue').textContent = Number(ds.total_students || 0).toLocaleString('en-IN');
+      document.getElementById('overviewStaffValue').textContent = Number(ds.total_staff || 0).toLocaleString('en-IN');
+      document.getElementById('overviewStudentsText').textContent = selectedBranchCode
+        ? 'Students enrolled in selected branch'
+        : 'Total number of students currently enrolled';
+      if (canAccessFees) {
+        document.getElementById('overviewPendingFeeValue').textContent = formatCurrency(fs.total_due || 0);
+        document.getElementById('overviewPendingFeeText').textContent = selectedBranchCode
+          ? 'Pending fee from selected branch students'
+          : 'Total pending fee from students';
+      }
+      document.getElementById('overviewStaffText').textContent = selectedBranchCode
+        ? 'Staff members visible for current school context'
+        : 'Total staff members in the system';
+    }
+
+    async function buildDashboardFallbackStats() {
+      if (!schoolId) return {};
+      const [studentStats, staffList, classList, duesSummary] = await Promise.allSettled([
+        StudentAPI.stats(schoolId, ayId, selectedBranchCode),
+        StaffAPI.list({ school_id: schoolId, per_page: 1 }),
+        ClassAPI.list(schoolId, ayId),
+        canAccessFees
+          ? FeesAPI.getDues({ school_id: schoolId, branch_code: selectedBranchCode })
+          : Promise.resolve({ data: { total_pending_invoices: 0 } })
+      ]);
+
+      return {
+        total_students: studentStats.status === 'fulfilled' ? (studentStats.value?.data?.total || 0) : 0,
+        total_staff: staffList.status === 'fulfilled' ? (staffList.value?.meta?.total || (staffList.value?.data || []).length || 0) : 0,
+        total_classes: classList.status === 'fulfilled' ? ((classList.value?.data || []).length || 0) : 0,
+        pending_fees: duesSummary.status === 'fulfilled' ? (duesSummary.value?.data?.total_pending_invoices || 0) : 0
+      };
+    }
+
+    async function loadBranchOptions() {
+      if (!schoolId) return;
+      try {
+        const schoolRes = await SchoolAPI.get(schoolId);
+        schoolBranches = schoolRes?.data?.branches || [];
+        renderBranchButtons();
+        const filter = document.getElementById('branchFilter');
+        const previous = selectedBranchCode;
+        filter.innerHTML = '<option value="">All Branches</option>' +
+          schoolBranches.map(branch => `<option value="${branch.code}">${branch.name}${branch.code ? ` (${branch.code})` : ''}</option>`).join('');
+        if (previous && schoolBranches.some(branch => branch.code === previous)) {
+          filter.value = previous;
+          selectedBranchCode = previous;
+        } else {
+          filter.value = '';
+          selectedBranchCode = '';
+        }
+        selectedBranchCode = applyBranchAccessToSelect('branchFilter', selectedBranchCode);
+        updateBranchContextLabel();
+      } catch (e) {
+        schoolBranches = [];
+        document.getElementById('branchFilter').innerHTML = '<option value="">All Branches</option>';
+        selectedBranchCode = getScopedBranchCode('');
+        updateBranchContextLabel();
+      }
+    }
+
+    async function load() {
+      schoolId = await initializeSchoolContext();
+      renderDashboardStats({}, {});
+      if (!schoolId) {
+        document.getElementById('overviewCards').innerHTML = `<div style="grid-column:span 3;background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px dashed #fcd34d;border-radius:1.25rem;padding:2.5rem;text-align:center">
+      <div style="font-size:3rem;margin-bottom:.75rem">🏫</div>
+      <p style="font-family:Outfit,sans-serif;font-weight:800;color:#92400e;font-size:1.25rem">School not configured yet</p>
+      <p style="color:#b45309;margin:.5rem 0 1.25rem;font-size:.9375rem">Set up your school to start managing</p>
+      <a href="/institution" style="display:inline-block;background:linear-gradient(135deg,#f59e0b,#d97706);color:#fff;padding:.75rem 2rem;border-radius:.875rem;font-family:Outfit,sans-serif;font-weight:700;text-decoration:none;box-shadow:0 4px 12px rgba(245,158,11,.4)">Setup School →</a>
+    </div>`;
+        return;
+      }
+      try {
+        if (!schoolBranches.length) await loadBranchOptions();
+        const [d] = await Promise.allSettled([
+          SchoolAPI.dashboard(schoolId, selectedBranchCode)
+        ]);
+        let statsData = d.status === 'fulfilled' ? (d.value?.data || {}) : {};
+        const hasMeaningfulStats = ['total_students', 'total_staff', 'total_classes', 'pending_fees']
+          .some(key => Number(statsData[key] || 0) > 0);
+        if (!hasMeaningfulStats) {
+          const fallbackStats = await buildDashboardFallbackStats();
+          statsData = {
+            total_students: fallbackStats.total_students ?? statsData.total_students ?? 0,
+            total_staff: fallbackStats.total_staff ?? statsData.total_staff ?? 0,
+            total_classes: fallbackStats.total_classes ?? statsData.total_classes ?? 0,
+            pending_fees: fallbackStats.pending_fees ?? statsData.pending_fees ?? 0,
+          };
+        }
+        const feeSummaryData = statsData.fee_summary || {};
+        renderDashboardStats(statsData, feeSummaryData);
+        if (canAccessFees && statsData.fee_summary) {
+          const fs = statsData.fee_summary;
+          document.getElementById('fsTotalBilled').textContent = formatCurrency(fs.total_billed || 0);
+          document.getElementById('fsCollected').textContent = formatCurrency(fs.total_collected || 0);
+          document.getElementById('fsDue').textContent = formatCurrency(fs.total_due || 0);
+          document.getElementById('fsRate').textContent = (fs.collection_rate || 0) + '%';
+          document.getElementById('fsBar').style.width = (fs.collection_rate || 0) + '%';
+        }
+        if (canAccessFees && !statsData.fee_summary) {
+          document.getElementById('fsTotalBilled').textContent = formatCurrency(0);
+          document.getElementById('fsCollected').textContent = formatCurrency(0);
+          document.getElementById('fsDue').textContent = formatCurrency(0);
+          document.getElementById('fsRate').textContent = '0%';
+          document.getElementById('fsBar').style.width = '0%';
+        }
+        const recentStudents = statsData.recent_students || [];
+        if (recentStudents.length > 0) {
+          document.getElementById('recentStudents').innerHTML = recentStudents.map(st =>
+            `<div style="display:flex;align-items:center;gap:.875rem;padding:.75rem .5rem;border-bottom:1px solid #f8fafc">
+          <div style="width:2.5rem;height:2.5rem;border-radius:.875rem;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;color:#fff;font-family:Outfit,sans-serif;font-weight:700;font-size:.875rem;flex-shrink:0">${(st.first_name || st.full_name || 'S').charAt(0).toUpperCase()}</div>
+          <div style="flex:1;min-width:0">
+            <p style="font-weight:600;color:#1e293b;font-size:.9375rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${st.full_name}</p>
+            <p style="font-size:.75rem;color:#94a3b8">${st.classroom_name || st.classroom || ''} ${st.admission_no ? '• ' + st.admission_no : ''}</p>
+          </div>
+        </div>`
+          ).join('');
+        } else {
+          document.getElementById('recentStudents').innerHTML = `
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;color:#94a3b8;text-align:center">
+              <div style="font-size:2.5rem;margin-bottom:.75rem">👨‍🎓</div>
+              <p style="font-size:.875rem">No students yet</p>
+            </div>`;
+        }
+      } catch (e) { console.error(e) }
+    }
+    load();
+    lucide.createIcons();
+
+    function getIcon(name, size = 18) {
+      const icons = {
+        student: `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>`,
+        staff: `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0113 0"/></svg>`,
+        calendar: `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/></svg>`,
+        money: `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5"/></svg>`,
+        exam: `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16"/><line x1="8" y1="13" x2="16" y2="13"/></svg>`,
+        certificate: `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6v20h12V8z"/></svg>`,
+        chart: `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="20" x2="6" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/></svg>`,
+        lightning: `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg>`,
+        building: `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="2" width="18" height="20"/></svg>`
+      };
+      return icons[name] || '';
+    }
+
+    document.getElementById("qaTitle").innerHTML =
+      getIcon('lightning') + " Quick Actions";
+
+    document.getElementById("icon-students").innerHTML = getIcon("student", 22);
+    document.getElementById("icon-staff").innerHTML = getIcon("staff", 22);
+  document.getElementById("icon-recent-students").innerHTML = getIcon("student", 18);
+  document.getElementById("icon-empty-students").innerHTML = getIcon("student", 40);
+document.getElementById("icon-fee").innerHTML = getIcon("rupee", 22);  
+
+function renderBranchButtons() {
+  const container = document.getElementById('branchButtons');
+
+  let html = `
+    <button onclick="goToStudents('')" 
+      class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-indigo-100 text-sm font-semibold">
+      All
+    </button>
+  `;
+
+  schoolBranches.forEach(b => {
+    html += `
+      <button onclick="goToStudents('${b.code}')" 
+        class="px-4 py-2 rounded-xl bg-white border border-gray-200 
+               hover:bg-indigo-50 hover:border-indigo-300 
+               text-sm font-semibold transition shadow-sm">
+        ${b.name}
+      </button>
+    `;
+  });
+
+  container.innerHTML = html;
+}
+
+function goToStudents(branchCode) {
+  const url = new URL('/students', window.location.origin);
+
+  if (branchCode) {
+    url.searchParams.set('branch_code', branchCode);
+  }
+
+  window.location.href = url.pathname + url.search;
+}
+
+</script>
+
+</body>
+
+</html>

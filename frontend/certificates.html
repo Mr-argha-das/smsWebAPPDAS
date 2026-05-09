@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f0f2f8;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f0f2f8;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      overflow: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Certificates - Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .finput {
+      width: 100%;
+      padding: .625rem .75rem;
+      border-radius: .75rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: .875rem;
+      outline: none
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #3b82f6
+    }
+
+    .lbl {
+      display: block;
+      font-size: .875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: .375rem
+    }
+
+    @media print {
+      body * {
+        visibility: hidden
+      }
+
+      #printArea,
+      #printArea * {
+        visibility: visible
+      }
+
+      #printArea {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%
+      }
+    }
+  </style>
+</head>
+
+<body >
+   <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+
+      <div class="p-6 space-y-6">
+
+        <div
+          style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div class="tab-bar">
+            <button onclick="switchTab(0)"
+              class="ctab px-5 py-4 flex  items-center gap-2 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap"><span data-lucide="scroll-text" class="w-4 h-4"></span>
+              Issue Certificate</button>
+            <button onclick="switchTab(1)"
+              class="ctab px-5 py-4 flex items-center gap-2 text-sm font-semibold border-b-2 border-transparent text-gray-500 whitespace-nowrap"><span data-lucide="file-text" class="w-4 h-4"></span>
+              Issued History</button>
+          </div>
+
+          <!-- Issue Certificate -->
+          <div id="ctab0" class="p-6">
+            <div class="grid lg:grid-cols-2 gap-8">
+              <!-- Form -->
+              <div class="space-y-5">
+                <h4 class="font-bold text-gray-900 text-lg">Generate Certificate</h4>
+                <div>
+                  <label class="lbl">Certificate Type *</label>
+                  <div class="grid grid-cols-2 gap-3">
+                    <label onclick="selectCertType('Bonafide Certificate')" id="ct_bonafide"
+                      class="cert-type-btn border-2 border-blue-500 bg-blue-50 rounded-xl p-3 cursor-pointer text-center transition-all">
+                      <div class="text-2xl"><div data-lucide="file-text" class="w-6 h-6 mx-auto"></div> </div>
+                      <div class="text-sm font-medium text-blue-700 mt-1">Bonafide</div>
+                    </label>
+                    <label onclick="selectCertType('Transfer Certificate')" id="ct_tc"
+                      class="cert-type-btn border-2 border-gray-200 rounded-xl p-3 cursor-pointer text-center transition-all hover:border-blue-300">
+                      <div class="text-2xl"><div data-lucide="truck" class="w-6 h-6 mx-auto"></div></div>
+                      <div class="text-sm font-medium text-gray-600 mt-1">Transfer (TC)</div>
+                    </label>
+                    <label onclick="selectCertType('Character Certificate')" id="ct_char"
+                      class="cert-type-btn border-2 border-gray-200 rounded-xl p-3 cursor-pointer text-center transition-all hover:border-blue-300">
+                      <div class="text-2xl"><div data-lucide="star" class="w-6 h-6 mx-auto"></div></div>
+                      <div class="text-sm font-medium text-gray-600 mt-1">Character</div>
+                    </label>
+                    <label onclick="selectCertType('Study Certificate')" id="ct_study"
+                      class="cert-type-btn border-2 border-gray-200 rounded-xl p-3 cursor-pointer text-center transition-all hover:border-blue-300">
+                      <div class="text-2xl"><div data-lucide="book-open" class="w-6 h-6 mx-auto"></div></div>
+                      <div class="text-sm font-medium text-gray-600 mt-1">Study</div>
+                    </label>
+                  </div>
+                  <input type="hidden" id="selectedCertType" value="Bonafide Certificate" />
+                </div>
+
+                <div>
+                  <label class="lbl">Class *</label>
+                  <select id="cert_class" class="finput" onchange="loadCertSections(); resetCertificateStudents()">
+                    <option value="">Select class</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="lbl">Section *</label>
+                  <select id="cert_section" class="finput" onchange="loadCertificateStudents()">
+                    <option value="">Select section</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="lbl">Student *</label>
+                  <select id="cert_student" class="finput" onchange="loadStudentInfo()">
+                    <option value="">Select class and section first</option>
+                  </select>
+                </div>
+
+                <!-- Student Info Preview -->
+                <div id="studentPreview" class="hidden bg-gray-50 rounded-xl p-4 space-y-1 text-sm">
+                  <div class="flex justify-between"><span class="text-gray-500">Admission No:</span><span id="sp_adm"
+                      class="font-medium"></span></div>
+                  <div class="flex justify-between"><span class="text-gray-500">Class:</span><span id="sp_class"
+                      class="font-medium"></span></div>
+                  <div class="flex justify-between"><span class="text-gray-500">Father:</span><span id="sp_father"
+                      class="font-medium"></span></div>
+                </div>
+
+                <div>
+                  <label class="lbl">Purpose *</label>
+                  <input id="cert_purpose" class="finput"
+                    placeholder="e.g. Bank account opening, Scholarship application" />
+                </div>
+
+                <div>
+                  <label class="lbl">Academic Year</label>
+                  <input id="cert_ay" class="finput" placeholder="e.g. 2024-25" />
+                </div>
+
+                <!-- TC-specific fields -->
+                <div id="tcFields" class="hidden space-y-3">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div><label class="lbl">Date of Leaving</label><input id="cert_leaving" type="date"
+                        class="finput" /></div>
+                    <div><label class="lbl">Result</label><select id="cert_result" class="finput">
+                        <option value="Passed">Passed</option>
+                        <option value="Failed">Failed</option>
+                        <option value="Promoted">Promoted</option>
+                      </select></div>
+                  </div>
+                  <div><label class="lbl">Reason for Leaving</label><input id="cert_reason" class="finput"
+                      placeholder="e.g. Family relocation" /></div>
+                </div>
+
+                <!-- Character-specific fields -->
+                <div id="charFields" class="hidden space-y-3">
+                  <div class="grid grid-cols-2 gap-3">
+                    <div><label class="lbl">From Year</label><input id="cert_from_yr" class="finput"
+                        placeholder="e.g. 2020" /></div>
+                    <div><label class="lbl">To Year</label><input id="cert_to_yr" class="finput"
+                        placeholder="e.g. 2025" /></div>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="lbl">Signatory Name</label>
+                  <input id="cert_signatory" class="finput" placeholder="e.g. Dr. Rajesh Kumar" />
+                </div>
+                <div>
+                  <label class="lbl">Signatory Designation</label>
+                  <input id="cert_designation" class="finput" value="Principal" />
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                  <button onclick="previewCertificate()"
+                    class="flex-1 px-5 py-3 bg-gray-100 flex items-center justify-center gap-2 text-gray-700 rounded-xl font-semibold text-sm hover:bg-gray-200"><span data-lucide="eye" class="w-4 h-4"></span>
+                    Preview</button>
+                  <button onclick="issueCertificate()"
+                    class="flex-1 px-5 py-3 bg-blue-600 flex items-center justify-center gap-2 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg"><span data-lucide="scroll-text" class="w-4 h-4"></span>
+
+                    Issue Certificate</button>
+                </div>
+              </div>
+
+              <!-- Preview Panel -->
+              <div>
+                <h4 class="font-bold text-gray-900 text-lg mb-3">Preview</h4>
+                <div id="certPreviewBox"
+                  class="border-2 border-dashed border-gray-200 rounded-2xl p-6 min-h-96 bg-white flex items-center justify-center">
+                  <div class="text-center text-gray-400">
+                    <div class="text-4xl mb-3"><span data-lucide="file-text" class="w-8 h-8"></span></div>
+                    <p>Fill the form and click Preview</p>
+                  </div>
+                </div>
+                <button id="printBtn" onclick="printCert()"
+                  class="hidden mt-3 w-full px-5 py-2.5 bg-gray-800 text-white rounded-xl text-sm font-medium hover:bg-gray-900">  <span data-lucide="printer" class="w-4 h-4"></span>
+                  Print Certificate</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Issued History -->
+          <div id="ctab1" class="p-5 hidden">
+            <div class="flex flex-wrap gap-3 mb-4">
+              <select id="histCertType" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm"
+                onchange="loadHistory()">
+                <option value="">All Types</option>
+                <option value="Bonafide Certificate">Bonafide</option>
+                <option value="Transfer Certificate">Transfer (TC)</option>
+                <option value="Character Certificate">Character</option>
+                <option value="Study Certificate">Study</option>
+              </select>
+            </div>
+            <div id="histTable"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Hidden print area -->
+  <div id="printArea" class="hidden"></div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('certificates');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('Certificates', 'Issue bonafide, TC, character and other certificates');
+    let schoolId = localStorage.getItem('school_id');
+    let ayId = localStorage.getItem('ay_id') || '';
+    let students = [], currentCertHtml = '';
+
+    function getSelectedCertificateType() {
+      return document.getElementById('selectedCertType')?.value || 'Bonafide Certificate';
+    }
+
+    async function init() {
+      schoolId = await initializeSchoolContext() || schoolId;
+      if (!schoolId) return;
+      await loadCertClasses();
+      resetCertificateStudents();
+    }
+
+    function resetCertificateStudents(message = 'Select class and section first') {
+      students = [];
+      document.getElementById('cert_student').innerHTML = `<option value="">${message}</option>`;
+      document.getElementById('studentPreview').style.display = 'none';
+    }
+
+    async function loadCertClasses() {
+      if (!schoolId) return;
+      try {
+        const r = await ClassAPI.list(schoolId, ayId);
+        const classes = r?.data || [];
+        document.getElementById('cert_class').innerHTML = '<option value="">Select class</option>' + classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+      } catch (e) {
+        resetCertificateStudents('Unable to load classes');
+      }
+    }
+
+    async function loadCertSections() {
+      const classId = document.getElementById('cert_class').value;
+      const sectionEl = document.getElementById('cert_section');
+      sectionEl.innerHTML = '<option value="">Select section</option>';
+      resetCertificateStudents();
+      if (!schoolId || !classId) return;
+      try {
+        const r = await SectionAPI.list(schoolId, classId);
+        const sections = r?.data || [];
+        sectionEl.innerHTML = '<option value="">Select section</option>' + sections.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+      } catch (e) {
+        resetCertificateStudents('Unable to load sections');
+      }
+    }
+
+    async function loadCertificateStudents() {
+      const classId = document.getElementById('cert_class').value;
+      const sectionId = document.getElementById('cert_section').value;
+      if (!schoolId || !classId || !sectionId) {
+        resetCertificateStudents();
+        return;
+      }
+      try {
+        const certType = getSelectedCertificateType();
+        const isTransferCertificate = certType === 'Transfer Certificate';
+        const r = await StudentAPI.list({
+          school_id: schoolId,
+          classroom_id: classId,
+          section_id: sectionId,
+          per_page: 100,
+          student_view: isTransferCertificate ? 'all' : 'active',
+          admission_status: isTransferCertificate ? '' : 'Active'
+        });
+        students = r?.data || [];
+        document.getElementById('cert_student').innerHTML = '<option value="">Select student</option>' + students.map(s => `<option value="${s.id}">${s.full_name} (${s.admission_no})${s.admission_status === 'Transferred' ? ' - Transferred' : ''}</option>`).join('');
+        if (!students.length) {
+          resetCertificateStudents('No students found');
+        }
+      } catch (e) {
+        resetCertificateStudents('Unable to load students');
+      }
+    }
+
+    function switchTab(i) {
+      document.querySelectorAll('.ctab').forEach((b, j) => { b.classList.toggle('border-blue-600', j === i); b.classList.toggle('text-blue-600', j === i); b.classList.toggle('border-transparent', j !== i); b.classList.toggle('text-gray-500', j !== i); });
+      document.querySelectorAll('[id^="ctab"]').forEach(t => { t.classList.toggle('hidden', parseInt(t.id.replace('ctab', '')) !== i); });
+      if (i === 1) loadHistory();
+    }
+
+    function selectCertType(type) {
+      document.getElementById('selectedCertType').value = type;
+      document.querySelectorAll('.cert-type-btn').forEach(b => { b.classList.remove('border-blue-500', 'bg-blue-50'); b.classList.add('border-gray-200'); b.querySelector('div:last-child').classList.remove('text-blue-700'); b.querySelector('div:last-child').classList.add('text-gray-600'); });
+      const map = { 'Bonafide Certificate': 'bonafide', 'Transfer Certificate': 'tc', 'Character Certificate': 'char', 'Study Certificate': 'study' };
+      const el = document.getElementById('ct_' + map[type]);
+      if (el) { el.classList.add('border-blue-500', 'bg-blue-50'); el.classList.remove('border-gray-200'); el.querySelector('div:last-child').classList.add('text-blue-700'); el.querySelector('div:last-child').classList.remove('text-gray-600'); }
+      // Show/hide specific fields
+      document.getElementById('tcFields').classList.toggle('hidden', type !== 'Transfer Certificate');
+      document.getElementById('charFields').classList.toggle('hidden', type !== 'Character Certificate');
+      if (document.getElementById('cert_class').value && document.getElementById('cert_section').value) {
+        loadCertificateStudents();
+      }
+    }
+
+    function loadStudentInfo() {
+      const stId = document.getElementById('cert_student').value;
+      const student = students.find(s => s.id === stId);
+      if (student) {
+        document.getElementById('sp_adm').textContent = student.admission_no;
+        document.getElementById('sp_class').textContent = student.classroom_name || student.class_name || student.classroom || '-';
+        document.getElementById('sp_father').textContent = student.father_name || '-';
+        document.getElementById('studentPreview').style.display = 'flex';
+      } else document.getElementById('studentPreview').style.display = 'none';
+    }
+
+    async function previewCertificate() {
+      const stId = document.getElementById('cert_student').value;
+      const purpose = document.getElementById('cert_purpose').value.trim();
+      const certType = document.getElementById('selectedCertType').value;
+      if (!document.getElementById('cert_class').value || !document.getElementById('cert_section').value || !stId || !purpose) { showToast('Select class, section, student and enter purpose', 'error'); return; }
+      try {
+        const r = await CertAPI.issue({
+          school_id: schoolId, student_id: stId, cert_type: certType,
+          purpose, academic_year: document.getElementById('cert_ay').value || null,
+          signatory_name: document.getElementById('cert_signatory').value || null,
+          signatory_designation: document.getElementById('cert_designation').value || 'Principal',
+          leaving_date: document.getElementById('cert_leaving')?.value || null,
+          result: document.getElementById('cert_result')?.value || null,
+          reason: document.getElementById('cert_reason')?.value || null,
+          from_year: document.getElementById('cert_from_yr')?.value || null,
+          to_year: document.getElementById('cert_to_yr')?.value || null
+        });
+        currentCertHtml = r.data.html;
+        const iframe = document.createElement('iframe');
+        iframe.style.cssText = 'width:100%;height:500px;border:none;border-radius:12px;';
+        const box = document.getElementById('certPreviewBox');
+        box.innerHTML = ''; box.appendChild(iframe);
+        iframe.contentDocument.open(); iframe.contentDocument.write(currentCertHtml); iframe.contentDocument.close();
+        document.getElementById('printBtn').style.display = 'flex';
+        showToast('Certificate issued! Cert No: ' + r.data.cert_number);
+        loadHistory();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function issueCertificate() {
+      await previewCertificate();
+    }
+
+    function printCert() {
+      if (!currentCertHtml) return;
+      const w = window.open('', '_blank');
+      w.document.write(currentCertHtml); w.document.close(); w.focus(); w.print();
+    }
+
+    async function loadHistory() {
+      if (!schoolId) return;
+      const certType = document.getElementById('histCertType').value;
+      const params = { school_id: schoolId }; if (certType) params.cert_type = certType;
+      try {
+        const r = await CertAPI.listIssued(params); const data = r?.data || [];
+        const hdrs = ['Cert No', 'Student', 'Admission No', 'Type', 'Purpose', 'Issued By', 'Date', 'Action'];
+        const rows = data.map(c => `
+      <td class="px-4 py-3 font-mono text-xs text-blue-600 font-semibold">${c.cert_number}</td>
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${c.student_name}</td>
+      <td class="px-4 py-3 text-xs text-gray-500">${c.admission_no}</td>
+      <td class="px-4 py-3">${tdBadge(c.cert_type.split(' ')[0], 'blue')}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${c.purpose || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${c.issued_by || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${formatDate(c.issue_date)}</td>
+      <td class="px-4 py-3"><button onclick="reprintCert('${c.id}')" class="px-2 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs hover:bg-gray-200">🖨 Reprint</button></td>
+    `);
+        document.getElementById('histTable').innerHTML = buildTable(hdrs, rows, 'No certificates issued yet');
+      } catch (e) { }
+    }
+
+    async function reprintCert(id) {
+      try {
+        const r = await CertAPI.preview(id);
+        const w = window.open('', '_blank'); w.document.write(r.data.html); w.document.close(); w.focus(); w.print();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    init();
+    lucide.createIcons();
+  </script>
+</body>
+
+</html>

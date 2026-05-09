@@ -1,0 +1,159 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<section class="hero-panel">
+    <div>
+        <span class="eyebrow">Operations overview</span>
+        <h3>Everything important, right where the admin team needs it.</h3>
+    </div>
+    <div class="hero-metrics">
+        <div>
+            <strong>{{ school_count }}</strong>
+            <span>Schools onboarded</span>
+        </div>
+        <div>
+            <strong>{{ active_years }}</strong>
+            <span>Active academic years</span>
+        </div>
+        <div>
+            <strong>{{ active_classes }}</strong>
+            <span>Live classrooms</span>
+        </div>
+        <div>
+            <strong>{{ "%.2f"|format(pending_fees) }}</strong>
+            <span>Pending fee balance</span>
+        </div>
+    </div>
+</section>
+
+<section class="cards-grid">
+    {% for card in dashboard_cards %}
+    <article class="stat-card {{ card.accent }}">
+        <span>{{ card.label }}</span>
+        <strong>{{ card.value }}</strong>
+    </article>
+    {% endfor %}
+</section>
+
+<section class="content-grid">
+    <article class="panel">
+        <div class="panel-heading">
+            <h3>Recent students</h3>
+            <a href="/admin/students">Manage students</a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Admission No</th>
+                    <th>Class</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in recent_students %}
+                <tr>
+                    <td>{{ student.full_name }}</td>
+                    <td>{{ student.admission_no }}</td>
+                    <td>{{ student.classroom.name if student.classroom else "-" }} {{ student.section.name if student.section else "" }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="3">No students yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading">
+            <h3>Recent staff</h3>
+            <a href="/admin/staff">Manage staff</a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Designation</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in recent_staff %}
+                <tr>
+                    <td>{{ member.full_name }}</td>
+                    <td>{{ member.designation }}</td>
+                    <td>{{ member.staff_type }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="3">No staff yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading">
+            <h3>Today staff punches</h3>
+            <a href="/attendance">Open attendance</a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>In</th>
+                    <th>Out</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for punch in today_staff_punches %}
+                <tr>
+                    <td>
+                        {{ punch.staff_name }}
+                        <span class="muted">{{ punch.designation or punch.school_name }}</span>
+                    </td>
+                    <td>{{ punch.check_in_time or "-" }}</td>
+                    <td>{{ punch.check_out_time or "-" }}</td>
+                    <td>{{ punch.status or "-" }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4">No staff punches today.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+    
+    <article class="panel">
+        <div class="panel-heading">
+            <h3>Recent invoices</h3>
+            <a href="/admin/finance">Open finance</a>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Invoice</th>
+                    <th>Student</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for invoice in recent_invoices %}
+                <tr>
+                    <td>{{ invoice.invoice_no }}</td>
+                    <td>{{ invoice.student.full_name if invoice.student else "-" }}</td>
+                    <td>{{ invoice.status }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="3">No invoices yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+    
+    <article class="panel spotlight">
+        <div class="panel-heading">
+            <h3>What this panel gives you</h3>
+        </div>
+        <p>Use this as your fast internal control room while your separate frontend keeps doing the public-facing product work. This admin stays maintainable because it is plain Jinja templates over your existing FastAPI models.</p>
+    </article>
+</section>
+{% endblock %}

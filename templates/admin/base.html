@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ page_title }} | EduManage Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('admin_static', path='admin/styles.css') }}">
+</head>
+<body class="admin-shell">
+    <div class="admin-grid">
+        <aside class="sidebar">
+            <div class="brand">
+                <span class="brand-kicker">School Operations</span>
+                <h1>EduManage Admin</h1>
+                <p>FastAPI control room for schools, people, academics, and billing.</p>
+            </div>
+
+            <nav class="nav-links">
+                <a href="{{ url_for('admin_dashboard') }}" class="{% if request.url.path == '/admin/dashboard' %}active{% endif %}">Dashboard</a>
+                <a href="{{ url_for('admin_schools') }}" class="{% if request.url.path == '/admin/schools' %}active{% endif %}">Schools</a>
+                <a href="{{ url_for('admin_users') }}" class="{% if request.url.path == '/admin/users' %}active{% endif %}">Users</a>
+                <a href="{{ url_for('admin_academics') }}" class="{% if request.url.path == '/admin/academics' %}active{% endif %}">Academics</a>
+                <a href="{{ url_for('admin_students') }}" class="{% if request.url.path == '/admin/students' %}active{% endif %}">Students</a>
+                <a href="{{ url_for('admin_staff') }}" class="{% if request.url.path == '/admin/staff' %}active{% endif %}">Staff</a>
+                <a href="{{ url_for('admin_finance') }}" class="{% if request.url.path == '/admin/finance' %}active{% endif %}">Finance</a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div>
+                    <strong>{{ current_user.full_name if current_user else 'Guest' }}</strong>
+                    <span>{{ current_user.email if current_user else 'Admin access only' }}</span>
+                </div>
+                {% if current_user %}
+                <form method="post" action="/admin/logout">
+                    <button type="submit" class="ghost-button">Logout</button>
+                </form>
+                {% endif %}
+            </div>
+        </aside>
+
+        <main class="content">
+            <header class="topbar">
+                <div>
+                    <span class="eyebrow">Template Admin Panel</span>
+                    <h2>{{ page_title }}</h2>
+                </div>
+                <div class="topbar-meta">
+                    <span>HTML templates + MongoEngine</span>
+                    <span>Runs on Uvicorn</span>
+                </div>
+            </header>
+
+            {% if message %}
+            <div class="flash {{ message_type }}">{{ message }}</div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

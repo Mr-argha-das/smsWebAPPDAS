@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f0f2f8;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f0f2f8;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow-y: auto;
+      padding: 1.5rem 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      max-height: calc(100vh - 3rem);
+      overflow-y: auto;
+      overflow-x: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Academics - Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .finput {
+      width: 100%;
+      padding: .625rem .75rem;
+      border-radius: .75rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: .875rem;
+      outline: none
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #3b82f6
+    }
+
+    .lbl {
+      display: block;
+      font-size: .875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: .375rem
+    }
+  </style>
+</head>
+
+<body>
+  <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+      <div class="p-6 space-y-6">
+
+        <div
+          style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div class="tab-bar">
+            <button onclick="switchAcTab(0)"
+              class="actab px-5 py-4 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap">Homework</button>
+            <button onclick="switchAcTab(1)"
+              class="actab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Study
+              Material</button>
+            <button onclick="switchAcTab(2)"
+              class="actab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Online
+              Classes</button>
+            <button onclick="switchAcTab(3)"
+              class="actab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Timetable</button>
+          </div>
+
+          <!-- Homework -->
+          <div id="actab0" class="p-5">
+            <div class="flex justify-between mb-4">
+              <h4 class="font-bold text-gray-900">Homework Assignments</h4>
+              <button onclick="document.getElementById('hwModal').style.display='flex';loadHwForm()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Assign
+                Homework</button>
+            </div>
+            <div id="hwTable"></div>
+          </div>
+
+          <!-- Study Material -->
+          <div id="actab1" class="p-5 hidden">
+            <div class="flex justify-between mb-4">
+              <h4 class="font-bold text-gray-900">Study Materials</h4>
+              <button onclick="document.getElementById('matModal').style.display='flex';loadMatForm()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Upload
+                Material</button>
+            </div>
+            <div id="matTable"></div>
+          </div>
+
+          <!-- Online Classes -->
+          <div id="actab2" class="p-5 hidden">
+            <div class="flex justify-between mb-4">
+              <h4 class="font-bold text-gray-900">Online Classes</h4>
+              <button onclick="document.getElementById('ocModal').style.display='flex';loadOcForm()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Schedule
+                Class</button>
+            </div>
+            <div id="ocTable"></div>
+          </div>
+
+          <!-- Timetable -->
+          <div id="actab3" class="p-5 hidden">
+            <div class="flex justify-between mb-4">
+              <h4 class="font-bold text-gray-900">Class Timetable</h4>
+              <button onclick="openTimetableModal()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Create
+                Timetable</button>
+            </div>
+            <div class="grid grid-cols-3 gap-4 mb-5">
+              <div><label class="lbl">Class</label><select id="tt_cls" class="finput">
+                  <option value="">Select class</option>
+                </select></div>
+              <div><label class="lbl">Section</label><select id="tt_sec" class="finput">
+                  <option value="">Select section</option>
+                </select></div>
+              <div class="flex items-end"><button onclick="viewTimetable()"
+                  class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">View
+                  Timetable</button></div>
+            </div>
+            <div id="ttDisplay"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Homework Modal -->
+  <div id="hwModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold text-gray-900">Assign Homework</h3><button
+          onclick="document.getElementById('hwModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Title *</label><input id="hw_title" class="finput" placeholder="Homework title" /></div>
+        <div><label class="lbl">Teacher *</label><select id="hw_teacher" class="finput">
+            <option value="">Select teacher</option>
+          </select></div>
+        <div><label class="lbl">Class *</label><select id="hw_cls" class="finput">
+            <option value="">Select class</option>
+          </select></div>
+        <div><label class="lbl">Subject *</label><select id="hw_sub" class="finput">
+            <option value="">Select subject</option>
+          </select></div>
+        <div><label class="lbl">Upload Homework File</label><input id="hw_file" type="file" class="finput" /></div>
+        <div><label class="lbl">Description *</label><textarea id="hw_desc" rows="3" class="finput resize-none"
+            placeholder="Describe the homework..."></textarea></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="lbl">Due Date *</label><input id="hw_due" type="date" class="finput" /></div>
+          <div><label class="lbl">Max Marks</label><input id="hw_marks" type="number" class="finput" value="10" /></div>
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('hwModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveHomework()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Assign</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Material Modal -->
+  <div id="matModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold text-gray-900">Upload Study Material</h3><button
+          onclick="document.getElementById('matModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Title *</label><input id="mat_title" class="finput" placeholder="Material title" />
+        </div>
+        <div><label class="lbl">Teacher *</label><select id="mat_teacher" class="finput">
+            <option value="">Select teacher</option>
+          </select></div>
+        <div><label class="lbl">Class *</label><select id="mat_cls" class="finput">
+            <option value="">Select class</option>
+          </select></div>
+        <div><label class="lbl">Subject *</label><select id="mat_sub" class="finput">
+            <option value="">Select subject</option>
+          </select></div>
+        <div><label class="lbl">Type</label><select id="mat_type" class="finput">
+            <option value="Notes">Notes</option>
+            <option value="Slides">Slides</option>
+            <option value="Video">Video</option>
+            <option value="Link">Link</option>
+            <option value="Book">Book</option>
+          </select></div>
+        <div><label class="lbl">Link / URL</label><input id="mat_link" class="finput" placeholder="https://..." /></div>
+        <div><label class="lbl">Description</label><textarea id="mat_desc" rows="2" class="finput resize-none"
+            placeholder="Optional description"></textarea></div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('matModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveMaterial()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Upload</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Online Class Modal -->
+  <div id="ocModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold text-gray-900">Schedule Online Class</h3><button
+          onclick="document.getElementById('ocModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Title *</label><input id="oc_title" class="finput" placeholder="Class title" /></div>
+        <div><label class="lbl">Teacher *</label><select id="oc_teacher" class="finput">
+            <option value="">Select teacher</option>
+          </select></div>
+        <div><label class="lbl">Class *</label><select id="oc_cls" class="finput">
+            <option value="">Select class</option>
+          </select></div>
+        <div><label class="lbl">Subject *</label><select id="oc_sub" class="finput">
+            <option value="">Select subject</option>
+          </select></div>
+        <div><label class="lbl">Platform</label><select id="oc_platform" class="finput">
+            <option value="Google Meet">Google Meet</option>
+            <option value="Zoom">Zoom</option>
+            <option value="Teams">Microsoft Teams</option>
+          </select></div>
+        <div><label class="lbl">Meeting Link *</label><input id="oc_link" class="finput"
+            placeholder="https://meet.google.com/..." /></div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="lbl">Scheduled At *</label><input id="oc_time" type="datetime-local" class="finput" />
+          </div>
+          <div><label class="lbl">Duration (mins)</label><input id="oc_dur" type="number" class="finput" value="45" />
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('ocModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="scheduleClass()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Schedule</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="ttModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-6xl">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold text-gray-900">Create Timetable</h3><button
+          onclick="document.getElementById('ttModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-5 max-h-[80vh] overflow-y-auto">
+        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+          <div><label class="lbl">Timetable Name *</label><input id="tt_name" class="finput" placeholder="e.g. Regular Timetable" /></div>
+          <div><label class="lbl">Class *</label><select id="ttm_cls" class="finput"><option value="">Select class</option></select></div>
+          <div><label class="lbl">Section *</label><select id="ttm_sec" class="finput"><option value="">Select section</option></select></div>
+          <div class="flex items-end"><button onclick="renderTimetableBuilder()"
+              class="w-full px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200">Load
+              Builder</button></div>
+        </div>
+        <div id="ttBuilderHelp" class="text-sm text-slate-500">Choose class and section, then add period rows for each day.</div>
+        <div id="ttDataInfo" class="text-xs text-slate-400"></div>
+        <div id="ttBuilder" class="space-y-5"></div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('ttModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveTimetable()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save Timetable</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('academics');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('Academic Management', 'Timetable, homework, materials and online classes');
+    let schoolId = localStorage.getItem('school_id');
+    let ayId = localStorage.getItem('ay_id');
+    const timetableDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    let timetableTeachers = [];
+    let timetableSubjects = [];
+    let timetableClasses = [];
+
+    function switchAcTab(idx) {
+      document.querySelectorAll('.actab').forEach((b, i) => { b.classList.toggle('border-blue-600', i === idx); b.classList.toggle('text-blue-600', i === idx); b.classList.toggle('border-transparent', i !== idx); b.classList.toggle('text-gray-500', i !== idx); });
+      document.querySelectorAll('[id^="actab"]').forEach(t => { t.classList.toggle('hidden', parseInt(t.id.replace('actab', '')) !== idx); });
+      if (idx === 0) loadHomework(); if (idx === 1) loadMaterials(); if (idx === 2) loadOnlineClasses(); if (idx === 3) loadTtClasses();
+    }
+
+    async function initializeAcademicContext() {
+      schoolId = await initializeSchoolContext() || schoolId;
+      if (!schoolId) return;
+      try {
+        const yearsRes = await AcademicYearAPI.list(schoolId);
+        const years = yearsRes?.data || [];
+        const validYear = years.find(year => year.id === ayId);
+        const currentYear = years.find(year => year.is_current) || years[0];
+        if (!validYear && currentYear?.id) {
+          ayId = currentYear.id;
+          localStorage.setItem('ay_id', ayId);
+        }
+      } catch (e) { }
+    }
+
+    async function loadFormData(selIds) {
+      if (!schoolId) return;
+      try {
+        const [tr, cr, sr] = await Promise.allSettled([StaffAPI.list({ school_id: schoolId, staff_type: 'Teaching', per_page: 100 }), ClassAPI.list(schoolId, ayId), SubjectAPI.list(schoolId)]);
+        const teacherOpts = '<option value="">Select teacher</option>' + (tr.value?.data || []).map(t => `<option value="${t.id}">${t.full_name}</option>`).join('');
+        const clsOpts = '<option value="">Select class</option>' + (cr.value?.data || []).map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        const subOpts = '<option value="">Select subject</option>' + (sr.value?.data || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        selIds.forEach(([teachSel, clsSel, subSel]) => {
+          if (teachSel) document.getElementById(teachSel).innerHTML = teacherOpts;
+          if (clsSel) document.getElementById(clsSel).innerHTML = clsOpts;
+          if (subSel) document.getElementById(subSel).innerHTML = subOpts;
+        });
+      } catch (e) { }
+    }
+    function loadHwForm() { loadFormData([['hw_teacher', 'hw_cls', 'hw_sub']]); }
+    function loadMatForm() { loadFormData([['mat_teacher', 'mat_cls', 'mat_sub']]); }
+    function loadOcForm() { loadFormData([['oc_teacher', 'oc_cls', 'oc_sub']]); }
+
+    async function saveHomework() {
+      if (!schoolId || !ayId) { showToast('Configure school and academic year', 'error'); return; }
+      const t = document.getElementById('hw_title').value.trim(), teacher = document.getElementById('hw_teacher').value, cls = document.getElementById('hw_cls').value, sub = document.getElementById('hw_sub').value;
+      const desc = document.getElementById('hw_desc').value.trim(), due = document.getElementById('hw_due').value;
+      if (!t || !teacher || !cls || !sub || !desc || !due) { showToast('Fill all required fields', 'error'); return; }
+      try {
+        const res = await AcademicAPI.createHomework({ school_id: schoolId, academic_year_id: ayId, teacher_id: teacher, classroom_id: cls, subject_id: sub, title: t, description: desc, due_date: new Date(due).toISOString(), max_marks: parseFloat(document.getElementById('hw_marks').value) || 10 });
+        const file = document.getElementById('hw_file').files?.[0];
+        if (file && res?.data?.id) {
+          const fd = new FormData();
+          fd.append('file', file);
+          await API.upload(`/academics/homework/${res.data.id}/attachment`, fd);
+        }
+        showToast('Homework assigned!'); document.getElementById('hwModal').style.display = 'none'; loadHomework();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadHomework() {
+      if (!schoolId) { document.getElementById('hwTable').innerHTML = '<div class="text-center py-8 text-gray-400">Configure school first</div>'; return; }
+      try {
+        const r = await AcademicAPI.getHomework({ school_id: schoolId }); const hws = r?.data || [];
+        const hdrs = ['Title', 'Class', 'Subject', 'Teacher', 'Assigned', 'Due Date', 'Max Marks', 'Attachment'];
+        const rows = hws.map(h => `
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${h.title}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${h.classroom || '-'} ${h.section ? '/ ' + h.section : ''}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${h.subject || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${h.teacher || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${formatDate(h.assigned_date)}</td>
+      <td class="px-4 py-3 text-sm font-medium text-orange-600">${formatDate(h.due_date)}</td>
+      <td class="px-4 py-3 text-sm text-gray-700">${h.max_marks}</td>
+      <td class="px-4 py-3">${(h.attachments || []).length ? `<a href="${h.attachments[0]}" target="_blank" class="text-blue-600 text-xs hover:underline">View File</a>` : '-'}</td>
+    `);
+        document.getElementById('hwTable').innerHTML = buildTable(hdrs, rows, 'No homework assigned yet');
+      } catch (e) { }
+    }
+
+    async function saveMaterial() {
+      if (!schoolId || !ayId) { showToast('Configure school and academic year', 'error'); return; }
+      const t = document.getElementById('mat_title').value.trim(), teacher = document.getElementById('mat_teacher').value, cls = document.getElementById('mat_cls').value, sub = document.getElementById('mat_sub').value;
+      if (!t || !teacher || !cls || !sub) { showToast('Fill required fields', 'error'); return; }
+      try {
+        await AcademicAPI.uploadMaterial({ school_id: schoolId, academic_year_id: ayId, teacher_id: teacher, classroom_id: cls, subject_id: sub, title: t, description: document.getElementById('mat_desc').value || null, material_type: document.getElementById('mat_type').value, external_link: document.getElementById('mat_link').value || null });
+        showToast('Material uploaded!'); document.getElementById('matModal').style.display = 'none'; loadMaterials();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadMaterials() {
+      if (!schoolId) { document.getElementById('matTable').innerHTML = '<div class="text-center py-8 text-gray-400">Configure school first</div>'; return; }
+      try {
+        const r = await AcademicAPI.getMaterials({ school_id: schoolId }); const mats = r?.data || [];
+        const hdrs = ['Title', 'Type', 'Class', 'Subject', 'Teacher', 'Link', 'Uploaded'];
+        const rows = mats.map(m => `
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${m.title}</td>
+      <td class="px-4 py-3">${tdBadge(m.material_type, 'blue')}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${m.classroom || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${m.subject || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${m.teacher || '-'}</td>
+      <td class="px-4 py-3">${m.external_link ? `<a href="${m.external_link}" target="_blank" class="text-blue-600 text-xs hover:underline">Open Link</a>` : '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${formatDate(m.upload_date)}</td>
+    `);
+        document.getElementById('matTable').innerHTML = buildTable(hdrs, rows, 'No materials uploaded yet');
+      } catch (e) { }
+    }
+
+    async function scheduleClass() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const t = document.getElementById('oc_title').value.trim(), teacher = document.getElementById('oc_teacher').value, cls = document.getElementById('oc_cls').value, sub = document.getElementById('oc_sub').value, link = document.getElementById('oc_link').value.trim(), time = document.getElementById('oc_time').value;
+      if (!t || !teacher || !cls || !sub || !link || !time) { showToast('Fill all required fields', 'error'); return; }
+      try {
+        await AcademicAPI.scheduleOnlineClass({ school_id: schoolId, teacher_id: teacher, classroom_id: cls, subject_id: sub, title: t, platform: document.getElementById('oc_platform').value, meeting_link: link, scheduled_at: new Date(time).toISOString(), duration_minutes: parseInt(document.getElementById('oc_dur').value) || 45 });
+        showToast('Online class scheduled!'); document.getElementById('ocModal').style.display = 'none'; loadOnlineClasses();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadOnlineClasses() {
+      if (!schoolId) { document.getElementById('ocTable').innerHTML = '<div class="text-center py-8 text-gray-400">Configure school first</div>'; return; }
+      try {
+        const r = await AcademicAPI.getOnlineClasses({ school_id: schoolId }); const ocs = r?.data || [];
+        const hdrs = ['Title', 'Class', 'Subject', 'Platform', 'Scheduled At', 'Duration', 'Status', 'Link'];
+        const rows = ocs.map(c => `
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${c.title}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${c.classroom || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${c.subject || '-'}</td>
+      <td class="px-4 py-3">${tdBadge(c.platform, 'blue')}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${c.scheduled_at ? new Date(c.scheduled_at).toLocaleString('en-IN', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${c.duration_minutes} min</td>
+      <td class="px-4 py-3">${tdBadge(c.status, c.status === 'Live' ? 'green' : c.status === 'Scheduled' ? 'blue' : 'gray')}</td>
+      <td class="px-4 py-3">${c.meeting_link ? `<a href="${c.meeting_link}" target="_blank" class="px-3 py-1 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700">Join</a>` : '-'}</td>
+    `);
+        document.getElementById('ocTable').innerHTML = buildTable(hdrs, rows, 'No online classes scheduled yet');
+      } catch (e) { }
+    }
+
+    async function loadTtClasses() {
+      if (!schoolId) return;
+      try {
+        let r = await ClassAPI.list(schoolId, ayId);
+        let cls = r?.data || [];
+        if (!cls.length) {
+          r = await ClassAPI.list(schoolId, '');
+          cls = r?.data || [];
+        }
+        timetableClasses = cls;
+        const options = '<option value="">Select class</option>' + cls.map(c => `<option value="${c.id}" data-secs='${JSON.stringify(c.sections)}'>${c.name}</option>`).join('');
+        document.getElementById('tt_cls').innerHTML = options;
+        document.getElementById('ttm_cls').innerHTML = options;
+      } catch (e) { }
+    }
+
+    function syncTimetableSections(classSelectId, sectionSelectId) {
+      const el = document.getElementById(classSelectId);
+      const se = document.getElementById(sectionSelectId);
+      if (!el || !se) return;
+      const opt = el.options[el.selectedIndex];
+      se.innerHTML = '<option value="">Select section</option>';
+      if (!opt?.dataset.secs) return;
+      JSON.parse(opt.dataset.secs).forEach(s => se.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+    }
+
+    async function loadTimetableMeta() {
+      if (!schoolId) return;
+      timetableTeachers = [];
+      timetableSubjects = [];
+      try {
+        const [tr, allStaff, sr] = await Promise.allSettled([
+          StaffAPI.list({ school_id: schoolId, staff_type: 'Teaching', per_page: 100 }),
+          StaffAPI.list({ school_id: schoolId, per_page: 100 }),
+          SubjectAPI.list(schoolId)
+        ]);
+        const teachingStaff = tr.status === 'fulfilled' ? (tr.value?.data || []) : [];
+        const fallbackStaff = allStaff.status === 'fulfilled' ? (allStaff.value?.data || []) : [];
+        timetableTeachers = teachingStaff.length ? teachingStaff : fallbackStaff;
+        timetableSubjects = sr.status === 'fulfilled' ? (sr.value?.data || []) : [];
+      } catch (e) { }
+    }
+
+    function subjectOptionMarkup(selected = '') {
+      if (!timetableSubjects.length) return '<option value="">No subjects found</option>';
+      return '<option value="">Select subject</option>' + timetableSubjects.map(subject => `<option value="${subject.id}" ${selected === subject.id ? 'selected' : ''}>${subject.name}</option>`).join('');
+    }
+
+    function teacherOptionMarkup(selected = '') {
+      if (!timetableTeachers.length) return '<option value="">No teachers found</option>';
+      return '<option value="">Select teacher</option>' + timetableTeachers.map(teacher => `<option value="${teacher.id}" ${selected === teacher.id ? 'selected' : ''}>${teacher.full_name}</option>`).join('');
+    }
+
+    function createPeriodRow(day, period = {}) {
+      const row = document.createElement('div');
+      row.className = 'grid grid-cols-1 md:grid-cols-12 gap-2 items-center rounded-xl border border-slate-200 bg-slate-50 p-3 tt-period-row';
+      row.dataset.day = day;
+      row.innerHTML = `
+        <div class="md:col-span-1"><input class="finput tt-period-no" type="number" min="1" value="${period.period_no || ''}" placeholder="#" /></div>
+        <div class="md:col-span-2"><input class="finput tt-start" type="time" value="${period.start_time || ''}" /></div>
+        <div class="md:col-span-2"><input class="finput tt-end" type="time" value="${period.end_time || ''}" /></div>
+        <div class="md:col-span-2"><select class="finput tt-subject">${subjectOptionMarkup(period.subject_id || '')}</select></div>
+        <div class="md:col-span-2"><select class="finput tt-teacher">${teacherOptionMarkup(period.teacher_id || '')}</select></div>
+        <div class="md:col-span-1"><input class="finput tt-room" placeholder="Room" value="${period.room || ''}" /></div>
+        <div class="md:col-span-1 flex items-center justify-center"><label class="flex items-center gap-2 text-xs text-slate-600"><input type="checkbox" class="tt-break w-4 h-4 accent-blue-600" ${period.is_break ? 'checked' : ''}/>Break</label></div>
+        <div class="md:col-span-1 flex gap-2 items-center">
+          <input class="finput tt-break-name ${period.is_break ? '' : 'hidden'}" placeholder="Break name" value="${period.break_name || ''}" />
+          <button type="button" onclick="this.closest('.tt-period-row').remove()" class="px-3 py-2 bg-red-50 text-red-600 rounded-xl text-sm">×</button>
+        </div>`;
+      const breakToggle = row.querySelector('.tt-break');
+      const breakNameInput = row.querySelector('.tt-break-name');
+      const subjectSelect = row.querySelector('.tt-subject');
+      const teacherSelect = row.querySelector('.tt-teacher');
+      breakToggle.addEventListener('change', () => {
+        const isBreak = breakToggle.checked;
+        breakNameInput.classList.toggle('hidden', !isBreak);
+        subjectSelect.disabled = isBreak;
+        teacherSelect.disabled = isBreak;
+        if (isBreak) {
+          subjectSelect.value = '';
+          teacherSelect.value = '';
+        } else {
+          breakNameInput.value = '';
+        }
+      });
+      if (period.is_break) {
+        subjectSelect.disabled = true;
+        teacherSelect.disabled = true;
+      }
+      return row;
+    }
+
+    function addTimetablePeriod(day, period = {}) {
+      const container = document.getElementById(`tt_day_${day}`);
+      if (!container) return;
+      container.appendChild(createPeriodRow(day, period));
+    }
+
+    async function openTimetableModal() {
+      await initializeAcademicContext();
+      if (!schoolId || !ayId) { showToast('Configure school and academic year', 'error'); return; }
+      await Promise.all([loadTtClasses(), loadTimetableMeta()]);
+      document.getElementById('tt_name').value = 'Regular Timetable';
+      document.getElementById('ttm_cls').value = '';
+      document.getElementById('ttm_sec').innerHTML = '<option value="">Select section</option>';
+      document.getElementById('ttBuilder').innerHTML = '';
+      document.getElementById('ttBuilderHelp').textContent = 'Choose class and section, then add period rows for each day.';
+      document.getElementById('ttDataInfo').textContent = `Classes: ${timetableClasses.length} • Subjects: ${timetableSubjects.length} • Teachers: ${timetableTeachers.length}`;
+      document.getElementById('ttModal').style.display = 'flex';
+      if (!timetableClasses.length) showToast('No classes found. Please create class and section first.', 'error');
+      else if (!timetableSubjects.length) showToast('No subjects found. Please add subjects in Institution first.', 'error');
+      else if (!timetableTeachers.length) showToast('No staff found. Please add teacher/staff first.', 'error');
+      if (timetableClasses.length) {
+        const firstClass = timetableClasses[0];
+        document.getElementById('ttm_cls').value = firstClass.id;
+        syncTimetableSections('ttm_cls', 'ttm_sec');
+        const firstSection = firstClass.sections?.[0];
+        if (firstSection?.id) {
+          document.getElementById('ttm_sec').value = firstSection.id;
+          renderTimetableBuilder();
+        }
+      }
+    }
+
+    function renderTimetableBuilder(existingDays = []) {
+      const clsId = document.getElementById('ttm_cls').value;
+      const secId = document.getElementById('ttm_sec').value;
+      if (!clsId || !secId) { showToast('Select class and section', 'error'); return; }
+      const existingMap = {};
+      (existingDays || []).forEach(day => { existingMap[day.day] = day.periods || []; });
+      document.getElementById('ttBuilderHelp').textContent = 'Add each period with time, subject and teacher. Break periods can be marked separately.';
+      document.getElementById('ttBuilder').innerHTML = timetableDays.map(day => `
+        <div class="rounded-2xl border border-slate-200 bg-white p-4">
+          <div class="flex items-center justify-between mb-3">
+            <h5 class="font-semibold text-slate-900">${day}</h5>
+            <button type="button" onclick="addTimetablePeriod('${day}')" class="text-sm text-blue-600 hover:underline">+ Add Period</button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-2 text-xs uppercase tracking-wide text-slate-400 px-1 mb-2">
+            <div class="md:col-span-1">No</div>
+            <div class="md:col-span-2">Start</div>
+            <div class="md:col-span-2">End</div>
+            <div class="md:col-span-2">Subject</div>
+            <div class="md:col-span-2">Teacher</div>
+            <div class="md:col-span-1">Room</div>
+            <div class="md:col-span-1">Break</div>
+            <div class="md:col-span-1">Action</div>
+          </div>
+          <div id="tt_day_${day}" class="space-y-2"></div>
+        </div>`).join('');
+      timetableDays.forEach(day => {
+        const rows = existingMap[day] || [];
+        if (rows.length) {
+          rows.forEach(period => addTimetablePeriod(day, {
+            period_no: period.period_no,
+            start_time: period.start_time,
+            end_time: period.end_time,
+            room: period.room,
+            is_break: period.is_break,
+            break_name: period.break_name,
+            subject_id: timetableSubjects.find(subject => subject.name === period.subject)?.id || '',
+            teacher_id: timetableTeachers.find(teacher => teacher.full_name === period.teacher)?.id || ''
+          }));
+        } else {
+          addTimetablePeriod(day);
+        }
+      });
+    }
+
+    async function saveTimetable() {
+      await initializeAcademicContext();
+      if (!schoolId || !ayId) { showToast('Configure school and academic year', 'error'); return; }
+      const name = document.getElementById('tt_name').value.trim();
+      const clsId = document.getElementById('ttm_cls').value;
+      const secId = document.getElementById('ttm_sec').value;
+      if (!name || !clsId || !secId) { showToast('Timetable name, class and section required', 'error'); return; }
+      const days = timetableDays.map(day => {
+        const periods = Array.from(document.querySelectorAll(`#tt_day_${day} .tt-period-row`)).map(row => {
+          const isBreak = row.querySelector('.tt-break').checked;
+          return {
+            period_no: parseInt(row.querySelector('.tt-period-no').value) || 0,
+            start_time: row.querySelector('.tt-start').value || null,
+            end_time: row.querySelector('.tt-end').value || null,
+            subject_id: isBreak ? null : (row.querySelector('.tt-subject').value || null),
+            teacher_id: isBreak ? null : (row.querySelector('.tt-teacher').value || null),
+            room: row.querySelector('.tt-room').value.trim() || null,
+            is_break: isBreak,
+            break_name: isBreak ? (row.querySelector('.tt-break-name').value.trim() || 'Break') : null
+          };
+        }).filter(period => period.period_no && period.start_time && period.end_time && (period.is_break || period.subject_id));
+        return { day, periods };
+      }).filter(day => day.periods.length);
+      if (!days.length) { showToast('Add at least one valid period', 'error'); return; }
+      try {
+        await AcademicAPI.createTimetable({
+          school_id: schoolId,
+          academic_year_id: ayId,
+          classroom_id: clsId,
+          section_id: secId,
+          name,
+          days
+        });
+        showToast('Timetable created successfully');
+        document.getElementById('ttModal').style.display = 'none';
+        document.getElementById('tt_cls').value = clsId;
+        syncTimetableSections('tt_cls', 'tt_sec');
+        document.getElementById('tt_sec').value = secId;
+        viewTimetable();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function viewTimetable() {
+      await initializeAcademicContext();
+      const clsId = document.getElementById('tt_cls').value, secId = document.getElementById('tt_sec').value;
+      if (!clsId || !secId) { showToast('Select class and section', 'error'); return; }
+      try {
+        const r = await AcademicAPI.getTimetable({
+          school_id: schoolId,
+          classroom_id: clsId,
+          section_id: secId
+        });
+        if (!r?.data) { document.getElementById('ttDisplay').innerHTML = '<div class="text-center py-8 text-gray-400"><div class="text-4xl mb-2">📅</div><p>No timetable found for this class/section</p></div>'; return; }
+        const tt = r.data;
+        const days = tt.days || [];
+        const allPeriods = [...new Set(days.flatMap(day => (day.periods || []).map(period => period.period_no)).filter(Boolean))].sort((a, b) => a - b);
+        const cellColors = ['bg-yellow-100 border-yellow-200', 'bg-emerald-100 border-emerald-200', 'bg-violet-100 border-violet-200', 'bg-orange-100 border-orange-200', 'bg-pink-100 border-pink-200', 'bg-sky-100 border-sky-200'];
+        const className = document.getElementById('tt_cls').selectedOptions[0]?.textContent || '-';
+        const sectionName = document.getElementById('tt_sec').selectedOptions[0]?.textContent || '-';
+        document.getElementById('ttDisplay').innerHTML = `
+      <div class="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h5 class="font-bold text-slate-900 text-lg">${tt.name}</h5>
+            <p class="text-sm text-slate-500 mt-1">${className} • Section ${sectionName}</p>
+          </div>
+          <div class="text-xs text-slate-400">Weekly timetable view</div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[920px] border-collapse">
+            <thead>
+              <tr class="bg-slate-50">
+                <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500 border-b border-slate-200 w-36">Day</th>
+                ${allPeriods.map(periodNo => `<th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wide text-slate-500 border-b border-slate-200 min-w-[170px]">P${periodNo}</th>`).join('')}
+              </tr>
+            </thead>
+            <tbody>
+              ${days.map((day, dayIndex) => {
+                const periodMap = {};
+                (day.periods || []).forEach(period => { periodMap[period.period_no] = period; });
+                return `
+                  <tr class="align-top">
+                    <td class="px-4 py-4 font-semibold text-slate-900 border-b border-slate-100 bg-slate-50/80">${day.day}</td>
+                    ${allPeriods.map((periodNo, periodIndex) => {
+                      const period = periodMap[periodNo];
+                      if (!period) {
+                        return `<td class="px-3 py-3 border-b border-slate-100"><div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-3 py-6 text-center text-sm text-slate-300">-</div></td>`;
+                      }
+                      if (period.is_break) {
+                        return `<td class="px-3 py-3 border-b border-slate-100"><div class="rounded-2xl border border-slate-200 bg-slate-100 px-3 py-4 text-center"><div class="text-sm font-semibold text-slate-600">${period.break_name || 'Break'}</div><div class="text-xs text-slate-400 mt-1">${period.start_time || ''}${period.end_time ? ` - ${period.end_time}` : ''}</div></div></td>`;
+                      }
+                      const colorClass = cellColors[(dayIndex + periodIndex) % cellColors.length];
+                      return `<td class="px-3 py-3 border-b border-slate-100">
+                        <div class="rounded-2xl border px-3 py-3 ${colorClass}">
+                          <div class="text-sm font-bold text-slate-800 leading-tight">${period.subject || '—'}</div>
+                          <div class="text-xs text-slate-600 mt-1">${period.teacher || ''}</div>
+                          <div class="text-[11px] text-slate-500 mt-2">${period.start_time || ''}${period.end_time ? ` - ${period.end_time}` : ''}</div>
+                          ${period.room ? `<div class="text-[11px] text-slate-400 mt-1">Room: ${period.room}</div>` : ''}
+                        </div>
+                      </td>`;
+                    }).join('')}
+                  </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>`;
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    document.getElementById('tt_cls').addEventListener('change', () => syncTimetableSections('tt_cls', 'tt_sec'));
+    document.getElementById('ttm_cls').addEventListener('change', () => {
+      syncTimetableSections('ttm_cls', 'ttm_sec');
+      document.getElementById('ttBuilder').innerHTML = '';
+    });
+    document.getElementById('ttm_sec').addEventListener('change', () => {
+      if (document.getElementById('ttm_cls').value && document.getElementById('ttm_sec').value) {
+        renderTimetableBuilder();
+      }
+    });
+
+    (async () => {
+      await initializeAcademicContext();
+      loadHomework();
+    })();
+  </script>
+</body>
+
+</html>

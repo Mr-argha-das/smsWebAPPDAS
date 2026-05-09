@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f0f2f8;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f0f2f8;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      overflow: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Institution - Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+  <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+      <div class="p-6 space-y-6">
+        <style>
+          .finput {
+            width: 100%;
+            padding: .625rem .75rem;
+            border-radius: .75rem;
+            border: 1px solid #e5e7eb;
+            background: #f9fafb;
+            font-size: .875rem;
+            outline: none
+          }
+
+          .finput:focus {
+            background: #fff;
+            border-color: #3b82f6
+          }
+
+          .lbl {
+            display: block;
+            font-size: .875rem;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: .375rem
+          }
+        </style>
+
+        <!-- Tabs -->
+        <div
+          style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div class="tab-bar">
+            <button onclick="showTab(0)"
+              class="itab px-5 py-4 text-sm font-semibold whitespace-nowrap border-b-2 border-blue-600 text-blue-600">School
+              Profile</button>
+            <button onclick="showTab(1)"
+              class="itab px-5 py-4 text-sm font-semibold whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-700">Academic
+              Years</button>
+            <button onclick="showTab(2)"
+              class="itab px-5 py-4 text-sm font-semibold whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-700">Classes</button>
+            <button onclick="showTab(3)"
+              class="itab px-5 py-4 text-sm font-semibold whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-700">Subjects</button>
+            <button onclick="showTab(4)"
+              class="itab px-5 py-4 text-sm font-semibold whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-700">Grading</button>
+            <button onclick="showTab(5)"
+              class="itab px-5 py-4 text-sm font-semibold whitespace-nowrap border-b-2 border-transparent text-gray-500 hover:text-gray-700">User
+              Access</button>
+          </div>
+
+          <!-- School Profile Tab -->
+          <div id="tab0" class="p-6">
+            <div id="schoolDisplay">
+              <!-- <div class="text-center py-12 text-gray-400">
+                <div class="text-5xl mb-3">&#127979;</div>
+                <p class="font-semibold text-gray-600 text-lg">No school configured</p>
+                <p class="text-sm mt-1 mb-4">Set up your school profile to get started</p>
+                <button onclick="showSchoolForm()"
+                  class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700">Create School
+                  Profile</button>
+              </div> -->
+            </div>
+
+            <div id="schoolForm" class="hidde" style="display:flex; flex-direction: column;">
+              <h4 class="font-bold text-gray-900 mb-5">School Information</h4>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div><label class="lbl">School Name *</label><input id="s_name" type="text" class="finput"
+                    placeholder="e.g. Delhi Public School" /></div>
+                <div><label class="lbl">School Code *</label><input id="s_code" type="text" class="finput"
+                    placeholder="e.g. DPS001" /></div>
+                <div><label class="lbl">Affiliation Board</label>
+                  <select id="s_board" class="finput">
+                    <option value="">Select board</option>
+                    <option>RBSE</option>
+                    <option>CBSE</option>
+                    <option>ICSE</option>
+                    <option>State Board</option>
+                    <option>IB</option>
+                  </select>
+                </div>
+                <div><label class="lbl">School Type</label>
+                  <select id="s_type" class="finput">
+                    <option>Private</option>
+                    <option>Government</option>
+                    <option>Aided</option>
+                    <option>International</option>
+                  </select>
+                </div>
+                <div><label class="lbl">Phone</label><input id="s_ph" type="tel" class="finput"
+                    placeholder="School phone" /></div>
+                <div><label class="lbl">Email</label><input id="s_em" type="email" class="finput"
+                    placeholder="School email" /></div>
+                <div><label class="lbl">Website</label><input id="s_web" type="url" class="finput"
+                    placeholder="https://yourschool.com" /></div>
+                <div><label class="lbl">Established Year</label><input id="s_yr" type="number" class="finput"
+                    placeholder="2000" min="1800" max="2024" /></div>
+                <div>
+                  <label class="lbl">School Logo</label>
+                  <input id="s_logo_file" type="file" accept="image/*" class="finput"
+                    onchange="uploadInstitutionLogo('school')" />
+                  <input id="s_logo" type="hidden" />
+                  <div class="mt-3 flex items-center gap-3">
+                    <div id="s_logo_preview"
+                      class="w-16 h-16 rounded-2xl bg-gray-100 overflow-hidden flex items-center justify-center text-gray-400 text-xs">
+                      No Logo</div>
+                    <span class="text-xs text-gray-500">Upload school logo image</span>
+                  </div>
+                </div>
+                <div><label class="lbl">Affiliation Number</label><input id="s_affno" type="text" class="finput"
+                    placeholder="Affiliation number" /></div>
+                <div><label class="lbl">Currency</label><select id="s_cur" class="finput">
+                    <option value="INR">INR (&#8377;)</option>
+                    <option value="USD">USD ($)</option>
+                  </select></div>
+                <div class="sm:col-span-2"><label class="lbl">Address</label><textarea id="s_addr" rows="2"
+                    class="finput resize-none" placeholder="School address"></textarea></div>
+                <div class="sm:col-span-2"><label class="lbl">Tagline</label><input id="s_tag" type="text"
+                    class="finput" placeholder="School tagline/motto" /></div>
+              </div>
+              <div class="mt-6">
+                <div class="flex items-center justify-between mb-3">
+                  <h5 class="font-semibold text-gray-900">Branch Setup</h5>
+                  <span class="text-xs text-gray-500">Admin can manage up to 3 branches</span>
+                </div>
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+                  <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-3">
+                    <h6 class="font-semibold text-gray-900">Branch 1</h6>
+                    <input id="b1_name" class="finput" placeholder="Branch name" />
+                    <input id="b1_code" class="finput" placeholder="Branch code" />
+                    <input id="b1_logo_file" type="file" accept="image/*" class="finput"
+                      onchange="uploadInstitutionLogo('branch', 1)" />
+                    <input id="b1_logo" type="hidden" />
+                    <div id="b1_logo_preview"
+                      class="w-14 h-14 rounded-xl bg-white overflow-hidden flex items-center justify-center text-gray-400 text-xs border border-gray-200">
+                      No Logo</div>
+                    <input id="b1_phone" class="finput" placeholder="Phone" />
+                    <input id="b1_email" class="finput" placeholder="Email" />
+                    <input id="b1_principal" class="finput" placeholder="Principal name" />
+                    <textarea id="b1_addr" rows="2" class="finput resize-none" placeholder="Branch address"></textarea>
+                  </div>
+                  <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-3">
+                    <h6 class="font-semibold text-gray-900">Branch 2</h6>
+                    <input id="b2_name" class="finput" placeholder="Branch name" />
+                    <input id="b2_code" class="finput" placeholder="Branch code" />
+                    <input id="b2_logo_file" type="file" accept="image/*" class="finput"
+                      onchange="uploadInstitutionLogo('branch', 2)" />
+                    <input id="b2_logo" type="hidden" />
+                    <div id="b2_logo_preview"
+                      class="w-14 h-14 rounded-xl bg-white overflow-hidden flex items-center justify-center text-gray-400 text-xs border border-gray-200">
+                      No Logo</div>
+                    <input id="b2_phone" class="finput" placeholder="Phone" />
+                    <input id="b2_email" class="finput" placeholder="Email" />
+                    <input id="b2_principal" class="finput" placeholder="Principal name" />
+                    <textarea id="b2_addr" rows="2" class="finput resize-none" placeholder="Branch address"></textarea>
+                  </div>
+                  <div class="rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-3">
+                    <h6 class="font-semibold text-gray-900">Branch 3</h6>
+                    <input id="b3_name" class="finput" placeholder="Branch name" />
+                    <input id="b3_code" class="finput" placeholder="Branch code" />
+                    <input id="b3_logo_file" type="file" accept="image/*" class="finput"
+                      onchange="uploadInstitutionLogo('branch', 3)" />
+                    <input id="b3_logo" type="hidden" />
+                    <div id="b3_logo_preview"
+                      class="w-14 h-14 rounded-xl bg-white overflow-hidden flex items-center justify-center text-gray-400 text-xs border border-gray-200">
+                      No Logo</div>
+                    <input id="b3_phone" class="finput" placeholder="Phone" />
+                    <input id="b3_email" class="finput" placeholder="Email" />
+                    <input id="b3_principal" class="finput" placeholder="Principal name" />
+                    <textarea id="b3_addr" rows="2" class="finput resize-none" placeholder="Branch address"></textarea>
+                  </div>
+                </div>
+              </div>
+              <div class="flex gap-3 mt-6">
+                <button onclick="saveSchool()"
+                  class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-lg text-sm">Save
+                  School</button>
+                <button
+                  onclick="document.getElementById('schoolForm').style.display='none';document.getElementById('schoolDisplay').style.display='flex'"
+                  class="px-6 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Academic Years Tab -->
+          <div id="tab1" class="p-6 hidden">
+            <div class="flex justify-between items-center mb-5">
+              <h4 class="font-bold text-gray-900">Academic Years</h4>
+              <button onclick="openAYModal()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Add
+                Year</button>
+            </div>
+            <div id="ayList"></div>
+          </div>
+
+          <!-- Classes Tab -->
+          <div id="tab2" class="p-6 hidden">
+            <div class="flex justify-between items-center mb-5">
+              <h4 class="font-bold text-gray-900">Classes &amp; Sections</h4>
+              <button onclick="openClassModal()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Add
+                Class</button>
+            </div>
+            <div id="clsList"></div>
+          </div>
+
+          <!-- Subjects Tab -->
+          <div id="tab3" class="p-6 hidden">
+            <div class="flex justify-between items-center mb-5">
+              <h4 class="font-bold text-gray-900">Subjects</h4>
+              <button onclick="openSubjectModal()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Add
+                Subject</button>
+            </div>
+            <div id="subList"></div>
+            <div class="mt-8 border-t border-gray-100 pt-6">
+              <div class="flex flex-col lg:flex-row lg:items-end gap-4 mb-5">
+                <div class="flex-1">
+                  <label class="lbl">Assign Subjects To Class</label>
+                  <select id="map_cls" class="finput" onchange="loadSubjectMappingSections()">
+                    <option value="">Select class</option>
+                  </select>
+                </div>
+                <div class="flex-1">
+                  <label class="lbl">Section</label>
+                  <select id="map_sec" class="finput">
+                    <option value="">All sections</option>
+                  </select>
+                </div>
+                <button onclick="loadSubjectMapping()" class="px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold">Load Assigned</button>
+                <button onclick="saveSubjectMapping()" class="px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-semibold">Save Assignment</button>
+              </div>
+              <div id="subjectMappingBox" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+            </div>
+          </div>
+
+          <!-- Grading Tab -->
+          <div id="tab4" class="p-6 hidden">
+            <div class="flex justify-between items-center mb-5">
+              <h4 class="font-bold text-gray-900">Grading System</h4>
+              <button onclick="openGradingModal()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Add
+                Grading</button>
+            </div>
+            <div class="bg-gray-50 rounded-xl p-6 mb-5">
+              <h5 class="font-semibold text-gray-700 mb-4">Standard RBSE Grading (A+ to F)</h5>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="bg-white">
+                      <th class="px-4 py-2 text-left font-semibold">Grade</th>
+                      <th class="px-4 py-2 text-left font-semibold">Min %</th>
+                      <th class="px-4 py-2 text-left font-semibold">Max %</th>
+                      <th class="px-4 py-2 text-left font-semibold">Grade Point</th>
+                    </tr>
+                  </thead>
+                  <tbody id="gradeTable" class="divide-y divide-gray-100 bg-white"></tbody>
+                </table>
+              </div>
+              <button onclick="createDefaultGrading()"
+                class="mt-4 px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">Save
+                Default RBSE Grading</button>
+            </div>
+            <div id="gradingList"></div>
+          </div>
+
+          <!-- User Access Tab -->
+          <div id="tab5" class="p-6 hidden">
+            <div class=class="flex flex-col gap-6">
+             <div class="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+                <div class="flex items-start justify-between gap-3 mb-4">
+                  <div>
+                    <h4 id="userAccessFormTitle" class="font-bold text-gray-900">Create User Access</h4>
+                    <p class="text-sm text-gray-500 mt-1">Alag alag users ko school branch wise login access dijiye.</p>
+                  </div>
+                  <button onclick="resetManagedUserForm()"
+                    class="px-3 py-2 bg-white border border-gray-200 text-gray-600 rounded-xl text-sm">Reset</button>
+                </div>
+
+                <div class="space-y-4">
+                  <div><label class="lbl">Full Name *</label><input id="ua_full_name" class="finput"
+                      placeholder="User full name" /></div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div><label class="lbl">Username *</label><input id="ua_username" class="finput"
+                        placeholder="login username" /></div>
+                    <div><label class="lbl">Phone</label><input id="ua_phone" class="finput"
+                        placeholder="phone number" /></div>
+                  </div>
+                  <div><label class="lbl">Email *</label><input id="ua_email" type="email" class="finput"
+                      placeholder="email address" /></div>
+                  <div><label class="lbl">Password <span class="text-gray-400 text-xs">(edit mode me
+                        optional)</span></label><input id="ua_password" type="password" class="finput"
+                      placeholder="minimum 6 characters" /></div>
+                  <div><label class="lbl">Role</label><select id="ua_role" class="finput">
+                      <option value="">No role selected</option>
+                    </select></div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label
+                      class="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm text-gray-700">
+                      <input id="ua_is_active" type="checkbox" class="w-4 h-4 accent-blue-600" checked />
+                      <span>User active</span>
+                    </label>
+                    <label
+                      class="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-3 text-sm text-gray-700">
+                      <input id="ua_is_superadmin" type="checkbox" class="w-4 h-4 accent-blue-600" />
+                      <span>Superadmin</span>
+                    </label>
+                  </div>
+                  <div class="rounded-2xl border border-blue-100 bg-blue-50 p-4">
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                      <div>
+                        <div class="font-semibold text-gray-900">Branch Assignment</div>
+                        <div id="ua_branch_hint" class="text-xs text-gray-500 mt-1">School branches load from School
+                          Profile tab.</div>
+                      </div>
+                    </div>
+                    <div class="space-y-3">
+                      <div><label class="lbl">Primary Branch</label><select id="ua_primary_branch" class="finput">
+                          <option value="">All branches access</option>
+                        </select></div>
+                      <div>
+                        <label class="lbl">Allowed Branches</label>
+                        <div id="ua_allowed_branch_list" class="space-y-2"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="flex gap-3">
+                    <button id="ua_submit_btn" onclick="saveManagedUser()"
+                      class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">Create
+                      User</button>
+                    <button onclick="resetManagedUserForm()"
+                      class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Clear</button>
+                  </div>
+                </div>
+              </div>
+                <div class="py-6">
+  <!-- Use this when only one specific spacing value is needed. -->
+</div>
+              <div class="rounded-2xl border border-gray-200 bg-white p-5">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                  <div>
+                    <h4 class="font-bold text-gray-900">Managed Users</h4>
+                    <p class="text-sm text-gray-500 mt-1">Users for the current school and their branch mappings will appear here.
+                    </p>
+                  </div>
+                  <div class="flex gap-2">
+                    <input id="ua_search" type="text" class="finput" placeholder="Search by name, email, username"
+                      oninput="renderManagedUsersTable()" />
+                    <button onclick="loadUserAccess()"
+                      class="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Refresh</button>
+                  </div>
+                </div>
+                <div id="ua_user_list"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Academic Year Modal -->
+  <div id="ayModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 id="ayModalTitle" class="font-bold text-gray-900">Add Academic Year</h3>
+        <button onclick="document.getElementById('ayModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl">X</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Year Name *</label><input id="ay_name" class="finput" placeholder="e.g. 2024-2025" />
+        </div>
+        <div><label class="lbl">Start Date *</label><input id="ay_start" type="date" class="finput" /></div>
+        <div><label class="lbl">End Date *</label><input id="ay_end" type="date" class="finput" /></div>
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="ay_curr"
+            class="w-4 h-4 accent-blue-600" /><span class="text-sm text-gray-700">Set as Current Year</span></label>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('ayModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button id="aySubmitBtn" onclick="saveAY()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Class Modal -->
+  <div id="clsModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 id="clsModalTitle" class="font-bold text-gray-900">Add Class</h3>
+        <button onclick="document.getElementById('clsModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl">X</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Class Name *</label><input id="cls_name" class="finput"
+            placeholder="e.g. Class 1 or Grade 10" /></div>
+        <div><label class="lbl">Order (for sorting)</label><input id="cls_order" type="number" class="finput"
+            placeholder="1" min="1" /></div>
+        <div><label class="lbl">Class Fee (₹)</label><input id="cls_fee" type="number" class="finput" placeholder="0"
+            min="0" /></div>
+        <div><label class="lbl">Sections (comma-separated)</label><input id="cls_secs" class="finput"
+            placeholder="A, B, C" /></div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('clsModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button id="clsSubmitBtn" onclick="saveClass()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Subject Modal -->
+  <div id="subModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 id="subModalTitle" class="font-bold text-gray-900">Add Subject</h3>
+        <button onclick="document.getElementById('subModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl">X</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Subject Name *</label><input id="sub_name" class="finput"
+            placeholder="e.g. Mathematics" /></div>
+        <div><label class="lbl">Subject Code *</label><input id="sub_code" class="finput" placeholder="e.g. MATH001" />
+        </div>
+        <div><label class="lbl">Subject Type</label>
+          <select id="sub_type" class="finput">
+            <option value="Theory">Theory</option>
+            <option value="Practical">Practical</option>
+            <option value="Both">Both (Theory + Practical)</option>
+          </select>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="lbl">Max Theory Marks</label><input id="sub_th" type="number" class="finput" value="100" />
+          </div>
+          <div><label class="lbl">Max Practical Marks</label><input id="sub_pr" type="number" class="finput"
+              value="0" /></div>
+        </div>
+        <div><label class="lbl">Passing Marks</label><input id="sub_pass" type="number" class="finput" value="33" />
+        </div>
+        <label class="flex items-center gap-2"><input type="checkbox" id="sub_opt"
+            class="w-4 h-4 accent-blue-600" /><span class="text-sm text-gray-700">Optional Subject</span></label>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('subModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button id="subSubmitBtn" onclick="saveSubject()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
+  </div>
+  <div id="gradingModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-2xl">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 id="gradingModalTitle" class="font-bold text-gray-900">Add Grading System</h3>
+        <button onclick="document.getElementById('gradingModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl">X</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Name *</label><input id="grading_name" class="finput"
+              placeholder="e.g. RBSE Standard Grading" /></div>
+          <div><label class="lbl">Type</label><select id="grading_type" class="finput">
+              <option value="Marks">Marks</option>
+              <option value="Grades">Grades</option>
+              <option value="CGPA">CGPA</option>
+            </select></div>
+        </div>
+        <label class="flex items-center gap-2"><input type="checkbox" id="grading_default"
+            class="w-4 h-4 accent-blue-600" /><span class="text-sm text-gray-700">Set as default grading</span></label>
+        <div>
+          <label class="lbl">Grade Scales</label>
+          <div id="gradingScaleRows" class="space-y-2"></div>
+          <button onclick="addGradingScaleRow()" class="mt-2 text-blue-600 text-sm hover:underline font-medium">+ Add
+            Grade Row</button>
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('gradingModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button id="gradingSubmitBtn" onclick="saveGradingSystem()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+      </div>
+    </div>
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('institution');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('Institution Setup', 'School configuration and management');
+    const schoolId = localStorage.getItem('school_id'), ayId = localStorage.getItem('ay_id');
+    let editingAyId = '';
+    let editingClassId = '';
+    let editingSubjectId = '';
+    let editingGradingId = '';
+    let editingManagedUserId = '';
+    let managedUsers = [];
+    let managedUserRoles = [];
+    let schoolBranchOptions = [];
+    let subjectMappingClasses = [];
+    let subjectMappingSubjects = [];
+
+    const defGrades = [{ grade: 'A+', min: 91, max: 100, gp: 10 }, { grade: 'A', min: 81, max: 90, gp: 9 }, { grade: 'B+', min: 71, max: 80, gp: 8 }, { grade: 'B', min: 61, max: 70, gp: 7 }, { grade: 'C+', min: 51, max: 60, gp: 6 }, { grade: 'C', min: 41, max: 50, gp: 5 }, { grade: 'D', min: 33, max: 40, gp: 4 }, { grade: 'F', min: 0, max: 32, gp: 0 }];
+    document.getElementById('gradeTable').innerHTML = defGrades.map(g => `<tr><td class="px-4 py-2 font-semibold text-blue-600">${g.grade}</td><td class="px-4 py-2">${g.min}</td><td class="px-4 py-2">${g.max}</td><td class="px-4 py-2">${g.gp}</td></tr>`).join('');
+
+    function showTab(idx) {
+      document.querySelectorAll('.itab').forEach((b, i) => { b.classList.toggle('border-blue-600', i === idx); b.classList.toggle('text-blue-600', i === idx); b.classList.toggle('border-transparent', i !== idx); b.classList.toggle('text-gray-500', i !== idx); });
+      document.querySelectorAll('[id^="tab"]').forEach((t, i) => { if (t.id.startsWith('tab')) t.classList.toggle('hidden', parseInt(t.id.replace('tab', '')) !== idx); });
+      if (idx === 1) loadAYs(); if (idx === 2) loadClasses(); if (idx === 3) loadSubjects(); if (idx === 4) loadGradingSystems(); if (idx === 5) loadUserAccess();
+    }
+
+    function showSchoolForm() { document.getElementById('schoolDisplay').style.display = 'none'; document.getElementById('schoolForm').style.display = 'flex'; }
+    function openAYModal() {
+      editingAyId = '';
+      document.getElementById('ayModalTitle').textContent = 'Add Academic Year';
+      document.getElementById('aySubmitBtn').textContent = 'Save';
+      ['ay_name', 'ay_start', 'ay_end'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('ay_curr').checked = false;
+      document.getElementById('ayModal').style.display = 'flex';
+    }
+    function openClassModal() {
+      editingClassId = '';
+      document.getElementById('clsModalTitle').textContent = 'Add Class';
+      document.getElementById('clsSubmitBtn').textContent = 'Save';
+      ['cls_name', 'cls_order', 'cls_fee', 'cls_secs'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('clsModal').style.display = 'flex';
+    }
+    function openSubjectModal() {
+      editingSubjectId = '';
+      document.getElementById('subModalTitle').textContent = 'Add Subject';
+      document.getElementById('subSubmitBtn').textContent = 'Save';
+      document.querySelectorAll('#subModal input').forEach(el => {
+        if (el.type === 'checkbox') el.checked = false;
+        else el.value = '';
+      });
+      document.getElementById('sub_type').value = 'Theory';
+      document.getElementById('sub_th').value = 100;
+      document.getElementById('sub_pr').value = 0;
+      document.getElementById('sub_pass').value = 33;
+      document.getElementById('subModal').style.display = 'flex';
+    }
+    function buildDefaultGradeRows() {
+      return defGrades.map(g => ({ grade: g.grade, min: g.min, max: g.max, gp: g.gp }));
+    }
+    function normalizeGradingName(name) {
+      return (name || '').replace(/CBSE/gi, 'RBSE').replace(/\s+\/\s+RBSE/gi, ' RBSE');
+    }
+    function addGradingScaleRow(scale = {}) {
+      const row = document.createElement('div');
+      row.className = 'grid grid-cols-4 gap-2 grading-scale-row';
+      row.innerHTML = `
+        <input class="finput grade-name" placeholder="Grade" value="${scale.grade || ''}" />
+        <input class="finput grade-min" type="number" placeholder="Min %" value="${scale.min ?? ''}" />
+        <input class="finput grade-max" type="number" placeholder="Max %" value="${scale.max ?? ''}" />
+        <div class="flex gap-2">
+          <input class="finput grade-gp" type="number" step="0.1" placeholder="GP" value="${scale.gp ?? ''}" />
+          <button type="button" onclick="this.closest('.grading-scale-row').remove()" class="px-3 py-2 bg-red-50 text-red-600 rounded-xl text-sm">×</button>
+        </div>`;
+      document.getElementById('gradingScaleRows').appendChild(row);
+    }
+    function openGradingModal(grading = null) {
+      editingGradingId = grading?.id || '';
+      document.getElementById('gradingModalTitle').textContent = grading ? 'Edit Grading System' : 'Add Grading System';
+      document.getElementById('gradingSubmitBtn').textContent = grading ? 'Update' : 'Save';
+      document.getElementById('grading_name').value = normalizeGradingName(grading?.name || '');
+      document.getElementById('grading_type').value = grading?.grading_type || 'Marks';
+      document.getElementById('grading_default').checked = !!grading?.is_default;
+      document.getElementById('gradingScaleRows').innerHTML = '';
+      (grading?.scales?.length ? grading.scales : buildDefaultGradeRows()).forEach(scale => addGradingScaleRow(scale));
+      document.getElementById('gradingModal').style.display = 'flex';
+    }
+
+    function setLogoPreview(targetId, url, fallback = 'No Logo') {
+      const el = document.getElementById(targetId);
+      if (!el) return;
+      const safeUrl = normalizeLogoUrl(url);
+      el.innerHTML = url
+        ? `<img src="${safeUrl}" alt="Logo" class="w-full h-full object-cover" />`
+        : `<span>${fallback}</span>`;
+    }
+
+    function normalizeLogoUrl(url) {
+      if (!url) return '';
+      if (url.startsWith('http://') || url.startsWith('https://') || url.startsWith('/uploads/')) return url;
+      return `/uploads/${url.replace(/^\/+/, '')}`;
+    }
+
+    async function uploadInstitutionLogo(type, index = null) {
+      const inputId = type === 'school' ? 's_logo_file' : `b${index}_logo_file`;
+      const hiddenId = type === 'school' ? 's_logo' : `b${index}_logo`;
+      const previewId = type === 'school' ? 's_logo_preview' : `b${index}_logo_preview`;
+      const file = document.getElementById(inputId)?.files?.[0];
+      if (!file) return;
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await SchoolAPI.uploadLogo(fd);
+        const url = normalizeLogoUrl(res?.data?.file_url || res?.data?.file_path || '');
+        document.getElementById(hiddenId).value = url;
+        setLogoPreview(previewId, url);
+        showToast('Logo uploaded!');
+      } catch (e) {
+        showToast('Logo upload failed: ' + e.message, 'error');
+      }
+    }
+
+    function setBranchForm(branches = []) {
+      for (let i = 1; i <= 3; i++) {
+        const b = branches[i - 1] || {};
+        document.getElementById(`b${i}_name`).value = b.name || '';
+        document.getElementById(`b${i}_code`).value = b.code || '';
+        document.getElementById(`b${i}_logo`).value = b.logo || '';
+        setLogoPreview(`b${i}_logo_preview`, b.logo || '');
+        document.getElementById(`b${i}_phone`).value = b.phone || '';
+        document.getElementById(`b${i}_email`).value = b.email || '';
+        document.getElementById(`b${i}_principal`).value = b.principal || '';
+        document.getElementById(`b${i}_addr`).value = b.address?.line1 || '';
+      }
+    }
+
+    function collectBranches() {
+      const branches = [];
+      for (let i = 1; i <= 3; i++) {
+        const name = document.getElementById(`b${i}_name`).value.trim();
+        const code = document.getElementById(`b${i}_code`).value.trim();
+        if (!name || !code) continue;
+        branches.push({
+          name,
+          code,
+          logo: document.getElementById(`b${i}_logo`).value.trim() || null,
+          phone: document.getElementById(`b${i}_phone`).value.trim() || null,
+          email: document.getElementById(`b${i}_email`).value.trim() || null,
+          principal: document.getElementById(`b${i}_principal`).value.trim() || null,
+          address: { line1: document.getElementById(`b${i}_addr`).value.trim() || null }
+        });
+      }
+      return branches;
+    }
+
+    function renderManagedUserRoles() {
+      const roleEl = document.getElementById('ua_role');
+      if (!roleEl) return;
+      roleEl.innerHTML = `<option value="">No role selected</option>${managedUserRoles.map(role => `<option value="${role.id}">${role.name}</option>`).join('')}`;
+    }
+
+    function renderManagedUserBranchOptions(selectedPrimaryBranch = '', selectedAllowedBranches = []) {
+      const branchSelect = document.getElementById('ua_primary_branch');
+      const branchList = document.getElementById('ua_allowed_branch_list');
+      const branchHint = document.getElementById('ua_branch_hint');
+      if (!branchSelect || !branchList) return;
+
+      const allowedSet = new Set(selectedAllowedBranches || []);
+      branchSelect.innerHTML = `<option value="">All branches access</option>${schoolBranchOptions.map(branch => `<option value="${branch.code}">${branch.name} (${branch.code})</option>`).join('')}`;
+      branchSelect.value = selectedPrimaryBranch || '';
+
+      if (!schoolBranchOptions.length) {
+        branchHint.textContent = 'No branches configured yet. Save branches in School Profile tab first.';
+        branchList.innerHTML = `<div class="text-sm text-gray-400">No branches available.</div>`;
+        return;
+      }
+
+      branchHint.textContent = 'The primary branch will lock the default branch context for this login.';
+      branchList.innerHTML = schoolBranchOptions.map(branch => `
+        <label class="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700">
+          <input type="checkbox" class="w-4 h-4 accent-blue-600 ua-branch-checkbox" value="${branch.code}" ${allowedSet.has(branch.code) ? 'checked' : ''} />
+          <span>${branch.name} <span class="text-gray-400">(${branch.code})</span></span>
+        </label>
+      `).join('');
+    }
+
+    function getManagedUserAllowedBranches() {
+      return Array.from(document.querySelectorAll('.ua-branch-checkbox:checked')).map(el => el.value);
+    }
+
+    function resetManagedUserForm() {
+      editingManagedUserId = '';
+      document.getElementById('userAccessFormTitle').textContent = 'Create User Access';
+      document.getElementById('ua_submit_btn').textContent = 'Create User';
+      ['ua_full_name', 'ua_username', 'ua_phone', 'ua_email', 'ua_password'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('ua_is_active').checked = true;
+      document.getElementById('ua_is_superadmin').checked = false;
+      document.getElementById('ua_role').value = '';
+      renderManagedUserBranchOptions('', []);
+    }
+
+    function editManagedUser(encoded) {
+      const user = JSON.parse(decodeURIComponent(encoded));
+      editingManagedUserId = user.id;
+      document.getElementById('userAccessFormTitle').textContent = 'Update User Access';
+      document.getElementById('ua_submit_btn').textContent = 'Update User';
+      document.getElementById('ua_full_name').value = user.full_name || '';
+      document.getElementById('ua_username').value = user.username || '';
+      document.getElementById('ua_phone').value = user.phone || '';
+      document.getElementById('ua_email').value = user.email || '';
+      document.getElementById('ua_password').value = '';
+      document.getElementById('ua_is_active').checked = !!user.is_active;
+      document.getElementById('ua_is_superadmin').checked = !!user.is_superadmin;
+      document.getElementById('ua_role').value = user.role_id || '';
+      renderManagedUserBranchOptions(user.assigned_branch_code || '', user.allowed_branch_codes || []);
+      showTab(5);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function renderManagedUsersTable() {
+      const holder = document.getElementById('ua_user_list');
+      if (!holder) return;
+      const query = String(document.getElementById('ua_search')?.value || '').trim().toLowerCase();
+      const filteredUsers = managedUsers.filter(user => {
+        if (!user.is_active) return false; // ← YE LINE ADD KARO
+        const haystack = [user.full_name, user.username, user.email, user.role_name, user.assigned_branch_code, user.assigned_branch_name].join(' ').toLowerCase();
+        return !query || haystack.includes(query);
+      });
+      holder.innerHTML = buildTable(
+        ['Name', 'Role', 'Branch Scope', 'Status', ''],  // 'Last Login' hata diya
+        filteredUsers.map(user => `
+    <td class="px-4 py-3">
+      <div class="font-semibold text-gray-900">${user.full_name || '-'}</div>
+      <div class="text-xs text-gray-500 mt-1">${user.username} · ${user.email || '-'}</div>
+    </td>
+    <td class="px-4 py-3 text-sm text-gray-600">${user.role_name || (user.is_superadmin ? 'Superadmin' : '-')}</td>
+    <td class="px-4 py-3">
+      <div class="text-sm text-gray-700">${user.assigned_branch_code ? `${user.assigned_branch_name || user.assigned_branch_code} (${user.assigned_branch_code})` : 'All branches'}</div>
+      <div class="text-xs text-gray-400 mt-1">${(user.allowed_branch_codes || []).length ? user.allowed_branch_codes.join(', ') : 'No restrictions'}</div>
+    </td>
+    <td class="px-4 py-3">${user.is_active ? tdBadge('Active', 'green') : tdBadge('Inactive', 'red')}</td>
+    <td class="px-4 py-3"><button onclick="editManagedUser('${encodeURIComponent(JSON.stringify(user))}')" class="text-xs text-blue-600 hover:underline">Edit Access</button></td>
+  `),
+        'No users available for this school'
+      );
+    }
+
+    async function loadUserAccess() {
+      if (!schoolId) {
+        document.getElementById('ua_user_list').innerHTML = '<p class="text-gray-400 text-sm">Save school first</p>';
+        return;
+      }
+      try {
+        const [usersRes, rolesRes] = await Promise.all([
+          UserAdminAPI.list(schoolId),
+          UserAdminAPI.roles(),
+        ]);
+        managedUsers = usersRes?.data || [];
+        managedUserRoles = rolesRes?.data || [];
+        renderManagedUserRoles();
+        renderManagedUsersTable();
+        renderManagedUserBranchOptions(document.getElementById('ua_primary_branch').value || '', getManagedUserAllowedBranches());
+      } catch (e) {
+        document.getElementById('ua_user_list').innerHTML = `<div class="text-sm text-red-500">${e.message}</div>`;
+      }
+    }
+
+    async function saveManagedUser() {
+      if (!schoolId) { showToast('Save school first', 'error'); return; }
+      const fullName = document.getElementById('ua_full_name').value.trim();
+      const username = document.getElementById('ua_username').value.trim();
+      const email = document.getElementById('ua_email').value.trim();
+      const password = document.getElementById('ua_password').value;
+      if (!fullName || !username || !email) { showToast('Full name, username and email required', 'error'); return; }
+      if (!editingManagedUserId && (!password || password.length < 6)) { showToast('Password must be at least 6 characters for a new user', 'error'); return; }
+
+      const payload = {
+        full_name: fullName,
+        username,
+        email,
+        password: password || null,
+        phone: document.getElementById('ua_phone').value.trim() || null,
+        school_id: schoolId,
+        role_id: document.getElementById('ua_role').value || null,
+        assigned_branch_code: document.getElementById('ua_primary_branch').value || null,
+        allowed_branch_codes: getManagedUserAllowedBranches(),
+        is_superadmin: document.getElementById('ua_is_superadmin').checked,
+        is_active: document.getElementById('ua_is_active').checked,
+      };
+
+      try {
+        if (editingManagedUserId) {
+          await UserAdminAPI.update(editingManagedUserId, payload);
+          showToast('User access updated successfully');
+        } else {
+          await UserAdminAPI.create(payload);
+          showToast('User created successfully');
+        }
+        resetManagedUserForm();
+        loadUserAccess();
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    async function loadSchool() {
+      if (!schoolId) return;
+      try {
+        const r = await SchoolAPI.get(schoolId); const s = r.data;
+        schoolBranchOptions = s.branches || [];
+        document.getElementById('s_name').value = s.name || '';
+        document.getElementById('s_code').value = s.code || '';
+        document.getElementById('s_board').value = s.affiliation_board || '';
+        document.getElementById('s_type').value = s.type || 'Private';
+        document.getElementById('s_ph').value = s.phone || '';
+        document.getElementById('s_em').value = s.email || '';
+        document.getElementById('s_web').value = s.website || '';
+        document.getElementById('s_yr').value = s.established_year || '';
+        document.getElementById('s_logo').value = s.logo || '';
+        setLogoPreview('s_logo_preview', s.logo || '');
+        document.getElementById('s_affno').value = s.affiliation_no || '';
+        document.getElementById('s_cur').value = s.currency || 'INR';
+        document.getElementById('s_addr').value = s.address?.line1 || '';
+        document.getElementById('s_tag').value = s.tagline || '';
+        setBranchForm(s.branches || []);
+        document.getElementById('schoolDisplay').innerHTML = `
+      <div class="flex items-center gap-5 pb-5 border-b mb-5">
+        <div class="w-16 h-16 bg-blue-100 rounded-2xl overflow-hidden flex items-center justify-center text-blue-600 font-bold text-2xl">${s.logo ? `<img src="${s.logo}" alt="School Logo" class="w-full h-full object-cover"/>` : '&#127979;'}</div>
+        <div><h3 class="text-xl font-bold text-gray-900">${s.name}</h3><p class="text-gray-500">${s.code} · ${s.type || ''} · ${s.affiliation_board || ''}</p></div>
+        <button onclick="showSchoolForm()" class="ml-auto px-4 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200">Edit</button>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+        <div class="bg-gray-50 rounded-xl p-3"><p class="text-gray-400">Phone</p><p class="font-medium mt-0.5">${s.phone || '-'}</p></div>
+        <div class="bg-gray-50 rounded-xl p-3"><p class="text-gray-400">Email</p><p class="font-medium mt-0.5">${s.email || '-'}</p></div>
+        <div class="bg-gray-50 rounded-xl p-3"><p class="text-gray-400">Website</p><p class="font-medium mt-0.5">${s.website || '-'}</p></div>
+        <div class="bg-gray-50 rounded-xl p-3"><p class="text-gray-400">Established</p><p class="font-medium mt-0.5">${s.established_year || '-'}</p></div>
+      </div>
+      <div class="mt-5">
+        <h4 class="font-semibold text-gray-900 mb-3">Branches</h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">${(s.branches || []).length ? (s.branches || []).map(b => `
+          <div class="rounded-2xl border border-gray-200 p-4 bg-white">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-12 h-12 rounded-xl bg-gray-100 overflow-hidden flex items-center justify-center">${b.logo ? `<img src="${b.logo}" alt="${b.name}" class="w-full h-full object-cover"/>` : '<span class="text-lg">&#127979;</span>'}</div>
+              <div><div class="font-semibold text-gray-900">${b.name}</div><div class="text-xs text-gray-500">${b.code}</div></div>
+            </div>
+            <div class="text-sm text-gray-600 space-y-1">
+              <div>${b.phone || '-'}</div>
+              <div>${b.email || '-'}</div>
+              <div>${b.principal || '-'}</div>
+            </div>
+          </div>`).join('') : '<div class="text-sm text-gray-400">No branches configured</div>'}</div>
+      </div>`;
+        renderManagedUserBranchOptions(document.getElementById('ua_primary_branch')?.value || '', getManagedUserAllowedBranches());
+      } catch (e) { }
+    }
+
+    async function saveSchool() {
+      const name = document.getElementById('s_name').value.trim(), code = document.getElementById('s_code').value.trim();
+      if (!name || !code) { showToast('Name and Code required', 'error'); return; }
+      try {
+        const payload = {
+          name,
+          code,
+          type: document.getElementById('s_type').value,
+          affiliation_board: document.getElementById('s_board').value || null,
+          phone: document.getElementById('s_ph').value || null,
+          email: document.getElementById('s_em').value || null,
+          website: document.getElementById('s_web').value || null,
+          established_year: parseInt(document.getElementById('s_yr').value) || null,
+          logo: document.getElementById('s_logo').value || null,
+          affiliation_no: document.getElementById('s_affno').value || null,
+          currency: document.getElementById('s_cur').value,
+          tagline: document.getElementById('s_tag').value || null,
+          address: { line1: document.getElementById('s_addr').value || null },
+          branches: collectBranches()
+        };
+        if (schoolId) {
+          await SchoolAPI.update(schoolId, payload);
+        } else {
+          const r = await SchoolAPI.create(payload);
+          localStorage.setItem('school_id', r.data.id);
+          location.reload();
+          return;
+        }
+        showToast('School saved!'); document.getElementById('schoolForm').style.display = 'none'; loadSchool();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadAYs() {
+      if (!schoolId) { document.getElementById('ayList').innerHTML = '<p class="text-gray-400 text-sm">Save school first</p>'; return; }
+      try {
+        const r = await AcademicYearAPI.list(schoolId); const ays = r?.data || [];
+        document.getElementById('ayList').innerHTML = buildTable(['Year Name', 'Start', 'End', 'Current', ''], ays.map(y => `
+    <td class="px-4 py-3 font-semibold text-gray-900">${y.name}</td>
+    <td class="px-4 py-3 text-sm text-gray-600">${formatDate(y.start_date)}</td>
+    <td class="px-4 py-3 text-sm text-gray-600">${formatDate(y.end_date)}</td>
+    <td class="px-4 py-3">${y.is_current ? tdBadge('Current', 'green') : ''}</td>
+    <td class="px-4 py-3"><div class="flex items-center gap-3"><button onclick="editAYFromEncoded('${encodeURIComponent(JSON.stringify(y))}')" class="text-xs text-emerald-600 hover:underline">Edit</button><button onclick="setCurrentAY('${y.id}')" class="text-xs text-blue-600 hover:underline">Set Current</button><button onclick="deleteAY('${y.id}')" class="text-xs text-red-600 hover:underline">Delete</button></div></td>
+  `), 'No academic years yet');
+      } catch (e) { }
+    }
+
+    async function saveAY() {
+      if (!schoolId) { showToast('Save school first', 'error'); return; }
+      const name = document.getElementById('ay_name').value.trim();
+      if (!name) { showToast('Year name required', 'error'); return; }
+      try {
+        const payload = { school_id: schoolId, name, start_date: new Date(document.getElementById('ay_start').value).toISOString(), end_date: new Date(document.getElementById('ay_end').value).toISOString(), is_current: document.getElementById('ay_curr').checked };
+        const r = editingAyId ? await AcademicYearAPI.updateAY(editingAyId, payload) : await AcademicYearAPI.create(payload);
+        if (document.getElementById('ay_curr').checked && r?.data?.id) { localStorage.setItem('ay_id', r.data.id); }
+        showToast('Academic year saved!'); document.getElementById('ayModal').style.display = 'none'; loadAYs();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    function editAY(year) {
+      editingAyId = year.id;
+      document.getElementById('ayModalTitle').textContent = 'Edit Academic Year';
+      document.getElementById('aySubmitBtn').textContent = 'Update';
+      document.getElementById('ay_name').value = year.name || '';
+      document.getElementById('ay_start').value = year.start_date ? String(year.start_date).slice(0, 10) : '';
+      document.getElementById('ay_end').value = year.end_date ? String(year.end_date).slice(0, 10) : '';
+      document.getElementById('ay_curr').checked = !!year.is_current;
+      document.getElementById('ayModal').style.display = 'flex';
+    }
+
+    function editAYFromEncoded(encoded) {
+      editAY(JSON.parse(decodeURIComponent(encoded)));
+    }
+
+    async function deleteAY(id) {
+      if (!confirm('Delete this academic year?')) return;
+      try { await AcademicYearAPI.deleteAY(id); showToast('Academic year deleted'); loadAYs(); }
+      catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function setCurrentAY(id) {
+      try { await AcademicYearAPI.setCurrent(id); localStorage.setItem('ay_id', id); showToast('Set as current year'); loadAYs(); }
+      catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadClasses() {
+      if (!schoolId) { document.getElementById('clsList').innerHTML = '<p class="text-gray-400 text-sm">Save school first</p>'; return; }
+      try {
+        const r = await ClassAPI.list(schoolId, ayId); const cls = r?.data || [];
+        document.getElementById('clsList').innerHTML = buildTable(['Class Name', 'Class Fee', 'Sections', ''], cls.map(c => `
+    <td class="px-4 py-3 font-semibold text-gray-900">${c.name}</td>
+    <td class="px-4 py-3 text-sm font-medium text-gray-700">${formatCurrency(c.class_fee || 0)}</td>
+    <td class="px-4 py-3"><div class="flex gap-1 flex-wrap">${(c.sections || []).map(s => `<span class="px-2 py-0.5 bg-blue-100 text-blue-700 rounded-lg text-xs font-medium">${s.name}</span>`).join('')}</div></td>
+    <td class="px-4 py-3"><div class="flex items-center gap-3"><button onclick="editClassFromEncoded('${encodeURIComponent(JSON.stringify(c))}')" class="text-xs text-emerald-600 hover:underline">Edit</button><button onclick="deleteClass('${c.id}')" class="text-xs text-red-600 hover:underline">Delete</button></div></td>
+  `), 'No classes yet');
+      } catch (e) { }
+    }
+
+    async function saveClass() {
+      if (!schoolId) { showToast('Save school first', 'error'); return; }
+      if (!ayId) { showToast('Set current academic year first', 'error'); return; }
+      const name = document.getElementById('cls_name').value.trim();
+      if (!name) { showToast('Class name required', 'error'); return; }
+      const secs = document.getElementById('cls_secs').value.split(',').map(s => s.trim()).filter(Boolean);
+      try {
+        const payload = { school_id: schoolId, academic_year_id: ayId, name, numeric_name: parseInt(document.getElementById('cls_order').value) || null, class_fee: parseFloat(document.getElementById('cls_fee').value) || 0, sections: secs };
+        if (editingClassId) await ClassAPI.updateClass(editingClassId, payload);
+        else await ClassAPI.create(payload);
+        showToast('Class saved!'); document.getElementById('clsModal').style.display = 'none'; loadClasses();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    function editClass(data) {
+      editingClassId = data.id;
+      document.getElementById('clsModalTitle').textContent = 'Edit Class';
+      document.getElementById('clsSubmitBtn').textContent = 'Update';
+      document.getElementById('cls_name').value = data.name || '';
+      document.getElementById('cls_order').value = data.numeric_name || '';
+      document.getElementById('cls_fee').value = data.class_fee || 0;
+      document.getElementById('cls_secs').value = (data.sections || []).map(s => s.name).join(', ');
+      document.getElementById('clsModal').style.display = 'flex';
+    }
+
+    function editClassFromEncoded(encoded) {
+      editClass(JSON.parse(decodeURIComponent(encoded)));
+    }
+
+    async function deleteClass(id) {
+      if (!confirm('Delete this class?')) return;
+      try { await ClassAPI.deleteClass(id); showToast('Class deleted'); loadClasses(); }
+      catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadSubjects() {
+      if (!schoolId) { document.getElementById('subList').innerHTML = '<p class="text-gray-400 text-sm">Save school first</p>'; return; }
+      try {
+        const [sr, cr] = await Promise.allSettled([SubjectAPI.list(schoolId), ClassAPI.list(schoolId, ayId)]);
+        const subs = sr.status === 'fulfilled' ? (sr.value?.data || []) : [];
+        subjectMappingSubjects = subs;
+        if (cr.status === 'fulfilled') {
+          subjectMappingClasses = cr.value?.data || [];
+          document.getElementById('map_cls').innerHTML = '<option value="">Select class</option>' + subjectMappingClasses.map(c => `<option value="${c.id}" data-secs='${JSON.stringify(c.sections || [])}'>${c.name}</option>`).join('');
+        }
+        document.getElementById('subList').innerHTML = buildTable(['Name', 'Code', 'Type', 'Max Marks', 'Passing', ''], subs.map(s => `
+    <td class="px-4 py-3 font-semibold text-gray-900">${s.name}</td>
+    <td class="px-4 py-3 font-mono text-xs text-gray-500">${s.code}</td>
+    <td class="px-4 py-3">${tdBadge(s.subject_type, s.subject_type === 'Theory' ? 'blue' : s.subject_type === 'Practical' ? 'green' : 'purple')}</td>
+    <td class="px-4 py-3 text-sm text-gray-600">${s.max_theory_marks + (s.max_practical_marks ? '+' + s.max_practical_marks : '')}</td>
+    <td class="px-4 py-3 text-sm text-gray-600">${s.passing_marks}</td>
+    <td class="px-4 py-3"><div class="flex items-center gap-3"><button onclick="editSubjectFromEncoded('${encodeURIComponent(JSON.stringify(s))}')" class="text-xs text-emerald-600 hover:underline">Edit</button><button onclick="delSubject('${s.id}')" class="text-xs text-red-600 hover:underline">Delete</button></div></td>
+  `), 'No subjects yet');
+        renderSubjectMappingChecks([]);
+      } catch (e) { }
+    }
+
+    function loadSubjectMappingSections() {
+      const opt = document.getElementById('map_cls').selectedOptions[0];
+      document.getElementById('map_sec').innerHTML = '<option value="">All sections</option>' + (opt?.dataset.secs ? JSON.parse(opt.dataset.secs).map(s => `<option value="${s.id}">${s.name}</option>`).join('') : '');
+      renderSubjectMappingChecks([]);
+    }
+
+    function renderSubjectMappingChecks(selectedIds = []) {
+      const selected = new Set(selectedIds);
+      document.getElementById('subjectMappingBox').innerHTML = subjectMappingSubjects.map(subject => `
+        <label class="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 cursor-pointer hover:bg-white">
+          <input type="checkbox" class="map-subject w-4 h-4 accent-blue-600" value="${subject.id}" ${selected.has(subject.id) ? 'checked' : ''}/>
+          <span class="text-sm font-medium text-gray-700">${subject.name}</span>
+          <span class="ml-auto text-xs text-gray-400">${subject.code || ''}</span>
+        </label>
+      `).join('') || '<p class="text-sm text-gray-400">Add subjects first</p>';
+    }
+
+    async function loadSubjectMapping() {
+      if (!schoolId || !ayId) { showToast('Set school and academic year first', 'error'); return; }
+      const clsId = document.getElementById('map_cls').value;
+      const secId = document.getElementById('map_sec').value;
+      if (!clsId) { showToast('Select class', 'error'); return; }
+      try {
+        const r = await SubjectAPI.getMapping({ school_id: schoolId, academic_year_id: ayId, classroom_id: clsId, section_id: secId });
+        renderSubjectMappingChecks(r?.data?.subject_ids || []);
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function saveSubjectMapping() {
+      if (!schoolId || !ayId) { showToast('Set school and academic year first', 'error'); return; }
+      const clsId = document.getElementById('map_cls').value;
+      const secId = document.getElementById('map_sec').value;
+      if (!clsId) { showToast('Select class', 'error'); return; }
+      const subjectIds = Array.from(document.querySelectorAll('.map-subject:checked')).map(el => el.value);
+      try {
+        const r = await SubjectAPI.saveMapping({ school_id: schoolId, academic_year_id: ayId, classroom_id: clsId, section_id: secId, subject_ids: subjectIds });
+        showToast(`Subjects assigned: ${r.data.saved || 0}`);
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function saveSubject() {
+      if (!schoolId) { showToast('Save school first', 'error'); return; }
+      const name = document.getElementById('sub_name').value.trim(), code = document.getElementById('sub_code').value.trim();
+      if (!name || !code) { showToast('Name and code required', 'error'); return; }
+      try {
+        const payload = { school_id: schoolId, name, code, subject_type: document.getElementById('sub_type').value, max_theory_marks: parseFloat(document.getElementById('sub_th').value) || 100, max_practical_marks: parseFloat(document.getElementById('sub_pr').value) || 0, passing_marks: parseFloat(document.getElementById('sub_pass').value) || 33, is_optional: document.getElementById('sub_opt').checked };
+        if (editingSubjectId) await SubjectAPI.update(editingSubjectId, payload);
+        else await SubjectAPI.create(payload);
+        showToast('Subject saved!'); document.getElementById('subModal').style.display = 'none'; loadSubjects();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    function editSubject(data) {
+      editingSubjectId = data.id;
+      document.getElementById('subModalTitle').textContent = 'Edit Subject';
+      document.getElementById('subSubmitBtn').textContent = 'Update';
+      document.getElementById('sub_name').value = data.name || '';
+      document.getElementById('sub_code').value = data.code || '';
+      document.getElementById('sub_type').value = data.subject_type || 'Theory';
+      document.getElementById('sub_th').value = data.max_theory_marks || 100;
+      document.getElementById('sub_pr').value = data.max_practical_marks || 0;
+      document.getElementById('sub_pass').value = data.passing_marks || 33;
+      document.getElementById('sub_opt').checked = !!data.is_optional;
+      document.getElementById('subModal').style.display = 'flex';
+    }
+
+    function editSubjectFromEncoded(encoded) {
+      editSubject(JSON.parse(decodeURIComponent(encoded)));
+    }
+
+    async function delSubject(id) {
+      if (!confirm('Delete this subject?')) return;
+      try { await SubjectAPI.delete(id); showToast('Subject deleted'); loadSubjects(); } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function createDefaultGrading() {
+      if (!schoolId) { showToast('Save school first', 'error'); return; }
+      const scales = [{ grade: 'A+', min_marks: 91, max_marks: 100, grade_point: 10, remarks: 'Outstanding' }, { grade: 'A', min_marks: 81, max_marks: 90, grade_point: 9, remarks: 'Excellent' }, { grade: 'B+', min_marks: 71, max_marks: 80, grade_point: 8, remarks: 'Very Good' }, { grade: 'B', min_marks: 61, max_marks: 70, grade_point: 7, remarks: 'Good' }, { grade: 'C+', min_marks: 51, max_marks: 60, grade_point: 6, remarks: 'Average' }, { grade: 'C', min_marks: 41, max_marks: 50, grade_point: 5, remarks: 'Below Average' }, { grade: 'D', min_marks: 33, max_marks: 40, grade_point: 4, remarks: 'Pass' }, { grade: 'F', min_marks: 0, max_marks: 32, grade_point: 0, remarks: 'Fail' }];
+      try { await GradingAPI.create({ school_id: schoolId, name: 'RBSE Standard Grading', grading_type: 'Marks', is_default: true, scales }); showToast('Default grading system saved!'); loadGradingSystems(); }
+      catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadGradingSystems() {
+      if (!schoolId) { document.getElementById('gradingList').innerHTML = '<p class="text-gray-400 text-sm">Save school first</p>'; return; }
+      try {
+        const r = await GradingAPI.list(schoolId);
+        const systems = r?.data || [];
+        document.getElementById('gradingList').innerHTML = buildTable(['Name', 'Type', 'Default', 'Scales', ''], systems.map(gs => `
+          <td class="px-4 py-3 font-semibold text-gray-900">${normalizeGradingName(gs.name)}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${gs.grading_type}</td>
+          <td class="px-4 py-3">${gs.is_default ? tdBadge('Default', 'green') : ''}</td>
+          <td class="px-4 py-3 text-xs text-gray-500">${(gs.scales || []).map(scale => `${scale.grade} (${scale.min}-${scale.max})`).join(', ')}</td>
+          <td class="px-4 py-3"><div class="flex items-center gap-3"><button onclick="editGradingFromEncoded('${encodeURIComponent(JSON.stringify(gs))}')" class="text-xs text-emerald-600 hover:underline">Edit</button><button onclick="deleteGrading('${gs.id}')" class="text-xs text-red-600 hover:underline">Delete</button></div></td>
+        `), 'No grading systems configured yet');
+      } catch (e) {
+        document.getElementById('gradingList').innerHTML = `<div class="text-sm text-red-500">${e.message}</div>`;
+      }
+    }
+
+    async function saveGradingSystem() {
+      if (!schoolId) { showToast('Save school first', 'error'); return; }
+      const name = document.getElementById('grading_name').value.trim();
+      if (!name) { showToast('Grading name required', 'error'); return; }
+      const scales = Array.from(document.querySelectorAll('.grading-scale-row')).map(row => ({
+        grade: row.querySelector('.grade-name').value.trim(),
+        min_marks: parseFloat(row.querySelector('.grade-min').value) || 0,
+        max_marks: parseFloat(row.querySelector('.grade-max').value) || 0,
+        grade_point: parseFloat(row.querySelector('.grade-gp').value) || 0,
+        remarks: ''
+      })).filter(scale => scale.grade);
+      if (!scales.length) { showToast('Add at least one grading row', 'error'); return; }
+      const payload = {
+        school_id: schoolId,
+        name,
+        grading_type: document.getElementById('grading_type').value,
+        is_default: document.getElementById('grading_default').checked,
+        scales
+      };
+      try {
+        if (editingGradingId) await GradingAPI.update(editingGradingId, payload);
+        else await GradingAPI.create(payload);
+        showToast('Grading system saved!');
+        document.getElementById('gradingModal').style.display = 'none';
+        loadGradingSystems();
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    function editGradingFromEncoded(encoded) {
+      openGradingModal(JSON.parse(decodeURIComponent(encoded)));
+    }
+
+    async function deleteGrading(id) {
+      if (!confirm('Delete this grading system?')) return;
+      try {
+        await GradingAPI.delete(id);
+        showToast('Grading system deleted');
+        loadGradingSystems();
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    loadSchool();
+  </script>
+</body>
+
+</html>

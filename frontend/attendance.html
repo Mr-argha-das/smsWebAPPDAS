@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f0f2f8;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f0f2f8;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      overflow: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Attendance - Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .finput {
+      width: 100%;
+      padding: .625rem .75rem;
+      border-radius: .75rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: .875rem;
+      outline: none
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #3b82f6
+    }
+
+    .lbl {
+      display: block;
+      font-size: .875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: .375rem
+    }
+  </style>
+</head>
+
+<body>
+  <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+      <div class="p-6 space-y-6">
+
+        <div id="attendanceSummaryCards" class="grid grid-cols-2 lg:grid-cols-4 gap-4"></div>
+
+        <div
+          style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div class="flex border-b border-gray-100 px-2 gap-1">
+            <button id="attendanceTab0" onclick="switchTab(0)"
+              class="atab px-5 py-4 text-sm font-semibold border-b-2 border-blue-600 text-blue-600">Mark
+              Student</button>
+            <button id="attendanceTab1" onclick="switchTab(1)"
+              class="atab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700">View
+              Records</button>
+            <button id="attendanceTab2" onclick="switchTab(2)"
+              class="atab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700">Staff
+              Attendance</button>
+            <button id="attendanceTab3" onclick="switchTab(3)"
+              class="atab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700">Holidays</button>
+          </div>
+
+          <!-- Mark Student -->
+          <div id="atab0" class="p-6">
+            <h4 class="font-bold text-gray-900 mb-4">Mark Student Attendance</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-5">
+              <div><label class="lbl">Class *</label><select id="att_cls" class="finput" onchange="loadAttSections()">
+                  <option value="">Select class</option>
+                </select></div>
+              <div><label class="lbl">Section *</label><select id="att_sec" class="finput">
+                  <option value="">Select section</option>
+                </select></div>
+              <div><label class="lbl">Date *</label><input id="att_date" type="date" class="finput" /></div>
+              <div class="flex items-end"><button onclick="loadStudentsForAtt()"
+                  class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700">Load
+                  Students</button></div>
+            </div>
+            <div id="attStudentList"></div>
+            <div id="attActionRow" class="hidden mt-4 flex flex-col sm:flex-row gap-3 items-center">
+              <div class="flex gap-2">
+                <button onclick="markAll('Present')"
+                  class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl text-sm font-medium hover:bg-emerald-200">All
+                  Present</button>
+                <button onclick="markAll('Absent')"
+                  class="px-4 py-2 bg-red-100 text-red-700 rounded-xl text-sm font-medium hover:bg-red-200">All
+                  Absent</button>
+              </div>
+              <div id="attSummary" class="text-sm text-gray-600 flex-1 text-center"></div>
+              <button onclick="submitAttendance()"
+                class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg">Save
+                Attendance</button>
+            </div>
+          </div>
+
+          <!-- View Records -->
+          <div id="atab1" class="p-6 hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 mb-5">
+              <div><label class="lbl">Class</label><select id="view_cls" class="finput" onchange="loadViewSections()">
+                  <option value="">Select class</option>
+                </select></div>
+              <div><label class="lbl">Section</label><select id="view_sec" class="finput">
+                  <option value="">Select section</option>
+                </select></div>
+              <div><label class="lbl">Date</label><input id="view_date" type="date" class="finput" /></div>
+              <div class="flex items-end"><button onclick="loadAttRecords()"
+                  class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700">Search</button>
+              </div>
+            </div>
+            <div id="attRecords"></div>
+          </div>
+
+          <!-- Staff Attendance -->
+          <div id="atab2" class="p-6 hidden">
+            <h4 class="font-bold text-gray-900 mb-4">Mark Staff Attendance</h4>
+            <div class="grid lg:grid-cols-2 gap-4 mb-5">
+              <div id="staffGeofenceCard" class="rounded-2xl border border-gray-200 bg-white p-4 space-y-3">
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <div class="text-sm font-semibold text-gray-900">Attendance Location Lock</div>
+                    <div class="text-xs text-gray-500">Teacher attendance will be marked only within the configured school location.</div>
+                  </div>
+                  <label class="flex items-center gap-2 text-sm text-gray-700">
+                    <input id="geo_enforce" type="checkbox" class="w-4 h-4 accent-blue-600" />
+                    Enforce
+                  </label>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div><label class="lbl">Latitude</label><input id="geo_lat" class="finput" placeholder="28.613900" /></div>
+                  <div><label class="lbl">Longitude</label><input id="geo_lng" class="finput" placeholder="77.209000" /></div>
+                  <div><label class="lbl">Radius (m)</label><input id="geo_radius" type="number" min="20" class="finput" placeholder="150" /></div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <button onclick="captureSchoolLocation()" class="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200">Use Current Location</button>
+                  <button onclick="saveAttendanceGeofence()" class="px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">Save Location Rule</button>
+                </div>
+                <div id="geoStatus" class="text-xs text-gray-500">Location lock is currently not configured.</div>
+              </div>
+              <div class="rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 space-y-3">
+                <div>
+                  <div class="text-sm font-semibold text-gray-900">Teacher Self Check-In</div>
+                  <div class="text-xs text-gray-500">Teachers can mark their own attendance from the app or panel.</div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div><label class="lbl">My Status</label><select id="self_staff_status" class="finput">
+                      <option value="Present">Present</option>
+                      <option value="Late">Late</option>
+                      <option value="Half-Day">Half Day</option>
+                    </select></div>
+                  <div><label class="lbl">Check In Time</label><input id="self_staff_time" type="time" class="finput" /></div>
+                  <div><label class="lbl">Check Out Time</label><input id="self_staff_out_time" type="time" class="finput" /></div>
+                  <div><label class="lbl">Attendance Date</label><input id="self_staff_date" type="date" class="finput" /></div>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <button onclick="markMyAttendanceFromDevice()" class="px-4 py-2.5 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700">Punch In</button>
+                  <button onclick="punchOutMyAttendance()" class="px-4 py-2.5 bg-slate-800 text-white rounded-xl text-sm font-medium hover:bg-slate-900">Punch Out</button>
+                </div>
+                <div id="selfAttendanceStatus" class="text-xs text-gray-500">This works only when the login user is linked to a staff profile.</div>
+              </div>
+            </div>
+            <div id="staffManagerBlock" class="grid grid-cols-2 gap-4 mb-5">
+              <div><label class="lbl">Date</label><input id="staff_att_date" type="date" class="finput" /></div>
+              <div class="flex items-end"><button onclick="loadStaffForAtt()"
+                  class="w-full px-4 py-2.5 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700">Load
+                  Staff</button></div>
+            </div>
+            <div id="staffAttList"></div>
+            <div id="staffAttAction" class="hidden mt-4">
+              <button onclick="submitStaffAtt()"
+                class="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg">Save
+                Staff Attendance</button>
+            </div>
+          </div>
+
+          <!-- Holidays -->
+          <div id="atab3" class="p-6 hidden">
+            <div class="flex justify-between mb-4">
+              <h4 class="font-bold text-gray-900">Holidays</h4>
+              <button onclick="document.getElementById('holModal').style.display='flex'"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">+ Add Holiday</button>
+            </div>
+            <div id="holList"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Holiday Modal -->
+  <div id="holModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold text-gray-900">Add Holiday</h3><button
+          onclick="document.getElementById('holModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Holiday Name *</label><input id="hol_name" class="finput" placeholder="e.g. Diwali" />
+        </div>
+        <div><label class="lbl">Date *</label><input id="hol_date" type="date" class="finput" /></div>
+        <div><label class="lbl">Type</label><select id="hol_type" class="finput">
+            <option value="National">National</option>
+            <option value="Regional">Regional</option>
+            <option value="School">School</option>
+            <option value="Exam">Exam</option>
+          </select></div>
+        <div><label class="lbl">Description</label><input id="hol_desc" class="finput"
+            placeholder="Optional description" /></div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('holModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveHoliday()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('attendance');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('Attendance Management', 'Track student and staff attendance');
+    let schoolId = localStorage.getItem('school_id');
+    let resolvedAttendanceAyId = localStorage.getItem('ay_id') || localStorage.getItem('academic_year_id') || '';
+    let loadedStudents = [];
+    let teacherAttendanceClasses = [];
+    let schoolMeta = null;
+    const currentUser = getUser() || {};
+    const currentRoleName = String(currentUser.role_name || currentUser.role || '').trim().toLowerCase();
+    const teacherSelfServiceOnly = isTeacherLikeRole(currentRoleName);
+
+    // Set today
+    const today = new Date().toISOString().split('T')[0];
+    ['att_date', 'view_date', 'staff_att_date', 'self_staff_date'].forEach(id => { const el = document.getElementById(id); if (el) el.value = today; });
+    const now = new Date();
+    const selfStaffTime = document.getElementById('self_staff_time');
+    if (selfStaffTime) selfStaffTime.value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const selfStaffOutTime = document.getElementById('self_staff_out_time');
+    if (selfStaffOutTime) selfStaffOutTime.value = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+    function switchTab(idx) {
+      document.querySelectorAll('.atab').forEach((b, i) => { b.classList.toggle('border-blue-600', i === idx); b.classList.toggle('text-blue-600', i === idx); b.classList.toggle('border-transparent', i !== idx); b.classList.toggle('text-gray-500', i !== idx); });
+      document.querySelectorAll('[id^="atab"]').forEach(t => { t.classList.toggle('hidden', parseInt(t.id.replace('atab', '')) !== idx); });
+      if (idx === 3) loadHolidays();
+    }
+
+    function configureTeacherSelfAttendanceView() {
+      if (!teacherSelfServiceOnly) return;
+      ['attendanceTab3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+      });
+      const managerBlock = document.getElementById('staffManagerBlock');
+      if (managerBlock) managerBlock.style.display = 'none';
+      const geofenceCard = document.getElementById('staffGeofenceCard');
+      if (geofenceCard) geofenceCard.style.display = 'none';
+      const selfDate = document.getElementById('self_staff_date');
+      if (selfDate) {
+        selfDate.value = today;
+        selfDate.min = today;
+        selfDate.max = today;
+        selfDate.disabled = true;
+      }
+      const staffDate = document.getElementById('staff_att_date');
+      if (staffDate) {
+        staffDate.value = today;
+        staffDate.min = today;
+        staffDate.max = today;
+        staffDate.disabled = true;
+      }
+      document.getElementById('selfAttendanceStatus').textContent = 'You can punch in/out for today and mark student attendance for assigned classes.';
+      switchTab(0);
+    }
+
+   function renderAttendanceSummary(summary = {}) {
+  const student = summary.students || {};
+  const staff = summary.staff || {};
+
+  document.getElementById('attendanceSummaryCards').innerHTML =
+    statCard('Students Present', student.present || 0, 'check-circle', 'green') +
+    statCard('Students Absent', student.absent || 0, 'x-circle', 'red') +
+    statCard('Students Late', student.late || 0, 'clock', 'orange') +
+    statCard('Staff Present', staff.present || 0, 'users', 'blue');
+
+  // ✅ correct
+  lucide.createIcons();
+}
+
+    async function loadAttendanceSummary() {
+      if (!schoolId) return;
+      try {
+        const selectedDate = document.getElementById('att_date')?.value || today;
+        const r = await AttendanceAPI.getSummary(schoolId, selectedDate);
+        renderAttendanceSummary(r?.data || {});
+      } catch (e) {
+        renderAttendanceSummary({});
+      }
+    }
+
+    async function loadSchoolGeoSettings() {
+      if (!schoolId) return;
+      try {
+        const res = await SchoolAPI.get(schoolId);
+        schoolMeta = res?.data || null;
+        const geo = schoolMeta?.attendance_geofence || null;
+        document.getElementById('geo_lat').value = geo?.latitude ?? '';
+        document.getElementById('geo_lng').value = geo?.longitude ?? '';
+        document.getElementById('geo_radius').value = geo?.radius_meters ?? 150;
+        document.getElementById('geo_enforce').checked = !!geo?.enforce_for_staff_attendance;
+        document.getElementById('geoStatus').textContent = geo?.latitude != null && geo?.longitude != null
+          ? `School geofence set at ${geo.latitude}, ${geo.longitude} with radius ${geo.radius_meters || 150}m${geo.enforce_for_staff_attendance ? ' and strict enforcement ON' : ''}.`
+          : 'Location lock is currently not configured.';
+      } catch (e) {
+        document.getElementById('geoStatus').textContent = 'Could not load attendance location settings.';
+      }
+    }
+
+    async function loadMyAttendanceStatus() {
+      if (!schoolId) return;
+      try {
+        const res = await AttendanceAPI.getMyStaffAtt({ school_id: schoolId, date: new Date(today).toISOString() });
+        const record = res?.data?.record || null;
+        if (!record) {
+          document.getElementById('selfAttendanceStatus').textContent = teacherSelfServiceOnly
+            ? 'You have not marked attendance for today yet.'
+            : 'This works only when the login user is linked to a staff profile.';
+          return;
+        }
+        const note = record.location_status ? ` • ${record.location_status}` : '';
+        const punchText = `${record.check_in_time ? `Punch in ${record.check_in_time}` : 'Punch in saved'}${record.check_out_time ? ` • Punch out ${record.check_out_time}` : ''}`;
+        document.getElementById('selfAttendanceStatus').textContent = `${record.staff_name || 'Staff'} is marked ${record.status} for today. ${punchText}${note}`;
+        if (record.status) document.getElementById('self_staff_status').value = record.status;
+        if (record.check_in_time) document.getElementById('self_staff_time').value = record.check_in_time;
+        if (record.check_out_time) document.getElementById('self_staff_out_time').value = record.check_out_time;
+      } catch (e) {
+        document.getElementById('selfAttendanceStatus').textContent = e.message || 'Unable to load your attendance status';
+      }
+    }
+
+    async function resolveAttendanceAcademicYearId(forceRefresh = false) {
+      if (!schoolId) return '';
+      if (resolvedAttendanceAyId && !forceRefresh) return resolvedAttendanceAyId;
+      try {
+        const res = await SchoolAPI.listAY(schoolId);
+        const years = res?.data || [];
+        const activeYear = years.find(year => year.is_current) || years[0] || null;
+        resolvedAttendanceAyId = activeYear?.id || '';
+        if (resolvedAttendanceAyId) {
+          localStorage.setItem('ay_id', resolvedAttendanceAyId);
+          localStorage.setItem('academic_year_id', resolvedAttendanceAyId);
+        }
+        return resolvedAttendanceAyId;
+      } catch (e) {
+        return resolvedAttendanceAyId || '';
+      }
+    }
+
+    async function captureSchoolLocation() {
+      if (!navigator.geolocation) { showToast('Browser location support not available', 'error'); return; }
+      navigator.geolocation.getCurrentPosition((pos) => {
+        document.getElementById('geo_lat').value = pos.coords.latitude.toFixed(6);
+        document.getElementById('geo_lng').value = pos.coords.longitude.toFixed(6);
+        if (!document.getElementById('geo_radius').value) document.getElementById('geo_radius').value = 150;
+        document.getElementById('geoStatus').textContent = `Current device location captured. Accuracy ${Math.round(pos.coords.accuracy || 0)}m`;
+      }, (err) => {
+        showToast(err?.message || 'Unable to fetch current location', 'error');
+      }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+    }
+
+    async function saveAttendanceGeofence() {
+      if (!schoolId) return;
+      const latitude = document.getElementById('geo_lat').value.trim();
+      const longitude = document.getElementById('geo_lng').value.trim();
+      const radius = parseFloat(document.getElementById('geo_radius').value) || 150;
+      const enforce = document.getElementById('geo_enforce').checked;
+      try {
+        await SchoolAPI.update(schoolId, {
+          attendance_geofence: latitude && longitude ? {
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude),
+            radius_meters: radius,
+            enforce_for_staff_attendance: enforce
+          } : null
+        });
+        showToast('Attendance location rule saved');
+        await loadSchoolGeoSettings();
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    async function markMyAttendanceFromDevice() {
+      if (!schoolId) return;
+      const payload = {
+        school_id: schoolId,
+        date: new Date(document.getElementById('self_staff_date').value || today).toISOString(),
+        status: document.getElementById('self_staff_status').value,
+        check_in_time: document.getElementById('self_staff_time').value || null
+      };
+      const submitSelfAttendance = async (position = null) => {
+        try {
+          if (position?.coords) {
+            payload.latitude = position.coords.latitude;
+            payload.longitude = position.coords.longitude;
+            payload.accuracy_meters = position.coords.accuracy || null;
+          }
+          const res = await AttendanceAPI.markMyStaff({
+            ...payload
+          });
+          const data = res?.data || {};
+          document.getElementById('selfAttendanceStatus').textContent = `${data.staff_name || 'Staff'} marked ${data.status}. ${data.location_status || ''}${data.distance_from_school_meters != null ? ` • Distance ${Math.round(data.distance_from_school_meters)}m` : ''}`;
+          showToast(res?.message || 'Attendance marked');
+          loadAttendanceSummary();
+          loadMyAttendanceStatus();
+          if (!teacherSelfServiceOnly) loadStaffForAtt();
+        } catch (e) {
+          document.getElementById('selfAttendanceStatus').textContent = e.message || 'Unable to mark self attendance';
+          showToast('Error: ' + e.message, 'error');
+        }
+      };
+
+      if (!navigator.geolocation) {
+        document.getElementById('selfAttendanceStatus').textContent = 'Location not available. Trying attendance without device location.';
+        await submitSelfAttendance();
+        return;
+      }
+
+      document.getElementById('selfAttendanceStatus').textContent = 'Getting current location...';
+      navigator.geolocation.getCurrentPosition(async (pos) => {
+        await submitSelfAttendance(pos);
+      }, async (err) => {
+        document.getElementById('selfAttendanceStatus').textContent = err?.message || 'Unable to fetch location';
+        await submitSelfAttendance();
+      }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
+    }
+
+    async function punchOutMyAttendance() {
+      if (!schoolId) return;
+      const outTime = document.getElementById('self_staff_out_time').value || `${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`;
+      try {
+        const res = await AttendanceAPI.punchOutMyStaff({
+          school_id: schoolId,
+          date: new Date(document.getElementById('self_staff_date').value || today).toISOString(),
+          check_out_time: outTime
+        });
+        const data = res?.data || {};
+        document.getElementById('selfAttendanceStatus').textContent = `${data.staff_name || 'Staff'} punch out saved${data.check_out_time ? ` at ${data.check_out_time}` : ''}`;
+        showToast(res?.message || 'Punch out saved');
+        loadAttendanceSummary();
+        loadMyAttendanceStatus();
+        if (!teacherSelfServiceOnly) loadStaffForAtt();
+      } catch (e) {
+        document.getElementById('selfAttendanceStatus').textContent = e.message || 'Unable to punch out';
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    async function loadClassesForAtt() {
+      if (!schoolId) return;
+      try {
+        const academicYearId = await resolveAttendanceAcademicYearId();
+        let cls = [];
+        if (teacherSelfServiceOnly) {
+          const teacherRes = await AttendanceAPI.getTeacherClasses({ school_id: schoolId, academic_year_id: academicYearId || '' });
+          teacherAttendanceClasses = teacherRes?.data || [];
+          const grouped = {};
+          teacherAttendanceClasses.forEach(item => {
+            if (!grouped[item.classroom_id]) grouped[item.classroom_id] = { id: item.classroom_id, name: item.classroom_name, sections: [] };
+            grouped[item.classroom_id].sections.push({ id: item.section_id, name: item.section_name });
+          });
+          cls = Object.values(grouped);
+        } else {
+          const r = await ClassAPI.list(schoolId, academicYearId || '');
+          cls = r?.data || [];
+        }
+        const opts = '<option value="">Select class</option>' + cls.map(c => `<option value="${c.id}" data-secs='${JSON.stringify(c.sections)}'>${c.name}</option>`).join('');
+        ['att_cls', 'view_cls'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = opts; });
+        if (teacherSelfServiceOnly && !cls.length) {
+          document.getElementById('attStudentList').innerHTML = '<p class="text-gray-400 text-sm py-4 text-center">No class has been assigned to your teacher login yet.</p>';
+        }
+      } catch (e) {
+        if (teacherSelfServiceOnly) document.getElementById('attStudentList').innerHTML = `<p class="text-red-400 text-sm py-4 text-center">${e.message || 'Could not load assigned classes'}</p>`;
+      }
+    }
+
+    function loadAttSections() {
+      const el = document.getElementById('att_cls'), se = document.getElementById('att_sec');
+      const opt = el.options[el.selectedIndex];
+      se.innerHTML = '<option value="">Select section</option>';
+      if (!opt || !opt.dataset.secs) return;
+      JSON.parse(opt.dataset.secs).forEach(s => se.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+    }
+
+    function loadViewSections() {
+      const el = document.getElementById('view_cls'), se = document.getElementById('view_sec');
+      const opt = el.options[el.selectedIndex];
+      se.innerHTML = '<option value="">Select section</option>';
+      if (!opt || !opt.dataset.secs) return;
+      JSON.parse(opt.dataset.secs).forEach(s => se.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+    }
+
+    async function loadStudentsForAtt() {
+      const clsId = document.getElementById('att_cls').value, secId = document.getElementById('att_sec').value;
+      if (!clsId || !secId) { showToast('Select class and section', 'error'); return; }
+      try {
+        const r = await StudentAPI.list({ school_id: schoolId, classroom_id: clsId, section_id: secId, per_page: 100 });
+        loadedStudents = r?.data || [];
+        Object.keys(attStatus).forEach(key => delete attStatus[key]);
+        if (!loadedStudents.length) { document.getElementById('attStudentList').innerHTML = '<p class="text-gray-400 text-sm py-4 text-center">No students in this section</p>'; return; }
+        document.getElementById('attStudentList').innerHTML = `
+      <div class="overflow-x-auto rounded-xl border border-gray-200">
+        <table class="w-full text-sm">
+          <thead><tr class="bg-gray-50 border-b"><th class="text-left px-4 py-3 text-gray-600 font-semibold text-xs uppercase">#</th><th class="text-left px-4 py-3 text-gray-600 font-semibold text-xs uppercase">Student</th><th class="text-left px-4 py-3 text-gray-600 font-semibold text-xs uppercase">Attendance</th><th class="px-4 py-3 text-gray-600 font-semibold text-xs uppercase">Remarks</th></tr></thead>
+          <tbody class="divide-y divide-gray-100" id="attRows">
+            ${loadedStudents.map((s, i) => `
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3 text-gray-500">${i + 1}</td>
+                <td class="px-4 py-3"><div class="font-medium text-gray-900">${s.full_name}</div><div class="text-xs text-gray-400">${s.admission_no}</div></td>
+                <td class="px-4 py-3">
+                  <div class="flex gap-2">
+                    <button onclick="setStatus('${s.id}','Present',this)" class="att-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-all border-2 border-emerald-200" data-student="${s.id}" data-status="Present">P</button>
+                    <button onclick="setStatus('${s.id}','Absent',this)" class="att-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-red-100 hover:text-red-700 transition-all border-2 border-transparent" data-student="${s.id}" data-status="Absent">A</button>
+                    <button onclick="setStatus('${s.id}','Late',this)" class="att-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-600 hover:bg-yellow-100 hover:text-yellow-700 transition-all border-2 border-transparent" data-student="${s.id}" data-status="Late">L</button>
+                  </div>
+                </td>
+                <td class="px-4 py-3"><input type="text" id="rem_${s.id}" class="px-2 py-1.5 rounded-lg border border-gray-200 text-xs w-full" placeholder="Remarks"/></td>
+              </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`;
+        const selectedDate = document.getElementById('att_date').value;
+        if (selectedDate) {
+          try {
+            const existing = await AttendanceAPI.getStudent({ school_id: schoolId, classroom_id: clsId, section_id: secId, date: selectedDate });
+            const existingAttendance = existing?.data?.[0];
+            if (existingAttendance?.records?.length) {
+              existingAttendance.records.forEach(rec => {
+                if (!rec.student_id) return;
+                attStatus[rec.student_id] = rec.status;
+                const activeBtn = document.querySelector(`[data-student="${rec.student_id}"][data-status="${rec.status}"]`);
+                if (activeBtn) setStatus(rec.student_id, rec.status, activeBtn);
+                const remarkInput = document.getElementById(`rem_${rec.student_id}`);
+                if (remarkInput) remarkInput.value = rec.remarks || '';
+              });
+              showToast('Existing attendance loaded', 'info');
+            }
+          } catch (e) { }
+        }
+        document.getElementById('attActionRow').style.display = 'flex';
+        updateSummary();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    const attStatus = {};
+    function setStatus(studentId, status, btn) {
+      attStatus[studentId] = status;
+      document.querySelectorAll(`[data-student="${studentId}"]`).forEach(b => {
+        b.classList.remove('bg-emerald-100', 'text-emerald-700', 'border-emerald-200', 'bg-red-100', 'text-red-700', 'border-red-200', 'bg-yellow-100', 'text-yellow-700', 'border-yellow-200');
+        b.classList.add('bg-gray-100', 'text-gray-600', 'border-transparent');
+      });
+      const colors = { Present: ['bg-emerald-100', 'text-emerald-700', 'border-emerald-200'], Absent: ['bg-red-100', 'text-red-700', 'border-red-200'], Late: ['bg-yellow-100', 'text-yellow-700', 'border-yellow-200'] };
+      if (colors[status]) colors[status].forEach(c => btn.classList.add(c));
+      btn.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent');
+      updateSummary();
+    }
+
+    function markAll(status) {
+      loadedStudents.forEach(s => {
+        attStatus[s.id] = status;
+        const btns = document.querySelectorAll(`[data-student="${s.id}"]`);
+        btns.forEach(b => { b.classList.remove('bg-emerald-100', 'text-emerald-700', 'border-emerald-200', 'bg-red-100', 'text-red-700', 'border-red-200', 'bg-yellow-100', 'text-yellow-700', 'border-yellow-200'); b.classList.add('bg-gray-100', 'text-gray-600', 'border-transparent'); });
+        const targetBtn = document.querySelector(`[data-student="${s.id}"][data-status="${status}"]`);
+        if (targetBtn) { const colors = { Present: ['bg-emerald-100', 'text-emerald-700', 'border-emerald-200'], Absent: ['bg-red-100', 'text-red-700', 'border-red-200'], Late: ['bg-yellow-100', 'text-yellow-700', 'border-yellow-200'] }; if (colors[status]) colors[status].forEach(c => targetBtn.classList.add(c)); targetBtn.classList.remove('bg-gray-100', 'text-gray-600', 'border-transparent'); }
+      });
+      updateSummary();
+    }
+
+    function updateSummary() {
+      const p = Object.values(attStatus).filter(v => v === 'Present').length;
+      const a = Object.values(attStatus).filter(v => v === 'Absent').length;
+      const l = Object.values(attStatus).filter(v => v === 'Late').length;
+      document.getElementById('attSummary').innerHTML = `<span class="text-emerald-600 font-semibold">P: ${p}</span> · <span class="text-red-500 font-semibold">A: ${a}</span> · <span class="text-yellow-600 font-semibold">L: ${l}</span> · Total: ${loadedStudents.length}`;
+    }
+
+    async function submitAttendance() {
+      const clsId = document.getElementById('att_cls').value, secId = document.getElementById('att_sec').value, date = document.getElementById('att_date').value;
+      if (!clsId || !secId || !date) { showToast('Select class, section and date', 'error'); return; }
+      const academicYearId = await resolveAttendanceAcademicYearId();
+      if (!academicYearId) { showToast('Set current academic year first', 'error'); return; }
+      const records = loadedStudents.map(s => ({ student_id: s.id, status: attStatus[s.id] || 'Absent', remarks: document.getElementById(`rem_${s.id}`)?.value || null }));
+      try {
+        const r = await AttendanceAPI.markStudent({ school_id: schoolId, academic_year_id: academicYearId, classroom_id: clsId, section_id: secId, date: new Date(date).toISOString(), records });
+        showToast(`Attendance saved! P:${r.data.present} A:${r.data.absent}`);
+        loadAttendanceSummary();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadAttRecords() {
+      const clsId = document.getElementById('view_cls').value, secId = document.getElementById('view_sec').value, date = document.getElementById('view_date').value;
+      if (!clsId || !secId || !date) { showToast('Select class, section and date', 'error'); return; }
+      try {
+        const r = await AttendanceAPI.getStudent({ school_id: schoolId, classroom_id: clsId, section_id: secId, date });
+        const data = r?.data || [];
+        if (!data.length) { document.getElementById('attRecords').innerHTML = '<p class="text-gray-400 text-sm py-4 text-center">No attendance records for this date</p>'; return; }
+        const att = data[0];
+        const hdrs = ['Student', 'Status', 'Check In', 'Remarks'];
+        const rows = (att.records || []).map(rec => `
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${rec.student_name || '-'}</td>
+      <td class="px-4 py-3">${tdBadge(rec.status, rec.status === 'Present' ? 'green' : rec.status === 'Absent' ? 'red' : 'yellow')}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${rec.check_in_time || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${rec.remarks || '-'}</td>
+    `);
+        document.getElementById('attRecords').innerHTML = `
+      <div class="flex gap-4 mb-4 text-sm">
+        <span class="text-emerald-600 font-semibold">Present: ${att.present_count}</span>
+        <span class="text-red-500 font-semibold">Absent: ${att.absent_count}</span>
+        <span class="text-yellow-600 font-semibold">Late: ${att.late_count}</span>
+      </div>`+ buildTable(hdrs, rows, 'No records');
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    let loadedStaff = [];
+    async function loadStaffForAtt() {
+      if (!schoolId) return;
+      try {
+        const r = await StaffAPI.list({ school_id: schoolId, per_page: 100 });
+        loadedStaff = r?.data || [];
+        let existingMap = {};
+        try {
+          const existing = await AttendanceAPI.getStaffAtt({ school_id: schoolId, date: document.getElementById('staff_att_date').value });
+          existingMap = Object.fromEntries((existing?.data?.records || []).map(record => [record.staff_id, record]));
+        } catch (e) { }
+        document.getElementById('staffAttList').innerHTML = `
+      <div class="overflow-x-auto rounded-xl border border-gray-200">
+        <table class="w-full text-sm">
+          <thead><tr class="bg-gray-50 border-b"><th class="text-left px-4 py-3 text-xs uppercase text-gray-600 font-semibold">Staff</th><th class="text-left px-4 py-3 text-xs uppercase text-gray-600 font-semibold">Status</th><th class="text-left px-4 py-3 text-xs uppercase text-gray-600 font-semibold">Punch In</th><th class="text-left px-4 py-3 text-xs uppercase text-gray-600 font-semibold">Punch Out</th><th class="text-left px-4 py-3 text-xs uppercase text-gray-600 font-semibold">Location</th></tr></thead>
+          <tbody class="divide-y divide-gray-100">
+            ${loadedStaff.map(s => `
+              ${(() => { const existing = existingMap[s.id] || {}; return `
+              <tr class="hover:bg-gray-50">
+                <td class="px-4 py-3"><div class="font-medium text-gray-900">${s.full_name}</div><div class="text-xs text-gray-400">${s.designation}</div></td>
+                <td class="px-4 py-3">
+                  <select id="satt_${s.id}" class="px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-sm">
+                    <option value="Present" ${existing.status === 'Present' ? 'selected' : ''}>Present</option><option value="Absent" ${existing.status === 'Absent' ? 'selected' : ''}>Absent</option><option value="Late" ${existing.status === 'Late' ? 'selected' : ''}>Late</option><option value="Half-Day" ${existing.status === 'Half-Day' ? 'selected' : ''}>Half Day</option><option value="On-Leave" ${existing.status === 'On-Leave' ? 'selected' : ''}>On Leave</option>
+                  </select>
+                </td>
+                <td class="px-4 py-3"><input type="time" id="sin_${s.id}" value="${existing.check_in_time || ''}" class="px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-sm"/></td>
+                <td class="px-4 py-3"><input type="time" id="sout_${s.id}" value="${existing.check_out_time || ''}" class="px-3 py-1.5 rounded-lg border border-gray-200 bg-gray-50 text-sm"/></td>
+                <td class="px-4 py-3 text-xs text-gray-500">${existing.location_status ? `${existing.location_status}${existing.distance_from_school_meters != null ? ` • ${Math.round(existing.distance_from_school_meters)}m` : ''}` : '-'}</td>
+              </tr>`; })()}
+            `).join('')}
+          </tbody>
+        </table>
+      </div>`;
+        document.getElementById('staffAttAction').style.display = 'flex';
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function submitStaffAtt() {
+      const date = document.getElementById('staff_att_date').value;
+      if (!date) { showToast('Select date', 'error'); return; }
+      const records = loadedStaff.map(s => ({ staff_id: s.id, status: document.getElementById(`satt_${s.id}`)?.value || 'Present', check_in_time: document.getElementById(`sin_${s.id}`)?.value || null, check_out_time: document.getElementById(`sout_${s.id}`)?.value || null }));
+      try {
+        await AttendanceAPI.markStaff({ school_id: schoolId, date: new Date(date).toISOString(), records });
+        showToast('Staff attendance saved!');
+        loadAttendanceSummary();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    function statCard(title, value, icon, color) {
+        return `
+          <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
+            
+            <div>
+              <p class="text-sm text-gray-400">${title}</p>
+              <h3 class="text-xl font-bold text-gray-900">${value}</h3>
+            </div>
+
+            <div class="p-3 rounded-xl bg-${color}-100 text-${color}-600">
+              <i data-lucide="${icon}" class="w-5 h-5"></i>
+            </div>
+
+          </div>
+        `;
+      }
+
+    async function loadHolidays() {
+      if (!schoolId) { document.getElementById('holList').innerHTML = '<p class="text-gray-400 text-sm">Configure school first</p>'; return; }
+      try {
+        const r = await AttendanceAPI.getHolidays(schoolId); const hols = r?.data || [];
+        const hdrs = ['Holiday', 'Date', 'Type', 'Description'];
+        const rows = hols.map(h => `
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${h.name}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${formatDate(h.date)}</td>
+      <td class="px-4 py-3">${tdBadge(h.holiday_type, h.holiday_type === 'National' ? 'red' : h.holiday_type === 'School' ? 'blue' : 'orange')}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${h.description || '-'}</td>
+    `);
+        document.getElementById('holList').innerHTML = buildTable(hdrs, rows, 'No holidays added');
+      } catch (e) { }
+    }
+
+    async function saveHoliday() {
+      const academicYearId = await resolveAttendanceAcademicYearId();
+      if (!schoolId || !academicYearId) { showToast('Configure school and academic year first', 'error'); return; }
+      const name = document.getElementById('hol_name').value.trim(), date = document.getElementById('hol_date').value;
+      if (!name || !date) { showToast('Name and date required', 'error'); return; }
+      try {
+        await AttendanceAPI.addHoliday({ school_id: schoolId, academic_year_id: academicYearId, name, date: new Date(date).toISOString(), holiday_type: document.getElementById('hol_type').value, description: document.getElementById('hol_desc').value || null });
+        showToast('Holiday added!'); document.getElementById('holModal').style.display = 'none'; loadHolidays();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    (async function initAttendancePage() {
+      schoolId = await initializeSchoolContext() || schoolId;
+      configureTeacherSelfAttendanceView();
+      await resolveAttendanceAcademicYearId();
+      await loadClassesForAtt();
+      await loadSchoolGeoSettings();
+      await loadAttendanceSummary();
+      await loadMyAttendanceStatus();
+      if (!teacherSelfServiceOnly) await loadStaffForAtt();
+    })();
+
+    
+  </script>
+</body>
+
+</html>

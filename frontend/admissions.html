@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f0f2f8;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f0f2f8;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      overflow: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Admissions - Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .finput {
+      width: 100%;
+      padding: .625rem .75rem;
+      border-radius: .75rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: .875rem;
+      outline: none
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #3b82f6
+    }
+
+    .lbl {
+      display: block;
+      font-size: .875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: .375rem
+    }
+  </style>
+</head>
+
+<body>
+   <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+     <div id="topbarContainer"></div>
+      <div class="p-6 space-y-6">
+
+        <div id="admStats" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+
+        <div
+          style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div class="tab-bar">
+            <button onclick="switchTab(0)"
+              class="adtab px-5 py-4 text-sm flex items-center gap-2 font-semibold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap"> <span data-lucide="file-text" class="w-4 h-4"></span>
+              Applications</button>
+            <button onclick="switchTab(1)"
+              class="adtab px-5 py-4 text-sm flex items-center gap-2 font-semibold border-b-2 border-transparent text-gray-500 whitespace-nowrap"><span data-lucide="settings" class="w-4 h-4"></span>
+              Settings</button>
+            <button onclick="switchTab(2)"
+              class="adtab px-5 py-4 flex items-center gap-2 text-sm font-semibold border-b-2 border-transparent text-gray-500 whitespace-nowrap"> <span data-lucide="globe" class="w-4 h-4"></span>
+              Public Form</button>
+          </div>
+
+          <!-- Applications -->
+          <div id="adtab0" class="p-5">
+            <div class="flex flex-wrap gap-3 mb-4 items-center">
+              <select id="admStatusFilter" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm"
+                onchange="loadApplications()">
+                <option value="">All Applications</option>
+                <option value="Submitted">Submitted</option>
+                <option value="Under Review">Under Review</option>
+                <option value="Shortlisted">Shortlisted</option>
+                <option value="Selected">Selected</option>
+                <option value="Rejected">Rejected</option>
+                <option value="Enrolled">Enrolled</option>
+              </select>
+              <select id="admClassFilter" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm"
+                onchange="loadApplications()">
+                <option value="">All Classes</option>
+              </select>
+            </div>
+            <div id="appTable"></div>
+          </div>
+
+          <!-- Settings -->
+          <div id="adtab1" class="p-5 hidden">
+            <h4 class="font-bold text-gray-900 mb-5">Admission Settings</h4>
+            <div class="max-w-2xl space-y-5">
+              <div class="flex items-center gap-4">
+                <label class="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" id="adm_open" class="w-5 h-5 accent-blue-600" />
+                  <span class="font-semibold text-gray-700">Admissions Open</span>
+                </label>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div><label class="lbl">Academic Year</label><input id="adm_ay" class="finput"
+                    placeholder="e.g. 2025-26" /></div>
+                <div><label class="lbl">Application Fee (₹)</label><input id="adm_fee" type="number" class="finput"
+                    value="0" /></div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div><label class="lbl">Open From</label><input id="adm_from" type="date" class="finput" /></div>
+                <div><label class="lbl">Open Till</label><input id="adm_till" type="date" class="finput" /></div>
+              </div>
+              <div><label class="lbl">Classes Available (comma separated)</label><input id="adm_classes" class="finput"
+                  placeholder="e.g. Class 1, Class 2, Class 3" /></div>
+              <div><label class="lbl">Welcome Message</label><textarea id="adm_welcome" rows="3"
+                  class="finput resize-none" placeholder="Welcome message shown on public form"></textarea></div>
+              <div><label class="lbl">Instructions</label><textarea id="adm_instructions" rows="3"
+                  class="finput resize-none" placeholder="Instructions for applicants"></textarea></div>
+              <div><label class="lbl">Required Documents (one per line)</label><textarea id="adm_docs" rows="4"
+                  class="finput resize-none"
+                  placeholder="Birth Certificate&#10;Aadhar Card&#10;Previous Marksheet&#10;Passport Photo"></textarea>
+              </div>
+              <div class="flex gap-4">
+                <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="adm_test"
+                    class="accent-blue-600" /><span class="text-sm">Has Entrance Test</span></label>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div><label class="lbl">Contact Phone</label><input id="adm_ph" class="finput" placeholder="Phone" />
+                </div>
+                <div><label class="lbl">Contact Email</label><input id="adm_email" class="finput" placeholder="Email" />
+                </div>
+              </div>
+              <button onclick="saveSettings()"
+                class="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">Save
+                Settings</button>
+            </div>
+          </div>
+
+          <!-- Public Form Preview -->
+          <div id="adtab2" class="p-5 hidden">
+            <div class="flex justify-between mb-4">
+              <h4 class="font-bold text-gray-900">Public Application Form</h4>
+              <div class="flex gap-2">
+                <button onclick="copyLink()"
+                  class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-sm font-medium border border-blue-200">📋
+                  Copy Link</button>
+              </div>
+            </div>
+            <div class="bg-blue-50 border border-blue-200 rounded-xl px-5 py-3 mb-5 text-sm">
+              <strong>Public URL:</strong> <span id="pubLink" class="text-blue-700 font-mono"></span>
+              <p class="text-gray-500 mt-1">Share this link with parents/applicants</p>
+            </div>
+            <div class="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center text-gray-400">
+              <div class="text-4xl mb-3">🎓</div>
+              <p class="font-medium">Public admission form is accessible at the link above</p>
+              <p class="text-sm mt-1">The form works without login — anyone with the link can apply</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Application Detail Modal -->
+  <div id="appModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold">Application Details</h3><button
+          onclick="document.getElementById('appModal').style.display='none'"
+          class="text-gray-400 hover:text-gray-600 text-xl px-2">×</button>
+      </div>
+      <div id="appDetail" class="px-6 py-5"></div>
+      <div class="px-6 py-4 border-t">
+        <h5 class="font-semibold text-gray-700 mb-3">Update Status</h5>
+        <div class="flex gap-2 flex-wrap">
+          <select id="newStatus" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm flex-1">
+            <option value="Under Review">Under Review</option>
+            <option value="Shortlisted">Shortlisted</option>
+            <option value="Test Scheduled">Test Scheduled</option>
+            <option value="Interview Scheduled">Interview Scheduled</option>
+            <option value="Selected">Selected</option>
+            <option value="Waitlisted">Waitlisted</option>
+            <option value="Rejected">Rejected</option>
+            <option value="Enrolled">Enrolled</option>
+          </select>
+          <input id="statusRemarks" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm flex-1"
+            placeholder="Remarks (optional)" />
+          <button onclick="updateStatus()"
+            class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Update</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('admissions');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('Online Admissions', 'Manage admission applications');
+    const schoolId = localStorage.getItem('school_id');
+    document.getElementById('pubLink').textContent = `${location.origin}/apply.html?school=${schoolId}`;
+    let currentAppId = null;
+
+    function switchTab(i) {
+      document.querySelectorAll('.adtab').forEach((b, j) => { b.classList.toggle('border-blue-600', j === i); b.classList.toggle('text-blue-600', j === i); b.classList.toggle('border-transparent', j !== i); b.classList.toggle('text-gray-500', j !== i); });
+      document.querySelectorAll('[id^="adtab"]').forEach(t => { t.classList.toggle('hidden', parseInt(t.id.replace('adtab', '')) !== i); });
+      if (i === 0) loadApplications(); if (i === 1) loadSettings(); if (i === 2) { document.getElementById('pubLink').textContent = `${location.origin}/apply.html?school=${schoolId}`; }
+    }
+
+      async function loadStats() {
+        if (!schoolId) return;
+
+        try {
+          const r = await AdmissionsAPI.getStats(schoolId);
+          const d = r?.data || {};
+
+          document.getElementById('admStats').innerHTML =
+            statCard('Total Applications', d.total_applications || 0, 'file-text', 'blue') +
+            statCard('Shortlisted', d.shortlisted || 0, 'check-circle', 'green') +
+            statCard('Selected', d.selected || 0, 'graduation-cap', 'emerald') +
+            statCard('Pending Review', d.submitted || 0, 'clock', 'orange');
+
+          // ✅ IMPORTANT
+          lucide.createIcons();
+
+        } catch (e) { }
+      }
+
+    async function loadApplications() {
+      if (!schoolId) { document.getElementById('appTable').innerHTML = '<p class="text-gray-400 text-sm p-4">Configure school first</p>'; return; }
+      const status = document.getElementById('admStatusFilter').value;
+      const cls = document.getElementById('admClassFilter').value;
+      const params = { school_id: schoolId, per_page: 25 };
+      if (status) params.status = status; if (cls) params.applied_class = cls;
+      try {
+        const r = await AdmissionsAPI.list(params); const apps = r?.data || [];
+        const hdrs = ['App No', 'Student Name', 'Class', 'Gender', 'Father Name', 'Phone', 'Previous %', 'Status', 'Date', 'Action'];
+        const rows = apps.map(a => `
+      <td class="px-4 py-3 font-mono text-xs text-blue-600 font-semibold">${a.application_no}</td>
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${a.student_name}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${a.applied_class || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${a.gender || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${a.father_name || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${a.father_phone || '-'}</td>
+      <td class="px-4 py-3 text-center text-sm font-medium">${a.percentage ? a.percentage + '%' : '-'}</td>
+      <td class="px-4 py-3">${tdBadge(a.status, a.status === 'Selected' || a.status === 'Enrolled' ? 'green' : a.status === 'Rejected' ? 'red' : a.status === 'Shortlisted' ? 'blue' : 'yellow')}</td>
+      <td class="px-4 py-3 text-xs text-gray-400">${formatDate(a.submitted_at)}</td>
+      <td class="px-4 py-3"><button onclick="viewApp('${a.id}')" class="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs hover:bg-blue-200">View</button></td>
+    `);
+        document.getElementById('appTable').innerHTML = buildTable(hdrs, rows, 'No applications found');
+      } catch (e) { document.getElementById('appTable').innerHTML = `<p class="text-red-400 text-sm p-4">${e.message}</p>`; }
+    }
+
+    async function viewApp(id) {
+      currentAppId = id;
+      try {
+        const r = await AdmissionsAPI.get(id); const a = r?.data || {};
+        document.getElementById('appDetail').innerHTML = `
+      <div class="grid grid-cols-2 gap-x-8 gap-y-3 text-sm">
+        <div class="col-span-2 flex items-center justify-between mb-2">
+          <div><h4 class="text-lg font-bold text-gray-900">${a.student_name}</h4><span class="text-gray-500">App No: ${a.application_no}</span></div>
+          ${tdBadge(a.status, a.status === 'Selected' ? 'green' : a.status === 'Rejected' ? 'red' : 'blue')}
+        </div>
+        <div><span class="text-gray-500">Class Applied:</span> <strong>${a.applied_class || '-'}</strong></div>
+        <div><span class="text-gray-500">Gender:</span> <strong>${a.gender || '-'}</strong></div>
+        <div><span class="text-gray-500">Date of Birth:</span> <strong>${a.dob ? formatDate(a.dob) : '-'}</strong></div>
+        <div><span class="text-gray-500">Category:</span> <strong>${a.category || '-'}</strong></div>
+        <div class="col-span-2 border-t pt-3 mt-1"><strong>Parent Information</strong></div>
+        <div><span class="text-gray-500">Father's Name:</span> <strong>${a.father_name || '-'}</strong></div>
+        <div><span class="text-gray-500">Father's Phone:</span> <strong>${a.father_phone || '-'}</strong></div>
+        <div><span class="text-gray-500">Father's Email:</span> <strong>${a.father_email || '-'}</strong></div>
+        <div><span class="text-gray-500">Mother's Name:</span> <strong>${a.mother_name || '-'}</strong></div>
+        <div class="col-span-2 border-t pt-3 mt-1"><strong>Previous School</strong></div>
+        <div><span class="text-gray-500">School:</span> <strong>${a.previous_school || '-'}</strong></div>
+        <div><span class="text-gray-500">Class:</span> <strong>${a.previous_class || '-'} (${a.percentage || '-'}%)</strong></div>
+        <div class="col-span-2 border-t pt-3 mt-1"><strong>Address</strong></div>
+        <div class="col-span-2 text-gray-700">${[a.address, a.city, a.state, a.pincode].filter(Boolean).join(', ') || '-'}</div>
+        ${a.test_score ? `<div class="col-span-2 border-t pt-3"><span class="text-gray-500">Test Score:</span> <strong class="text-blue-700">${a.test_score}</strong></div>` : ''}
+        ${a.interview_notes ? `<div class="col-span-2"><span class="text-gray-500">Interview Notes:</span> <strong>${a.interview_notes}</strong></div>` : ''}
+        ${a.selection_remarks ? `<div class="col-span-2"><span class="text-gray-500">Remarks:</span> <strong>${a.selection_remarks}</strong></div>` : ''}
+        ${a.rejection_reason ? `<div class="col-span-2 text-red-600"><span>Rejection Reason:</span> <strong>${a.rejection_reason}</strong></div>` : ''}
+      </div>
+    `;
+        document.getElementById('newStatus').value = a.status === 'Enrolled' ? 'Enrolled' : 'Under Review';
+        document.getElementById('appModal').style.display = 'flex';
+      } catch (e) { showToast('Error loading application', 'error'); }
+    }
+
+    async function updateStatus() {
+      if (!currentAppId) return;
+      const status = document.getElementById('newStatus').value;
+      const remarks = document.getElementById('statusRemarks').value;
+      try {
+        await AdmissionsAPI.updateStatus(currentAppId, { status, selection_remarks: remarks || null, rejection_reason: status === 'Rejected' ? remarks : null });
+        showToast(`Status updated to ${status}`); document.getElementById('appModal').style.display = 'none'; loadApplications(); loadStats();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadSettings() {
+      if (!schoolId) return;
+      try {
+        const r = await AdmissionsAPI.getSettings(schoolId); const d = r?.data || {};
+        document.getElementById('adm_open').checked = d.is_open || false;
+        document.getElementById('adm_ay').value = d.academic_year || '';
+        document.getElementById('adm_fee').value = d.application_fee || 0;
+        document.getElementById('adm_from').value = d.open_from ? d.open_from.slice(0, 10) : '';
+        document.getElementById('adm_till').value = d.open_till ? d.open_till.slice(0, 10) : '';
+        document.getElementById('adm_classes').value = (d.classes_available || []).join(', ');
+        document.getElementById('adm_welcome').value = d.welcome_message || '';
+        document.getElementById('adm_instructions').value = d.instructions || '';
+        document.getElementById('adm_docs').value = (d.required_documents || []).join('\n');
+        document.getElementById('adm_test').checked = d.has_entrance_test || false;
+        document.getElementById('adm_ph').value = d.contact_phone || '';
+        document.getElementById('adm_email').value = d.contact_email || '';
+        // Populate class filter
+        document.getElementById('admClassFilter').innerHTML = '<option value="">All Classes</option>' + (d.classes_available || []).map(c => `<option value="${c}">${c}</option>`).join('');
+      } catch (e) { }
+    }
+
+    async function saveSettings() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const classes = document.getElementById('adm_classes').value.split(',').map(s => s.trim()).filter(Boolean);
+      const docs = document.getElementById('adm_docs').value.split('\n').map(s => s.trim()).filter(Boolean);
+      try {
+        await AdmissionsAPI.saveSettings({ school_id: schoolId, is_open: document.getElementById('adm_open').checked, academic_year: document.getElementById('adm_ay').value || null, application_fee: parseFloat(document.getElementById('adm_fee').value) || 0, open_from: document.getElementById('adm_from').value || null, open_till: document.getElementById('adm_till').value || null, classes_available: classes, welcome_message: document.getElementById('adm_welcome').value || null, instructions: document.getElementById('adm_instructions').value || null, required_documents: docs, has_entrance_test: document.getElementById('adm_test').checked, contact_phone: document.getElementById('adm_ph').value || null, contact_email: document.getElementById('adm_email').value || null });
+        showToast('Settings saved!');
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(document.getElementById('pubLink').textContent); showToast('Link copied to clipboard!');
+    }
+    function statCard(title, value, icon, color) {
+      return `
+        <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
+          <div>
+            <p class="text-sm text-gray-400">${title}</p>
+            <h3 class="text-xl font-bold text-gray-900">${value}</h3>
+          </div>
+          <div class="p-3 rounded-xl bg-${color}-100 text-${color}-600">
+            <i data-lucide="${icon}" class="w-5 h-5"></i>
+          </div>
+        </div>
+      `;
+     }
+
+    loadStats(); loadApplications();
+
+
+  </script>
+</body>
+
+</html>

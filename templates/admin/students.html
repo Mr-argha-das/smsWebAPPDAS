@@ -1,0 +1,85 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<section class="split-layout">
+    <article class="panel form-panel">
+        <div class="panel-heading">
+            <h3>Add student</h3>
+            <span>Create a quick admission record from the admin panel.</span>
+        </div>
+        <form method="post" action="/admin/students" class="stacked-form">
+            <label>Admission no<input type="text" name="admission_no" required></label>
+            <label>Roll no<input type="text" name="roll_no"></label>
+            <label>First name<input type="text" name="first_name" required></label>
+            <label>Last name<input type="text" name="last_name" required></label>
+            <label>Gender
+                <select name="gender" required>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+            </label>
+            <label>Phone<input type="text" name="phone"></label>
+            <label>Email<input type="email" name="email"></label>
+            <label>School
+                <select name="school_id" required>
+                    {% for school in schools %}
+                    <option value="{{ school.id }}">{{ school.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Academic year
+                <select name="academic_year_id" required>
+                    {% for year in years %}
+                    <option value="{{ year.id }}">{{ year.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Classroom
+                <select name="classroom_id" required>
+                    {% for classroom in classrooms %}
+                    <option value="{{ classroom.id }}">{{ classroom.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Section
+                <select name="section_id" required>
+                    {% for section in sections %}
+                    <option value="{{ section.id }}">{{ section.name }} - {{ section.classroom.name if section.classroom else "-" }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <button type="submit" class="primary-button">Create student</button>
+        </form>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading">
+            <h3>Student registry</h3>
+            <span>{{ students|length }} records</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Admission No</th>
+                    <th>School</th>
+                    <th>Class</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.full_name }}</td>
+                    <td>{{ student.admission_no }}</td>
+                    <td>{{ student.school.name if student.school else "-" }}</td>
+                    <td>{{ student.classroom.name if student.classroom else "-" }} {{ student.section.name if student.section else "" }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4">No students yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+</section>
+{% endblock %}

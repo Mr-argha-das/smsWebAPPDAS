@@ -1,0 +1,863 @@
+{
+  "created_at": "2026-04-13T18:25:22.589347",
+  "invoice_count": 9,
+  "payment_count": 6,
+  "collections": {
+    "fee_invoices": [
+      {
+        "_id": {
+          "$oid": "69d39409d677e0d4fad4cc47"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3858421c6abdacbd75d07"
+        },
+        "academic_year": {
+          "$oid": "69cf80fc65ecc5fd4c01c532"
+        },
+        "invoice_no": "INV/08060601603/202604/81915",
+        "invoice_date": {
+          "$date": "2026-04-06T11:07:53.842Z"
+        },
+        "items": [
+          {
+            "category": "Tuition Fee",
+            "description": "Tuition Fee",
+            "base_amount": 120.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 120.0
+          },
+          {
+            "category": "Library Fee",
+            "description": "Library Fee",
+            "base_amount": 130.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 130.0
+          },
+          {
+            "category": "Lab Fee",
+            "description": "Lab Fee",
+            "base_amount": 116.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 116.0
+          }
+        ],
+        "transport_months": [
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Dec"
+        ],
+        "gross_amount": 366.0,
+        "discount_amount": 0.0,
+        "late_fee": 0.0,
+        "net_amount": 366.0,
+        "paid_amount": 0.0,
+        "balance_amount": 0.0,
+        "status": "Cancelled",
+        "generated_by": "School Admin",
+        "created_at": {
+          "$date": "2026-04-06T11:07:53.842Z"
+        }
+      },
+      {
+        "_id": {
+          "$oid": "69d3999f1a67258af7aba6dc"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3858421c6abdacbd75d07"
+        },
+        "academic_year": {
+          "$oid": "69cf80fc65ecc5fd4c01c532"
+        },
+        "invoice_no": "INV/08060601603/202604/13066",
+        "invoice_date": {
+          "$date": "2026-04-06T11:31:43.907Z"
+        },
+        "items": [
+          {
+            "category": "Tuition Fee",
+            "description": "Tuition Fee",
+            "base_amount": 120.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 120.0
+          },
+          {
+            "category": "Library Fee",
+            "description": "Library Fee",
+            "base_amount": 130.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 130.0
+          },
+          {
+            "category": "Lab Fee",
+            "description": "Lab Fee",
+            "base_amount": 116.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 116.0
+          }
+        ],
+        "transport_months": [
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+          "Jan",
+          "Feb",
+          "Mar"
+        ],
+        "gross_amount": 366.0,
+        "discount_amount": 0.0,
+        "late_fee": 0.0,
+        "net_amount": 366.0,
+        "paid_amount": 366.0,
+        "balance_amount": 0.0,
+        "status": "Paid",
+        "generated_by": "School Admin",
+        "created_at": {
+          "$date": "2026-04-06T11:31:43.907Z"
+        }
+      },
+      {
+        "_id": {
+          "$oid": "69d39e62df1228940f97af58"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3858421c6abdacbd75d04"
+        },
+        "academic_year": {
+          "$oid": "69cf80fc65ecc5fd4c01c532"
+        },
+        "invoice_no": "INV/08060601603/202604/72292",
+        "invoice_date": {
+          "$date": "2026-04-06T11:52:02.354Z"
+        },
+        "items": [
+          {
+            "category": "Registration Fee",
+            "description": "Registration Fee",
+            "base_amount": 12333.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 12333.0
+          },
+          {
+            "category": "Admission Fee",
+            "description": "Admission Fee",
+            "base_amount": 1322.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 1322.0
+          },
+          {
+            "category": "Annual Examination Fee",
+            "description": "Annual Examination Fee",
+            "base_amount": 3123.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 3123.0
+          },
+          {
+            "category": "Stationary kit / Activity Charge",
+            "description": "Stationary kit / Activity Charge",
+            "base_amount": 1234.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 1234.0
+          },
+          {
+            "category": "Tuition Fee",
+            "description": "Tuition Fee",
+            "base_amount": 2130.0,
+            "concession_percent": 50.0,
+            "discount_amount": 1065.0,
+            "amount": 1065.0
+          }
+        ],
+        "transport_months": [],
+        "concession_name": "50% per month concession in Tuition Fees on Second Younger",
+        "concession_percent": 50.0,
+        "emailed_to": [],
+        "gross_amount": 19077.0,
+        "discount_amount": 0.0,
+        "late_fee": 0.0,
+        "net_amount": 19077.0,
+        "paid_amount": 10000.0,
+        "balance_amount": 9077.0,
+        "status": "Partial",
+        "generated_by": "School Admin",
+        "created_at": {
+          "$date": "2026-04-06T11:52:02.354Z"
+        }
+      },
+      {
+        "_id": {
+          "$oid": "69d3db083bfa8afe844bd9b2"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3778721c6abdacbd75ca4"
+        },
+        "academic_year": {
+          "$oid": "69cf80fc65ecc5fd4c01c532"
+        },
+        "invoice_no": "INV/08060601603/202604/96749",
+        "invoice_date": {
+          "$date": "2026-04-06T16:10:48.858Z"
+        },
+        "items": [
+          {
+            "category": "Bus charge",
+            "description": "Bus charge",
+            "amount": 500
+          },
+          {
+            "category": "Registration Fee",
+            "description": "Registration Fee",
+            "base_amount": 0.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 0.0
+          },
+          {
+            "category": "Admission Fee",
+            "description": "Admission Fee",
+            "base_amount": 0.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 0.0
+          },
+          {
+            "category": "Annual Examination Fee",
+            "description": "Annual Examination Fee",
+            "base_amount": 2100.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 2100.0
+          },
+          {
+            "category": "Stationary kit / Activity Charge",
+            "description": "Stationary kit / Activity Charge",
+            "base_amount": 0.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 0.0
+          },
+          {
+            "category": "Tuition Fee",
+            "description": "Tuition Fee",
+            "base_amount": 1700.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 1700.0
+          }
+        ],
+        "transport_months": [],
+        "concession_percent": 0.0,
+        "emailed_to": [],
+        "gross_amount": 4300.0,
+        "discount_amount": 0.0,
+        "late_fee": 0.0,
+        "net_amount": 4300.0,
+        "paid_amount": 0.0,
+        "balance_amount": 4300.0,
+        "status": "Pending",
+        "generated_by": "School Admin",
+        "created_at": {
+          "$date": "2026-04-06T16:10:48.858Z"
+        }
+      },
+      {
+        "_id": {
+          "$oid": "69d3db313bfa8afe844bd9b3"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d344e621c6abdacbd75c39"
+        },
+        "academic_year": {
+          "$oid": "69cf80fc65ecc5fd4c01c532"
+        },
+        "invoice_no": "INV/08060601603/202604/44823",
+        "invoice_date": {
+          "$date": "2026-04-06T16:11:29.961Z"
+        },
+        "due_date": {
+          "$date": "2026-04-06T00:00:00Z"
+        },
+        "items": [
+          {
+            "category": "Class Fee",
+            "description": "UKG Class Fee",
+            "base_amount": 1200.0,
+            "concession_percent": 20.0,
+            "discount_amount": 240.0,
+            "amount": 960.0
+          }
+        ],
+        "transport_months": [
+          "Apr",
+          "May",
+          "Jun",
+          "Jul",
+          "Aug",
+          "Sep",
+          "Oct",
+          "Nov",
+          "Dec",
+          "Jan",
+          "Feb",
+          "Mar"
+        ],
+        "concession_name": "20% per month concession in Tuition Fees on Each Girls Student",
+        "concession_percent": 20.0,
+        "emailed_to": [],
+        "gross_amount": 960.0,
+        "discount_amount": 0.0,
+        "late_fee": 0.0,
+        "net_amount": 960.0,
+        "paid_amount": 0.0,
+        "balance_amount": 0.0,
+        "status": "Cancelled",
+        "generated_by": "School Admin",
+        "created_at": {
+          "$date": "2026-04-06T16:11:29.961Z"
+        }
+      },
+      {
+        "_id": {
+          "$oid": "69d3e15b3bfa8afe844bd9b7"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3778721c6abdacbd75cae"
+        },
+        "academic_year": {
+          "$oid": "69cf80fc65ecc5fd4c01c532"
+        },
+        "invoice_no": "INV/08060601603/202604/43487",
+        "invoice_date": {
+          "$date": "2026-04-06T16:37:47.945Z"
+        },
+        "due_date": {
+          "$date": "2026-04-06T00:00:00Z"
+        },
+        "items": [
+          {
+            "category": "Registration Fee",
+            "description": "Registration Fee",
+            "base_amount": 0.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 0.0
+          },
+          {
+            "category": "Admission Fee",
+            "description": "Admission Fee",
+            "base_amount": 0.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 0.0
+          },
+          {
+            "category": "Annual Examination Fee",
+            "description": "Annual Examination Fee",
+            "base_amount": 2100.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 2100.0
+          },
+          {
+            "category": "Stationary kit / Activity Charge",
+            "description": "Stationary kit / Activity Charge",
+            "base_amount": 0.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 0.0
+          },
+          {
+            "category": "Tuition Fee",
+            "description": "Tuition Fee",
+            "base_amount": 1700.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 1700.0
+          }
+        ],
+        "transport_months": [
+          "Apr",
+          "May",
+          "Jun",
+          "Jul"
+        ],
+        "concession_percent": 0.0,
+        "emailed_to": [],
+        "gross_amount": 3800.0,
+        "discount_amount": 0.0,
+        "late_fee": 0.0,
+        "net_amount": 3800.0,
+        "paid_amount": 3800.0,
+        "balance_amount": 0.0,
+        "status": "Paid",
+        "generated_by": "School Admin",
+        "created_at": {
+          "$date": "2026-04-06T16:37:47.945Z"
+        }
+      },
+      {
+        "_id": {
+          "$oid": "69d50cca949a9adbe5b7cb77"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3778721c6abdacbd75caf"
+        },
+        "academic_year": {
+          "$oid": "69cf80fc65ecc5fd4c01c532"
+        },
+        "invoice_no": "INV/202600007",
+        "invoice_date": {
+          "$date": "2026-04-07T13:55:22.106Z"
+        },
+        "due_date": {
+          "$date": "2026-04-10T00:00:00Z"
+        },
+        "items": [
+          {
+            "category": "Registration Fee",
+            "description": "Registration Fee",
+            "base_amount": 0.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 0.0
+          },
+          {
+            "category": "Admission Fee",
+            "description": "Admission Fee",
+            "base_amount": 0.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 0.0
+          },
+          {
+            "category": "Annual Examination Fee",
+            "description": "Annual Examination Fee",
+            "base_amount": 2100.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 2100.0
+          },
+          {
+            "category": "Stationary kit / Activity Charge",
+            "description": "Stationary kit / Activity Charge",
+            "base_amount": 0.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 0.0
+          },
+          {
+            "category": "Tuition Fee",
+            "description": "Tuition Fee",
+            "base_amount": 1700.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 1700.0
+          },
+          {
+            "category": "Transport Fee",
+            "description": "Transport Fee (Apr)",
+            "amount": 500.0,
+            "monthly_fee": 500.0,
+            "months": [
+              "Apr"
+            ],
+            "route_name": "Terra Heritage"
+          }
+        ],
+        "transport_months": [
+          "Apr"
+        ],
+        "transport_route": "Terra Heritage",
+        "concession_percent": 0.0,
+        "emailed_to": [],
+        "gross_amount": 4300.0,
+        "discount_amount": 300.0,
+        "late_fee": 0.0,
+        "net_amount": 4000.0,
+        "paid_amount": 4000.0,
+        "balance_amount": 0.0,
+        "status": "Paid",
+        "generated_by": "School Admin",
+        "created_at": {
+          "$date": "2026-04-07T13:55:22.106Z"
+        }
+      },
+      {
+        "_id": {
+          "$oid": "69d873be708ca51193c72e0d"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3778721c6abdacbd75cae"
+        },
+        "academic_year": {
+          "$oid": "69cf80fc65ecc5fd4c01c532"
+        },
+        "invoice_no": "INV-2608",
+        "invoice_date": {
+          "$date": "2026-04-10T03:51:26.004Z"
+        },
+        "items": [
+          {
+            "category": "Registration Fee",
+            "description": "Registration Fee",
+            "base_amount": 0.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 0.0
+          },
+          {
+            "category": "Admission Fee",
+            "description": "Admission Fee",
+            "base_amount": 0.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 0.0
+          },
+          {
+            "category": "Annual Examination Fee",
+            "description": "Annual Examination Fee",
+            "base_amount": 2100.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 2100.0
+          },
+          {
+            "category": "Stationary kit / Activity Charge",
+            "description": "Stationary kit / Activity Charge",
+            "base_amount": 0.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 0.0
+          },
+          {
+            "category": "Tuition Fee",
+            "description": "Tuition Fee",
+            "base_amount": 1700.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 1700.0
+          },
+          {
+            "category": "Transport Fee",
+            "description": "Transport Fee (Apr, May)",
+            "amount": 1000.0,
+            "monthly_fee": 500.0,
+            "months": [
+              "Apr",
+              "May"
+            ],
+            "route_name": "Vill. thada"
+          }
+        ],
+        "transport_months": [
+          "Apr",
+          "May"
+        ],
+        "transport_route": "Vill. thada",
+        "concession_percent": 0.0,
+        "emailed_to": [],
+        "gross_amount": 4800.0,
+        "discount_amount": 0.0,
+        "late_fee": 0.0,
+        "net_amount": 4800.0,
+        "paid_amount": 0.0,
+        "balance_amount": 0.0,
+        "status": "Cancelled",
+        "generated_by": "School Admin",
+        "created_at": {
+          "$date": "2026-04-10T03:51:26.004Z"
+        }
+      },
+      {
+        "_id": {
+          "$oid": "69d8fef204af3e795219485a"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3858421c6abdacbd75d07"
+        },
+        "academic_year": {
+          "$oid": "69cf80fc65ecc5fd4c01c532"
+        },
+        "invoice_no": "INV-2609",
+        "invoice_date": {
+          "$date": "2026-04-10T13:45:22.860Z"
+        },
+        "due_date": {
+          "$date": "2026-04-17T00:00:00Z"
+        },
+        "items": [
+          {
+            "category": "Tuition Fee",
+            "description": "Tuition Fee (Apr, May, Jun, Jul)",
+            "base_amount": 480.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 480.0,
+            "months": [
+              "Apr",
+              "May",
+              "Jun",
+              "Jul"
+            ]
+          },
+          {
+            "category": "Library Fee",
+            "description": "Library Fee",
+            "base_amount": 130.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 130.0,
+            "months": []
+          },
+          {
+            "category": "Lab Fee",
+            "description": "Lab Fee",
+            "base_amount": 116.0,
+            "concession_percent": 0,
+            "discount_amount": 0,
+            "amount": 116.0,
+            "months": []
+          },
+          {
+            "category": "Transport Fee",
+            "description": "Transport Fee (Apr, May, Jun, Jul)",
+            "amount": 2000.0,
+            "monthly_fee": 500.0,
+            "months": [
+              "Apr",
+              "May",
+              "Jun",
+              "Jul"
+            ],
+            "route_name": "Piyush city"
+          }
+        ],
+        "transport_months": [
+          "Apr",
+          "May",
+          "Jun",
+          "Jul"
+        ],
+        "transport_route": "Piyush city",
+        "concession_percent": 0.0,
+        "emailed_to": [],
+        "gross_amount": 2726.0,
+        "discount_amount": 0.0,
+        "late_fee": 0.0,
+        "net_amount": 2726.0,
+        "paid_amount": 0.0,
+        "balance_amount": 0.0,
+        "status": "Cancelled",
+        "generated_by": "School Admin",
+        "created_at": {
+          "$date": "2026-04-10T13:45:22.860Z"
+        }
+      }
+    ],
+    "payment_transactions": [
+      {
+        "_id": {
+          "$oid": "69d3de733bfa8afe844bd9b5"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3858421c6abdacbd75d07"
+        },
+        "invoice": {
+          "$oid": "69d3999f1a67258af7aba6dc"
+        },
+        "transaction_no": "TXN20260406162523250656",
+        "payment_date": {
+          "$date": "2026-04-06T16:25:23.841Z"
+        },
+        "amount": 366.0,
+        "payment_mode": "Cash",
+        "status": "Success",
+        "collected_by": "School Admin",
+        "receipt_no": "RCP-23250656",
+        "remarks": "deno",
+        "created_at": {
+          "$date": "2026-04-06T16:25:23.841Z"
+        }
+      },
+      {
+        "_id": {
+          "$oid": "69d3dedf3bfa8afe844bd9b6"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3858421c6abdacbd75d04"
+        },
+        "invoice": {
+          "$oid": "69d39e62df1228940f97af58"
+        },
+        "transaction_no": "TXN20260406162711214CDB",
+        "payment_date": {
+          "$date": "2026-04-06T16:27:11.582Z"
+        },
+        "amount": 10000.0,
+        "payment_mode": "Cash",
+        "status": "Success",
+        "collected_by": "School Admin",
+        "receipt_no": "RCP-11214CDB",
+        "remarks": "test",
+        "created_at": {
+          "$date": "2026-04-06T16:27:11.582Z"
+        }
+      },
+      {
+        "_id": {
+          "$oid": "69d3e1a63bfa8afe844bd9b8"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3778721c6abdacbd75cae"
+        },
+        "invoice": {
+          "$oid": "69d3e15b3bfa8afe844bd9b7"
+        },
+        "transaction_no": "TXN20260406163902060083",
+        "payment_date": {
+          "$date": "2026-04-06T16:39:02.539Z"
+        },
+        "amount": 1500.0,
+        "payment_mode": "Cash",
+        "status": "Success",
+        "collected_by": "School Admin",
+        "receipt_no": "RCP-02060083",
+        "created_at": {
+          "$date": "2026-04-06T16:39:02.539Z"
+        }
+      },
+      {
+        "_id": {
+          "$oid": "69d4ac95949a9adbe5b7cb6e"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3778721c6abdacbd75cae"
+        },
+        "invoice": {
+          "$oid": "69d3e15b3bfa8afe844bd9b7"
+        },
+        "transaction_no": "TXN20260407070453D049B7",
+        "payment_date": {
+          "$date": "2026-04-07T07:04:53.927Z"
+        },
+        "amount": 2300.0,
+        "payment_mode": "Cash",
+        "status": "Success",
+        "collected_by": "School Admin",
+        "receipt_no": "RCP-53D049B7",
+        "created_at": {
+          "$date": "2026-04-07T07:04:53.927Z"
+        }
+      },
+      {
+        "_id": {
+          "$oid": "69d50d7d949a9adbe5b7cb78"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3778721c6abdacbd75caf"
+        },
+        "invoice": {
+          "$oid": "69d50cca949a9adbe5b7cb77"
+        },
+        "transaction_no": "TXN2026040713582160FFBA",
+        "payment_date": {
+          "$date": "2026-04-07T13:58:21.472Z"
+        },
+        "amount": 3000.0,
+        "payment_mode": "Cash",
+        "status": "Success",
+        "collected_by": "School Admin",
+        "receipt_no": "RCP-2160FFBA",
+        "created_at": {
+          "$date": "2026-04-07T13:58:21.472Z"
+        }
+      },
+      {
+        "_id": {
+          "$oid": "69d50e24949a9adbe5b7cb79"
+        },
+        "school": {
+          "$oid": "69ce8eed1404669f403d7802"
+        },
+        "student": {
+          "$oid": "69d3778721c6abdacbd75caf"
+        },
+        "invoice": {
+          "$oid": "69d50cca949a9adbe5b7cb77"
+        },
+        "transaction_no": "TXN20260407140108FAA109",
+        "payment_date": {
+          "$date": "2026-04-07T14:01:08.049Z"
+        },
+        "amount": 1000.0,
+        "payment_mode": "Cash",
+        "status": "Success",
+        "collected_by": "School Admin",
+        "receipt_no": "RCP-08FAA109",
+        "created_at": {
+          "$date": "2026-04-07T14:01:08.049Z"
+        }
+      }
+    ]
+  }
+}

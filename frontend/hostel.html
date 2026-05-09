@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f0f2f8;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f0f2f8;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      overflow: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Hostel - Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .finput {
+      width: 100%;
+      padding: .625rem .75rem;
+      border-radius: .75rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: .875rem;
+      outline: none
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #3b82f6
+    }
+
+    .lbl {
+      display: block;
+      font-size: .875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: .375rem
+    }
+  </style>
+</head>
+
+<body >
+    <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+      <div class="p-6 space-y-6">
+
+        <div id="hostelStats" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+
+        <div
+          style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div class="tab-bar">
+            <button onclick="switchTab(0)"
+              class="hotab px-5 py-4 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap">
+              Hostels</button>
+            <button onclick="switchTab(1)"
+              class="hotab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 whitespace-nowrap">
+              Rooms</button>
+            <button onclick="switchTab(2)"
+              class="hotab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 whitespace-nowrap">
+              Allocations</button>
+            <button onclick="switchTab(3)"
+              class="hotab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 whitespace-nowrap">
+              Hostel Fees</button>
+            <button onclick="switchTab(4)"
+              class="hotab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 whitespace-nowrap">
+              Leave Requests</button>
+          </div>
+
+          <!-- Hostels -->
+          <div id="hotab0" class="p-5">
+            <div class="flex justify-between mb-4">
+              <h4 class="font-bold text-gray-900">Hostels</h4>
+              <button onclick="document.getElementById('hostelModal').style.display='flex'"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Add
+                Hostel</button>
+            </div>
+            <div id="hostelGrid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+          </div>
+
+          <!-- Rooms -->
+          <div id="hotab1" class="p-5 hidden">
+            <div class="flex justify-between mb-4">
+              <div class="flex gap-2">
+                <select id="roomHostelFilter" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm"
+                  onchange="loadRooms()">
+                  <option value="">All Hostels</option>
+                </select>
+                <label
+                  class="flex items-center gap-2 text-sm cursor-pointer px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50"><input
+                    type="checkbox" id="availRoomsOnly" class="accent-blue-600" onchange="loadRooms()" /><span>Available
+                    only</span></label>
+              </div>
+              <button
+                onclick="document.getElementById('roomModal').style.display='flex';loadHostelOptions('roomHostelSel')"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Add
+                Room</button>
+            </div>
+            <div id="roomTable"></div>
+          </div>
+
+          <!-- Allocations -->
+          <div id="hotab2" class="p-5 hidden">
+            <div class="flex justify-between mb-4">
+              <h4 class="font-bold text-gray-900">Room Allocations</h4>
+              <button onclick="openAllocModal()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Allocate
+                Room</button>
+            </div>
+            <div id="allocTable"></div>
+          </div>
+
+          <!-- Hostel Fees -->
+          <div id="hotab3" class="p-5 hidden">
+            <div class="flex gap-3 mb-4 flex-wrap">
+              <input id="feeMonth" type="month" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm"
+                onchange="loadHostelFees()" />
+              <select id="feeStatus" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm"
+                onchange="loadHostelFees()">
+                <option value="">All Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Paid">Paid</option>
+                <option value="Partial">Partial</option>
+                <option value="Overdue">Overdue</option>
+              </select>
+              <button onclick="generateFees()"
+                class="px-4 py-2 bg-emerald-600 text-white rounded-xl text-sm font-medium hover:bg-emerald-700">Generate
+                Monthly Fees</button>
+            </div>
+            <div id="hostelFeeTable"></div>
+          </div>
+
+          <!-- Leave Requests -->
+          <div id="hotab4" class="p-5 hidden">
+            <div class="flex justify-between mb-4">
+              <select id="leaveStatus" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm"
+                onchange="loadLeaves()">
+                <option value="Pending">Pending</option>
+                <option value="Approved">Approved</option>
+                <option value="Rejected">Rejected</option>
+                <option value="">All</option>
+              </select>
+              <button onclick="document.getElementById('leaveModal').style.display='flex';loadLeaveStudents()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ New
+                Request</button>
+            </div>
+            <div id="leaveTable"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Hostel Modal -->
+  <div id="hostelModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold">Add Hostel</h3><button
+          onclick="document.getElementById('hostelModal').style.display='none'"
+          class="text-gray-400 hover:text-gray-600 text-xl px-2">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Hostel Name *</label><input id="hs_name" class="finput"
+            placeholder="e.g. Boys Hostel Block A" /></div>
+        <div><label class="lbl">Type</label><select id="hs_type" class="finput">
+            <option value="Boys">Boys</option>
+            <option value="Girls">Girls</option>
+            <option value="Mixed">Mixed</option>
+          </select></div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Warden Name</label><input id="hs_warden" class="finput" placeholder="Warden name" />
+          </div>
+          <div><label class="lbl">Warden Phone</label><input id="hs_wph" class="finput" placeholder="Phone" /></div>
+        </div>
+        <div><label class="lbl">Monthly Fee (₹)</label><input id="hs_fee" type="number" class="finput"
+            placeholder="0" /></div>
+        <div><label class="lbl">Address</label><textarea id="hs_addr" rows="2" class="finput resize-none"
+            placeholder="Hostel address"></textarea></div>
+        <div>
+          <label class="lbl">Facilities</label>
+          <div class="flex flex-wrap gap-2 mt-1">
+            <label class="flex items-center gap-1 text-sm"><input type="checkbox" value="WiFi"
+                class="fac-check accent-blue-600" />WiFi</label>
+            <label class="flex items-center gap-1 text-sm"><input type="checkbox" value="Mess"
+                class="fac-check accent-blue-600" />Mess</label>
+            <label class="flex items-center gap-1 text-sm"><input type="checkbox" value="Laundry"
+                class="fac-check accent-blue-600" />Laundry</label>
+            <label class="flex items-center gap-1 text-sm"><input type="checkbox" value="AC"
+                class="fac-check accent-blue-600" />AC</label>
+            <label class="flex items-center gap-1 text-sm"><input type="checkbox" value="TV Room"
+                class="fac-check accent-blue-600" />TV Room</label>
+            <label class="flex items-center gap-1 text-sm"><input type="checkbox" value="Gym"
+                class="fac-check accent-blue-600" />Gym</label>
+            <label class="flex items-center gap-1 text-sm"><input type="checkbox" value="Study Room"
+                class="fac-check accent-blue-600" />Study Room</label>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('hostelModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveHostel()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Room Modal -->
+  <div id="roomModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold">Add Room</h3><button onclick="document.getElementById('roomModal').style.display='none'"
+          class="text-gray-400 hover:text-gray-600 text-xl px-2">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Hostel *</label><select id="roomHostelSel" class="finput">
+            <option value="">Select hostel</option>
+          </select></div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Room Number *</label><input id="rm_no" class="finput" placeholder="e.g. 101" /></div>
+          <div><label class="lbl">Floor</label><input id="rm_floor" type="number" class="finput" value="1" /></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Room Type</label><select id="rm_type" class="finput">
+              <option value="Single">Single</option>
+              <option value="Double">Double</option>
+              <option value="Triple">Triple</option>
+              <option value="Dormitory">Dormitory</option>
+            </select></div>
+          <div><label class="lbl">Capacity</label><input id="rm_cap" type="number" class="finput" value="2" /></div>
+        </div>
+        <div><label class="lbl">Monthly Fee (₹)</label><input id="rm_fee" type="number" class="finput"
+            placeholder="Leave blank to use hostel fee" /></div>
+        <div class="flex gap-4">
+          <label class="flex items-center gap-2"><input type="checkbox" id="rm_ac" class="accent-blue-600" /><span
+              class="text-sm">AC</span></label>
+          <label class="flex items-center gap-2"><input type="checkbox" id="rm_bath" class="accent-blue-600" /><span
+              class="text-sm">Attached Bathroom</span></label>
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('roomModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveRoom()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Allocation Modal -->
+  <div id="allocModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold">Allocate Room to Student</h3><button
+          onclick="document.getElementById('allocModal').style.display='none'"
+          class="text-gray-400 hover:text-gray-600 text-xl px-2">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Student *</label><select id="al_student" class="finput">
+            <option value="">Select student</option>
+          </select></div>
+        <div><label class="lbl">Hostel *</label><select id="al_hostel" class="finput" onchange="loadAllocRooms()">
+            <option value="">Select hostel</option>
+          </select></div>
+        <div><label class="lbl">Room *</label><select id="al_room" class="finput">
+            <option value="">Select room</option>
+          </select></div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Bed Number</label><input id="al_bed" class="finput" placeholder="e.g. B1" /></div>
+          <div><label class="lbl">Check-in Date</label><input id="al_checkin" type="date" class="finput" /></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Security Deposit (₹)</label><input id="al_dep" type="number" class="finput"
+              value="0" /></div>
+          <div class="flex items-end pb-1"><label class="flex items-center gap-2"><input type="checkbox"
+                id="al_dep_paid" class="accent-blue-600" /><span class="text-sm">Deposit Paid</span></label></div>
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('allocModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveAllocation()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Allocate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leave Modal -->
+  <div id="leaveModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold">New Leave Request</h3><button
+          onclick="document.getElementById('leaveModal').style.display='none'"
+          class="text-gray-400 hover:text-gray-600 text-xl px-2">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Student *</label><select id="lv_student" class="finput">
+            <option value="">Select student</option>
+          </select></div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">From Date *</label><input id="lv_from" type="date" class="finput" /></div>
+          <div><label class="lbl">To Date *</label><input id="lv_to" type="date" class="finput" /></div>
+        </div>
+        <div><label class="lbl">Destination</label><input id="lv_dest" class="finput"
+            placeholder="Where is the student going?" /></div>
+        <div><label class="lbl">Reason</label><textarea id="lv_reason" rows="2" class="finput resize-none"
+            placeholder="Reason for leave"></textarea></div>
+        <div><label class="lbl">Guardian Phone</label><input id="lv_gph" class="finput"
+            placeholder="Guardian contact" /></div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('leaveModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveLeave()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('hostel');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('Hostel Management', 'Manage rooms, allocations and hostel fees');
+    const schoolId = localStorage.getItem('school_id');
+    const now = new Date();
+    document.getElementById('feeMonth').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+    function switchTab(i) {
+      document.querySelectorAll('.hotab').forEach((b, j) => { b.classList.toggle('border-blue-600', j === i); b.classList.toggle('text-blue-600', j === i); b.classList.toggle('border-transparent', j !== i); b.classList.toggle('text-gray-500', j !== i); });
+      document.querySelectorAll('[id^="hotab"]').forEach(t => { t.classList.toggle('hidden', parseInt(t.id.replace('hotab', '')) !== i); });
+      if (i === 0) loadHostels(); if (i === 1) loadRooms(); if (i === 2) loadAllocations(); if (i === 3) loadHostelFees(); if (i === 4) loadLeaves();
+    }
+
+    async function loadStats() {
+  if (!schoolId) return;
+
+  try {
+    const r = await HostelAPI.getStats(schoolId);
+    const d = r?.data || {};
+
+    document.getElementById('hostelStats').innerHTML =
+      statCard('Total Capacity', d.total_capacity || 0, 'building', 'blue') +
+      statCard('Occupied Beds', d.occupied_beds || 0, 'bed-double', 'orange') +
+      statCard('Available Beds', d.available_beds || 0, 'check-circle', 'green') +
+      statCard('Occupancy Rate', (d.occupancy_rate || 0) + '%', 'bar-chart-3', 'purple');
+
+    // 🔥 IMPORTANT
+    lucide.createIcons();
+
+  } catch (e) {}
+}
+    async function loadHostelOptions(selId) {
+      if (!schoolId) return;
+      try { const r = await HostelAPI.list(schoolId); const opts = '<option value="">Select hostel</option>' + (r?.data || []).map(h => `<option value="${h.id}">${h.name} (${h.hostel_type})</option>`).join(''); document.getElementById(selId).innerHTML = opts; } catch (e) { }
+    }
+
+    async function loadHostels() {
+      if (!schoolId) { document.getElementById('hostelGrid').innerHTML = '<p class="text-gray-400 text-sm col-span-3">Configure school first</p>'; return; }
+      try {
+        const r = await HostelAPI.list(schoolId); const hostels = r?.data || [];
+        // Also populate room filter
+        document.getElementById('roomHostelFilter').innerHTML = '<option value="">All Hostels</option>' + (hostels.map(h => `<option value="${h.id}">${h.name}</option>`).join(''));
+        document.getElementById('hostelGrid').innerHTML = hostels.map(h => `
+      <div class="border border-gray-100 rounded-2xl p-5 hover:shadow-md transition-shadow">
+        <div class="flex justify-between items-start mb-3">
+          <div><h4 class="font-bold text-gray-900">${h.name}</h4><span class="text-xs text-gray-500">${h.hostel_type} Hostel</span></div>
+          ${tdBadge(h.hostel_type, h.hostel_type === 'Boys' ? 'blue' : h.hostel_type === 'Girls' ? 'pink' : 'purple')}
+        </div>
+        <div class="space-y-2 text-sm text-gray-600">
+          <div class="flex justify-between"><span>Warden</span><span class="font-medium">${h.warden_name || '-'}</span></div>
+          <div class="flex justify-between"><span>Phone</span><span>${h.warden_phone || '-'}</span></div>
+          <div class="flex justify-between"><span>Monthly Fee</span><span class="font-bold text-gray-900">${formatCurrency(h.monthly_fee)}</span></div>
+          <div class="flex justify-between"><span>Total Rooms</span><span>${h.total_rooms}</span></div>
+        </div>
+        <div class="mt-3 pt-3 border-t flex justify-between items-center">
+          <div class="text-xs text-gray-500">
+            <span class="text-emerald-600 font-bold">${h.available}</span> available / 
+            <span class="text-orange-500 font-bold">${h.occupied}</span> occupied
+          </div>
+          <div class="w-24 bg-gray-100 rounded-full h-2">
+            <div class="bg-blue-500 h-2 rounded-full" style="width:${h.total_capacity ? Math.round(h.occupied / h.total_capacity * 100) : 0}%"></div>
+          </div>
+        </div>
+        ${h.facilities?.length ? `<div class="mt-3 flex flex-wrap gap-1">${h.facilities.map(f => `<span class="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full">${f}</span>`).join('')}</div>` : ''}
+        <button onclick="deleteHostel('${h.id}')" class="mt-3 text-xs text-red-400 hover:text-red-600">Delete hostel</button>
+      </div>
+    `).join('') || '<p class="text-center py-8 text-gray-400 col-span-3">No hostels added yet</p>';
+      } catch (e) { }
+    }
+
+    async function saveHostel() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const name = document.getElementById('hs_name').value.trim();
+      if (!name) { showToast('Name required', 'error'); return; }
+      const facilities = Array.from(document.querySelectorAll('.fac-check:checked')).map(cb => cb.value);
+      try {
+        await HostelAPI.create({ school_id: schoolId, name, hostel_type: document.getElementById('hs_type').value, warden_name: document.getElementById('hs_warden').value || null, warden_phone: document.getElementById('hs_wph').value || null, monthly_fee: parseFloat(document.getElementById('hs_fee').value) || 0, address: document.getElementById('hs_addr').value || null, facilities });
+        showToast('Hostel added!'); document.getElementById('hostelModal').style.display = 'none'; loadHostels(); loadStats();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function deleteHostel(id) { if (!confirm('Delete this hostel?')) return; try { await HostelAPI.delete(id); showToast('Deleted'); loadHostels(); loadStats(); } catch (e) { showToast('Error: ' + e.message, 'error'); } }
+
+    async function loadRooms() {
+      if (!schoolId) return;
+      const hid = document.getElementById('roomHostelFilter').value;
+      const avail = document.getElementById('availRoomsOnly').checked;
+      try {
+        const r = await HostelAPI.getRooms(schoolId, hid, avail); const rooms = r?.data || [];
+        const hdrs = ['Room No', 'Hostel', 'Floor', 'Type', 'Capacity', 'Occupied', 'Available', 'Fee', 'AC', 'Status'];
+        const rows = rooms.map(r => `
+      <td class="px-4 py-3 font-bold text-gray-900">${r.room_number}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${r.hostel_name || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">Floor ${r.floor}</td>
+      <td class="px-4 py-3">${tdBadge(r.room_type, 'blue')}</td>
+      <td class="px-4 py-3 text-center text-sm">${r.capacity}</td>
+      <td class="px-4 py-3 text-center text-orange-500 font-semibold">${r.occupied}</td>
+      <td class="px-4 py-3 text-center text-emerald-600 font-semibold">${r.available_beds}</td>
+      <td class="px-4 py-3 text-sm font-medium">${formatCurrency(r.monthly_fee)}</td>
+      <td class="px-4 py-3 text-center">${r.has_ac ? '❄️' : ''}</td>
+      <td class="px-4 py-3">${tdBadge(r.status, r.status === 'Available' ? 'green' : r.status === 'Full' ? 'red' : 'orange')}</td>
+    `);
+        document.getElementById('roomTable').innerHTML = buildTable(hdrs, rows, 'No rooms added');
+      } catch (e) { }
+    }
+
+    async function saveRoom() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const hid = document.getElementById('roomHostelSel').value, no = document.getElementById('rm_no').value.trim();
+      if (!hid || !no) { showToast('Select hostel and enter room number', 'error'); return; }
+      try {
+        await HostelAPI.createRoom({ school_id: schoolId, hostel_id: hid, room_number: no, floor: parseInt(document.getElementById('rm_floor').value) || 0, room_type: document.getElementById('rm_type').value, capacity: parseInt(document.getElementById('rm_cap').value) || 2, monthly_fee: parseFloat(document.getElementById('rm_fee').value) || 0, has_ac: document.getElementById('rm_ac').checked, has_attached_bath: document.getElementById('rm_bath').checked });
+        showToast('Room added!'); document.getElementById('roomModal').style.display = 'none'; loadRooms(); loadStats();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function openAllocModal() {
+      document.getElementById('allocModal').style.display = 'flex';
+      await Promise.allSettled([
+        loadHostelOptions('al_hostel'),
+        StudentAPI.list({ school_id: schoolId, per_page: 200, admission_status: 'Active' }).then(r => { document.getElementById('al_student').innerHTML = '<option value="">Select student</option>' + (r?.data || []).map(s => `<option value="${s.id}">${s.full_name} (${s.admission_no})</option>`).join(''); }).catch(() => { })
+      ]);
+    }
+
+    async function loadAllocRooms() {
+      const hid = document.getElementById('al_hostel').value;
+      if (!hid || !schoolId) { document.getElementById('al_room').innerHTML = '<option value="">Select hostel first</option>'; return; }
+      try { const r = await HostelAPI.getRooms(schoolId, hid, true); document.getElementById('al_room').innerHTML = '<option value="">Select room</option>' + (r?.data || []).map(r => `<option value="${r.id}">Room ${r.room_number} (${r.available_beds} beds free) - ${formatCurrency(r.monthly_fee)}/mo</option>`).join(''); } catch (e) { }
+    }
+
+    async function loadAllocations() {
+      if (!schoolId) return;
+      try {
+        const r = await HostelAPI.getAllocations(schoolId); const data = r?.data || [];
+        const hdrs = ['Student', 'Admission No', 'Hostel', 'Room', 'Bed', 'Check-in', 'Monthly Fee', 'Deposit', ''];
+        const rows = data.map(a => `
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${a.student_name}</td>
+      <td class="px-4 py-3 font-mono text-xs text-gray-500">${a.admission_no}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${a.hostel_name}</td>
+      <td class="px-4 py-3 font-bold text-gray-900 text-sm">${a.room_number}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${a.bed_number || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${formatDate(a.check_in_date)}</td>
+      <td class="px-4 py-3 font-medium">${formatCurrency(a.monthly_fee)}</td>
+      <td class="px-4 py-3"><span class="${a.deposit_paid ? 'text-emerald-600' : 'text-red-500'} text-xs font-medium">${a.deposit_paid ? 'Paid' : 'Unpaid'}</span></td>
+      <td class="px-4 py-3"><button onclick="checkout('${a.id}')" class="px-2 py-1 bg-red-100 text-red-600 rounded-lg text-xs hover:bg-red-200">Checkout</button></td>
+    `);
+        document.getElementById('allocTable').innerHTML = buildTable(hdrs, rows, 'No students allocated');
+      } catch (e) { }
+    }
+
+    async function saveAllocation() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const stId = document.getElementById('al_student').value, hId = document.getElementById('al_hostel').value, rId = document.getElementById('al_room').value;
+      if (!stId || !hId || !rId) { showToast('Select student, hostel and room', 'error'); return; }
+      try {
+        await HostelAPI.allocate({ school_id: schoolId, student_id: stId, hostel_id: hId, room_id: rId, bed_number: document.getElementById('al_bed').value || null, check_in_date: document.getElementById('al_checkin').value || new Date().toISOString(), security_deposit: parseFloat(document.getElementById('al_dep').value) || 0, deposit_paid: document.getElementById('al_dep_paid').checked });
+        showToast('Room allocated!'); document.getElementById('allocModal').style.display = 'none'; loadAllocations(); loadStats();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function checkout(id) { if (!confirm('Checkout this student?')) return; try { await HostelAPI.checkout(id); showToast('Checked out!'); loadAllocations(); loadStats(); } catch (e) { showToast('Error: ' + e.message, 'error'); } }
+
+    async function loadHostelFees() {
+      if (!schoolId) return;
+      const mv = document.getElementById('feeMonth').value;
+      const [yr, mo] = mv ? mv.split('-') : [new Date().getFullYear(), new Date().getMonth() + 1];
+      const status = document.getElementById('feeStatus').value;
+      const params = { school_id: schoolId, month: parseInt(mo), year: parseInt(yr) };
+      if (status) params.status = status;
+      try {
+        const r = await HostelAPI.getFees(params); const data = r?.data || [];
+        const hdrs = ['Student', 'Month/Year', 'Amount', 'Paid', 'Balance', 'Status', 'Due Date', ''];
+        const rows = data.map(i => `
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${i.student_name}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][i.month]} ${i.year}</td>
+      <td class="px-4 py-3 font-medium">${formatCurrency(i.amount)}</td>
+      <td class="px-4 py-3 text-emerald-600 font-medium">${formatCurrency(i.paid_amount)}</td>
+      <td class="px-4 py-3 font-bold ${i.balance > 0 ? 'text-red-600' : 'text-gray-400'}">${formatCurrency(i.balance)}</td>
+      <td class="px-4 py-3">${tdBadge(i.status, i.status === 'Paid' ? 'green' : i.status === 'Partial' ? 'orange' : i.status === 'Overdue' ? 'red' : 'yellow')}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${formatDate(i.due_date)}</td>
+      <td class="px-4 py-3">${i.status !== 'Paid' ? `<button onclick="payFee('${i.id}',${i.balance})" class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs hover:bg-emerald-200">Collect</button>` : ''}</td>
+    `);
+        document.getElementById('hostelFeeTable').innerHTML = buildTable(hdrs, rows, 'No fee records for this month');
+      } catch (e) { }
+    }
+
+    async function generateFees() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const mv = document.getElementById('feeMonth').value;
+      const [yr, mo] = mv ? mv.split('-') : [new Date().getFullYear(), new Date().getMonth() + 1];
+      try {
+        const r = await HostelAPI.generateFees({ school_id: schoolId, month: parseInt(mo), year: parseInt(yr) });
+        showToast(`Generated ${r.data.created} invoices!`); loadHostelFees();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function payFee(id, balance) {
+      const amt = prompt(`Enter amount to collect (Balance: ₹${balance}):`, balance);
+      if (!amt) return;
+      try { await HostelAPI.payFee(id, parseFloat(amt)); showToast('Payment recorded!'); loadHostelFees(); } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadLeaveStudents() {
+      if (!schoolId) return;
+      try { const r = await StudentAPI.list({ school_id: schoolId, per_page: 200 }); document.getElementById('lv_student').innerHTML = '<option value="">Select student</option>' + (r?.data || []).map(s => `<option value="${s.id}">${s.full_name}</option>`).join(''); } catch (e) { }
+    }
+
+    async function loadLeaves() {
+      if (!schoolId) return;
+      const status = document.getElementById('leaveStatus').value;
+      try {
+        const r = await HostelAPI.getLeaves(schoolId, status); const data = r?.data || [];
+        const hdrs = ['Student', 'From', 'To', 'Destination', 'Reason', 'Status', 'Action'];
+        const rows = data.map(l => `
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${l.student_name}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${formatDate(l.from_date)}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${formatDate(l.to_date)}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${l.destination || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${l.reason || '-'}</td>
+      <td class="px-4 py-3">${tdBadge(l.status, l.status === 'Approved' ? 'green' : l.status === 'Rejected' ? 'red' : 'yellow')}</td>
+      <td class="px-4 py-3 flex gap-1">${l.status === 'Pending' ? `<button onclick="actionLeave('${l.id}','Approved')" class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs">Approve</button><button onclick="actionLeave('${l.id}','Rejected')" class="px-2 py-1 bg-red-100 text-red-600 rounded-lg text-xs">Reject</button>` : ''}
+      </td>
+    `);
+        document.getElementById('leaveTable').innerHTML = buildTable(hdrs, rows, 'No leave requests');
+      } catch (e) { }
+    }
+
+    async function saveLeave() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const stId = document.getElementById('lv_student').value, from = document.getElementById('lv_from').value, to = document.getElementById('lv_to').value;
+      if (!stId || !from || !to) { showToast('Fill required fields', 'error'); return; }
+      try {
+        await HostelAPI.createLeave({ school_id: schoolId, student_id: stId, from_date: from, to_date: to, destination: document.getElementById('lv_dest').value || null, reason: document.getElementById('lv_reason').value || null, guardian_phone: document.getElementById('lv_gph').value || null });
+        showToast('Leave request submitted!'); document.getElementById('leaveModal').style.display = 'none'; loadLeaves();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function actionLeave(id, status) {
+      try { await HostelAPI.actionLeave(id, { status }); showToast(`Leave ${status}!`); loadLeaves(); } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+    function statCard(title, value, icon, color) {
+  return `
+    <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
+      
+      <div>
+        <p class="text-sm text-gray-400">${title}</p>
+        <h3 class="text-xl font-bold text-gray-900">${value}</h3>
+      </div>
+
+      <div class="p-3 rounded-xl bg-${color}-100 text-${color}-600">
+        <i data-lucide="${icon}" class="w-5 h-5"></i>
+      </div>
+
+    </div>
+  `;
+}
+
+    loadStats(); loadHostels();
+  </script>
+</body>
+
+</html>

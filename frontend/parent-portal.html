@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f0f2f8;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f0f2f8;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      overflow: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Parent Portal - Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .finput {
+      width: 100%;
+      padding: .625rem .75rem;
+      border-radius: .75rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: .875rem;
+      outline: none
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #3b82f6
+    }
+
+    .lbl {
+      display: block;
+      font-size: .875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: .375rem
+    }
+  </style>
+</head>
+
+<body>
+  <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+      <div class="p-6 space-y-6">
+
+        <!-- Stats -->
+        <div id="portalStats" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+
+        <!-- Portal Link -->
+        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl p-6 text-white">
+          <div class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div>
+              <h3 class="font-bold text-lg mb-1 flex items-center gap-2"><span data-lucide="users" class="w-5 h-5"></span> Parent Portal</h3>
+              <p class="text-blue-100 text-sm">Parents can login and track their children's progress, attendance, fees
+                and homework.</p>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <button onclick="copyPortalLink()"
+                class="px-4 py-2 bg-white/20 flex items-center gap-2 hover:bg-white/30 text-white rounded-xl text-sm font-medium backdrop-blur-sm"> <span data-lucide="copy" class="w-4 h-4"></span>
+                Copy Login Link</button>
+              <button onclick="openPortal()"
+                class="px-4 py-2 bg-white text-blue-700 flex items-center gap-2 rounded-xl text-sm font-semibold hover:bg-blue-50"> <span data-lucide="globe" class="w-4 h-4"></span> Open
+                Portal</button>
+            </div>
+          </div>
+          <div class="mt-3 bg-white/10 rounded-xl px-4 py-2">
+            <span class="text-xs text-blue-200">Portal URL:</span>
+            <span id="portalUrl" class="text-sm font-mono text-white ml-2"></span>
+          </div>
+        </div>
+
+        <div
+          style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div class="tab-bar">
+            <button onclick="switchTab(0)"
+              class="pptab px-5 py-4 text-sm flex items-center gap-2 font-semibold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap"><span data-lucide="users" class="w-4 h-4"></span>
+              Registered Parents</button>
+            <button onclick="switchTab(1)"
+              class="pptab px-5 py-4 text-sm flex items-center gap-2 font-semibold border-b-2 border-transparent text-gray-500 whitespace-nowrap"> <span data-lucide="mail" class="w-4 h-4"></span>
+              Messages from Parents</button>
+            <button onclick="switchTab(2)"
+              class="pptab px-5 py-4 text-sm flex items-center gap-2 font-semibold border-b-2 border-transparent text-gray-500 whitespace-nowrap"> <span data-lucide="smartphone" class="w-4 h-4"></span>
+              Parent App Guide</button>
+          </div>
+
+          <!-- Parents List -->
+          <div id="pptab0" class="p-5">
+            <div class="flex justify-between mb-4">
+              <input id="parentSearch" type="text" placeholder="Search parents..."
+                class="px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-64"
+                oninput="filterParents()" />
+            </div>
+            <div id="parentTable"></div>
+          </div>
+
+          <!-- Parent Messages -->
+          <div id="pptab1" class="p-5 hidden">
+            <div class="flex justify-between mb-4">
+              <h4 class="font-bold text-gray-900">Messages from Parents</h4>
+              <button onclick="loadMessages()" class="text-sm text-blue-600 underline">Refresh</button>
+            </div>
+            <div id="msgTable"></div>
+          </div>
+
+          <!-- Guide -->
+          <div id="pptab2" class="p-5 hidden">
+            <div class="max-w-2xl space-y-6">
+              <h4 class="font-bold text-gray-900 text-lg">How Parents Can Use the Portal</h4>
+
+              <div class="space-y-4">
+                <div class="flex gap-4 p-4 bg-blue-50 rounded-xl">
+                  <div
+                    class="flex-shrink-0 w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                    1</div>
+                  <div>
+                    <h5 class="font-semibold text-gray-900">Share the Portal Link</h5>
+                    <p class="text-sm text-gray-600 mt-1">Share the parent portal link with parents via WhatsApp, SMS or
+                      email. They can open it on their phone's browser.</p>
+                    <code id="guideUrl"
+                      class="text-xs bg-white rounded-lg px-3 py-1 mt-2 inline-block border border-blue-200 text-blue-700"></code>
+                  </div>
+                </div>
+
+                <div class="flex gap-4 p-4 bg-emerald-50 rounded-xl">
+                  <div
+                    class="flex-shrink-0 w-8 h-8 bg-emerald-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                    2</div>
+                  <div>
+                    <h5 class="font-semibold text-gray-900">Parent Self-Registration</h5>
+                    <p class="text-sm text-gray-600 mt-1">Parents register with their name, email, phone and their
+                      child's <strong>admission number</strong>. The system automatically links them to their child.</p>
+                  </div>
+                </div>
+
+                <div class="flex gap-4 p-4 bg-purple-50 rounded-xl">
+                  <div
+                    class="flex-shrink-0 w-8 h-8 bg-purple-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                    3</div>
+                  <div>
+                    <h5 class="font-semibold text-gray-900">What Parents Can See</h5>
+                    <ul class="text-sm text-gray-600 mt-2 space-y-1">
+                      <li class="flex items-center gap-2"><span data-lucide="check-circle"></span> Daily attendance of their child</li>
+                      <li class="flex items-center gap-2"><span data-lucide="indian-rupee"></span> Fee dues and payment history</li>
+                      <li class="flex items-center gap-2"><span data-lucide="file-text"></span> Homework assignments</li>
+                      <li class="flex items-center gap-2"><span data-lucide="bar-chart-3"></span> Exam results and report cards</li>
+                      <li class="flex items-center gap-2"><span data-lucide="megaphone"></span> School notices and events</li>
+                      <li class="flex items-center gap-2"><span data-lucide="mail"></span> Send messages to teachers/admin</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="flex gap-4 p-4 bg-orange-50 rounded-xl">
+                  <div
+                    class="flex-shrink-0 w-8 h-8 bg-orange-600 text-white rounded-full flex items-center justify-center font-bold text-sm">
+                    4</div>
+                  <div>
+                    <h5 class="font-semibold text-gray-900">Multiple Children Support</h5>
+                    <p class="text-sm text-gray-600 mt-1">Parents with multiple children can link all of them during
+                      registration by entering multiple admission numbers (comma separated). They can switch between
+                      children in the portal.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-gray-50 rounded-xl p-4">
+                <p class="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2"><span data-lucide="lightbulb" class="w-4 h-4"></span> Quick WhatsApp Message Template:</p>
+                <div class="bg-white rounded-lg p-4 border text-sm text-gray-700 font-mono leading-relaxed">
+                  Dear Parents,<br /><br />
+                  We are pleased to inform you that our school's <strong>Parent Portal</strong> is now live!<br /><br />
+                  You can now track your child's attendance, fees, results and more from your mobile.<br /><br />
+                  🔗 <span id="wtUrl"></span><br /><br />
+                  Register using your child's Admission Number.<br /><br />
+                  Regards,<br />School Administration
+                </div>
+                <button onclick="copyWhatsApp()"
+                  class="mt-2 px-4 py-2 bg-green-600 text-white rounded-xl text-sm font-medium hover:bg-green-700">Copy
+                  WhatsApp Message</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Message Detail Modal -->
+  <div id="msgModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-lg">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold">Message from Parent</h3><button
+          onclick="document.getElementById('msgModal').style.display='none'"
+          class="text-gray-400 hover:text-gray-600 text-xl px-2">×</button>
+      </div>
+      <div id="msgDetail" class="px-6 py-5"></div>
+      <div class="px-6 py-4 border-t flex gap-3 justify-end">
+        <button onclick="document.getElementById('msgModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('parent-portal');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('Parent Portal', 'Manage parent access and communications');
+    const schoolId = localStorage.getItem('school_id');
+    const portalUrl = `${location.origin}/parent-login.html?school=${schoolId}`;
+    document.getElementById('portalUrl').textContent = portalUrl;
+    document.getElementById('guideUrl').textContent = portalUrl;
+    document.getElementById('wtUrl').textContent = portalUrl;
+
+    function switchTab(i) {
+      document.querySelectorAll('.pptab').forEach((b, j) => { b.classList.toggle('border-blue-600', j === i); b.classList.toggle('text-blue-600', j === i); b.classList.toggle('border-transparent', j !== i); b.classList.toggle('text-gray-500', j !== i); });
+      document.querySelectorAll('[id^="pptab"]').forEach(t => { t.classList.toggle('hidden', parseInt(t.id.replace('pptab', '')) !== i); });
+      if (i === 0) loadParents(); if (i === 1) loadMessages();
+    }
+
+    let allParents = [];
+
+   async function loadParents() {
+  if (!schoolId) {
+    document.getElementById('parentTable').innerHTML =
+      '<p class="text-gray-400 text-sm p-4">Configure school first</p>';
+    return;
+  }
+
+  try {
+    const r = await ParentAPI.adminGetParents(schoolId);
+    allParents = r?.data || [];
+
+    document.getElementById('portalStats').innerHTML =
+      statCard('Registered Parents', allParents.length, 'users', 'blue') +
+      statCard('Active Today',
+        allParents.filter(p => p.last_login && new Date(p.last_login) > new Date(Date.now() - 86400000)).length,
+        'check-circle', 'green') +
+      statCard('Total Children',
+        allParents.reduce((a, p) => a + (p.children?.length || 0), 0),
+        'baby', 'orange') +
+      statCard('Portal Link', 'Share →', 'link', 'purple');
+
+    // ✅ ADD THIS (MOST IMPORTANT)
+    lucide.createIcons();
+
+    renderParentTable(allParents);
+
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+    function renderParentTable(parents) {
+      const hdrs = ['Parent Name', 'Relation', 'Phone', 'Email', 'Children', 'Last Login', 'Registered'];
+      const rows = parents.map(p => `
+    <td class="px-4 py-3 font-medium text-gray-900 text-sm">${p.name}</td>
+    <td class="px-4 py-3">${tdBadge(p.relation, p.relation === 'Father' ? 'blue' : p.relation === 'Mother' ? 'pink' : 'purple')}</td>
+    <td class="px-4 py-3 text-sm text-gray-600">${p.phone}</td>
+    <td class="px-4 py-3 text-sm text-gray-500">${p.email}</td>
+    <td class="px-4 py-3">
+      <div class="space-y-0.5">${(p.children || []).map(c => `<div class="text-xs text-gray-600">• ${c.name} <span class="text-gray-400">(${c.admission_no})</span></div>`).join('') || '<span class="text-gray-400 text-xs">None linked</span>'}</div>
+    </td>
+    <td class="px-4 py-3 text-xs text-gray-500">${p.last_login ? formatDate(p.last_login) : 'Never'}</td>
+    <td class="px-4 py-3 text-xs text-gray-400">${formatDate(p.created_at)}</td>
+  `);
+      document.getElementById('parentTable').innerHTML = buildTable(hdrs, rows, 'No parents registered yet. Share the portal link with parents!');
+    }
+
+    function filterParents() {
+      const q = document.getElementById('parentSearch').value.toLowerCase();
+      renderParentTable(allParents.filter(p => p.name.toLowerCase().includes(q) || p.phone.includes(q) || p.email.toLowerCase().includes(q)));
+    }
+
+    async function loadMessages() {
+      if (!schoolId) return;
+      try {
+        const r = await ParentAPI.adminGetMessages(schoolId); const msgs = r?.data || [];
+        const hdrs = ['Parent', 'Student', 'Subject', 'Preview', 'Date', 'Read'];
+        const rows = msgs.map(m => `
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${m.parent_name}<div class="text-xs text-gray-400">${m.parent_phone}</div></td>
+      <td class="px-4 py-3 text-sm text-gray-600">${m.student || '-'}</td>
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${m.subject}</td>
+      <td class="px-4 py-3 text-sm text-gray-500 max-w-xs truncate cursor-pointer hover:text-blue-600" onclick="viewMsg('${m.id}','${m.parent_name}','${m.subject}','${m.content.replace(/'/g, "\\'")}','${m.date}')">${m.content.slice(0, 60)}...</td>
+      <td class="px-4 py-3 text-xs text-gray-400">${formatDate(m.date)}</td>
+      <td class="px-4 py-3">${m.is_read ? '<span class="text-xs text-gray-400">Read</span>' : `<span class="w-2 h-2 bg-blue-600 rounded-full inline-block"></span>`}</td>
+    `);
+        document.getElementById('msgTable').innerHTML = buildTable(hdrs, rows, 'No messages from parents yet');
+      } catch (e) { }
+    }
+
+    function viewMsg(id, from, subject, content, date) {
+      document.getElementById('msgDetail').innerHTML = `
+    <div class="space-y-3">
+      <div class="flex justify-between text-sm"><span class="text-gray-500">From:</span><strong>${from}</strong></div>
+      <div class="flex justify-between text-sm"><span class="text-gray-500">Date:</span><span>${formatDate(date)}</span></div>
+      <div class="font-semibold text-gray-900 border-t pt-3">${subject}</div>
+      <p class="text-gray-700 text-sm leading-relaxed">${content}</p>
+    </div>
+  `;
+      document.getElementById('msgModal').style.display = 'flex';
+      ParentAPI.adminMarkRead(id).catch(() => { });
+    }
+
+    function copyPortalLink() {
+      navigator.clipboard.writeText(portalUrl); showToast('Portal link copied!');
+    }
+
+    function openPortal() {
+      window.open(portalUrl, '_blank');
+    }
+    function statCard(title, value, icon, color) {
+  return `
+    <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
+      <div>
+        <p class="text-sm text-gray-400">${title}</p>
+        <h3 class="text-xl font-bold text-gray-900">${value}</h3>
+      </div>
+      <div class="p-3 rounded-xl bg-${color}-100 text-${color}-600">
+        <i data-lucide="${icon}" class="w-5 h-5"></i>
+      </div>
+    </div>
+  `;
+}
+
+    function copyWhatsApp() {
+      const msg = `Dear Parents,\n\nWe are pleased to inform you that our school's Parent Portal is now live!\n\nYou can now track your child's attendance, fees, results and more from your mobile.\n\n🔗 ${portalUrl}\n\nRegister using your child's Admission Number.\n\nRegards,\nSchool Administration`;
+      navigator.clipboard.writeText(msg); showToast('WhatsApp message copied!');
+    }
+
+    loadParents();
+      // lucide.createIcons();
+  </script>
+</body>
+
+</html>

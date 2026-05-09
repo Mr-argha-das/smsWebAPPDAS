@@ -1,0 +1,82 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<section class="split-layout">
+    <article class="panel form-panel">
+        <div class="panel-heading">
+            <h3>Create admin user</h3>
+            <span>Add accounts for principals, operators, and admins.</span>
+        </div>
+        <form method="post" action="/admin/users" class="stacked-form">
+            <label>Full name<input type="text" name="full_name" required></label>
+            <label>Username<input type="text" name="username" required></label>
+            <label>Email<input type="email" name="email" required></label>
+            <label>Password<input type="password" name="password" required></label>
+            <label>Phone<input type="text" name="phone"></label>
+            <label>Assigned school
+                <select name="school_id">
+                    <option value="">No school yet</option>
+                    {% for school in schools %}
+                    <option value="{{ school.id }}">{{ school.name }}{% if school.branches %} ({{ school.branches|length }} branches){% endif %}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <div class="inline-note">
+                <strong>Branch-wise access</strong>
+                <span>Select the school first, then enter branch codes exactly as configured on the school record. The same central-panel user can be given access to different branches.</span>
+            </div>
+            <label>Primary branch code<input type="text" name="assigned_branch_code" placeholder="MAIN or NORTH"></label>
+            <label>Allowed branch codes<input type="text" name="allowed_branch_codes" placeholder="MAIN,NORTH"></label>
+            <label>Role
+                <select name="role_id">
+                    <option value="">No role selected</option>
+                    {% for role in roles %}
+                    <option value="{{ role.id }}">{{ role.name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label class="checkbox-row"><input type="checkbox" name="is_superadmin"> Superadmin access</label>
+            <button type="submit" class="primary-button">Create user</button>
+        </form>
+    </article>
+
+    <article class="panel">
+        <div class="panel-heading">
+            <h3>Users</h3>
+            <span>{{ users|length }} active records</span>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>School</th>
+                    <th>Branch Scope</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.full_name }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.role.name if user.role else ("Superadmin" if user.is_superadmin else "-") }}</td>
+                    <td>{{ user.assigned_school.name if user.assigned_school else "-" }}</td>
+                    <td>
+                        {% if user.assigned_branch_code %}
+                        {{ user.assigned_branch_code }}{% if user.assigned_branch_name %} · {{ user.assigned_branch_name }}{% endif %}
+                        {% elif user.allowed_branch_codes %}
+                        {{ user.allowed_branch_codes|join(", ") }}
+                        {% else %}
+                        All branches
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5">No users available.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </article>
+</section>
+{% endblock %}

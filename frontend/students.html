@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f0f2f8;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f0f2f8;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      overflow: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Students - Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body >
+   <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+      <div class="p-6 space-y-6">
+
+        <div id="statsRow" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+            <div>
+              <h3 class="text-lg font-bold text-gray-900">Bulk Student Upload</h3>
+              <p class="text-sm text-gray-500 mt-1">Download the CSV template according to the backend structure and upload the data in the same format. If the class or section is not already created in the ERP, it will be created automatically during import. Any fields left blank can be updated later.</p>
+            </div>
+            <button onclick="downloadStudentImportTemplate()" class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 whitespace-nowrap">Download CSV Template</button>
+          </div>
+          <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_280px] gap-4 mt-5">
+            <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
+              <label class="lbl">Upload Student CSV</label>
+              <input id="studentImportFile" type="file" accept=".csv" class="finput" />
+              <div class="grid sm:grid-cols-3 gap-3 mt-3 text-sm text-slate-500">
+                <div class="rounded-xl bg-white border border-slate-200 px-3 py-2">School: <span id="studentImportSchool" class="font-medium text-slate-700">-</span></div>
+                <div class="rounded-xl bg-white border border-slate-200 px-3 py-2">Academic Year: <span id="studentImportYear" class="font-medium text-slate-700">-</span></div>
+                <div class="rounded-xl bg-white border border-slate-200 px-3 py-2">Branch: <span id="studentImportBranch" class="font-medium text-slate-700">Main School</span></div>
+              </div>
+            </div>
+            <div class="flex flex-col gap-3">
+              <button id="studentImportBtn" onclick="uploadStudentCsv()" class="px-5 py-3 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg disabled:opacity-60 disabled:cursor-not-allowed">Upload Data</button>
+              <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                <strong>Smart duplicate check is enabled</strong><br>
+                <span class="text-emerald-700">The sheet Adm No is ignored. New students get a fresh admission number; matching existing students are updated instead of duplicated.</span>
+              </div>
+            </div>
+          </div>
+          <div id="studentImportResult" class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-500 min-h-[92px]">Download the CSV template, fill the data, save the file, and then upload it from here.</div>
+        </div>
+
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+          <div class="tab-bar !px-0 mb-5">
+            <button id="studentTabActive" type="button" onclick="switchStudentTab('active')" class="tab-btn active">Students</button>
+            <button id="studentTabTransferred" type="button" onclick="switchStudentTab('transferred')" class="tab-btn">Transferred Students</button>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3 justify-between mb-5">
+            <div class="flex gap-2 flex-wrap">
+              <input id="searchInput" type="text" placeholder="Search name, admission no, father name, phone..."
+                class="px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-64" />
+              <select id="filterStatus"
+                class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                <option value="">All Status</option>
+                <option value="Active">Active</option>
+                <option value="Transferred">Transferred</option>
+              </select>
+              <select id="filterBranch"
+                class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                <option value="">All Branches</option>
+              </select>
+              <select id="filterClass"
+                class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                <option value="">All Classes</option>
+              </select>
+            </div>
+            <div class="flex gap-2 flex-wrap">
+              <button id="studentExportBtn" onclick="exportStudentList()"
+                class="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-semibold text-sm hover:bg-slate-200 whitespace-nowrap inline-flex items-center justify-center gap-2 min-w-[132px]">
+                <span id="studentExportSpinner" class="hidden w-4 h-4 rounded-full border-2 border-slate-300 border-t-blue-600 animate-spin"></span>
+                <span id="studentExportText">Export List</span>
+              </button>
+              <button onclick="openAdmModal()"
+                class="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg whitespace-nowrap flex items-center gap-1.5">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Admit Student
+              </button>
+            </div>
+          </div>
+          <div id="tblContainer"></div>
+          <div id="pgn" class="flex justify-between items-center mt-4 text-sm text-gray-500"></div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Admission Modal -->
+  <div id="admModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div class="modal-box w-full max-w-5xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between px-6 py-4 border-b sticky top-0 bg-white z-10">
+        <div>
+          <h3 id="admModalTitle" class="text-lg font-bold text-gray-900">New Student Admission</h3>
+          <p id="admModalHint" class="text-sm text-gray-500 mt-1">Add student details, transport and documents.</p>
+        </div>
+        <button onclick="document.getElementById('admModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl">X</button>
+      </div>
+      <div class="px-6 py-5">
+        <div class="space-y-6">
+          <div>
+            <h4 class="font-semibold text-gray-900 mb-3">Basic Details</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div><label class="lbl">Profile Pic</label><input id="m_photo" type="file" accept="image/*" class="finput" /></div>
+              <div><label class="lbl">Registration Type</label>
+                <select id="m_reg_type" class="finput">
+                  <option value="Manual">Manual</option>
+                  <option value="Online">Online</option>
+                </select>
+              </div>
+              <div><label class="lbl">Branch</label>
+                <select id="m_branch" class="finput">
+                  <option value="">School</option>
+                </select>
+              </div>
+              <div><label class="lbl">Admission Type</label>
+                <select id="m_at" class="finput">
+                  <option value="New">New</option>
+                  <option value="Transfer">Transfer</option>
+                  <option value="Re-Admission">Re-Admission</option>
+                </select>
+              </div>
+              <div><label class="lbl">First Name</label><input id="m_fn" type="text" class="finput" placeholder="First name" /></div>
+              <div><label class="lbl">Middle Name</label><input id="m_mn" type="text" class="finput" placeholder="Middle name" /></div>
+              <div><label class="lbl">Last Name</label><input id="m_ln" type="text" class="finput" placeholder="Last name" /></div>
+              <div><label class="lbl">Gender</label>
+                <select id="m_gnd" class="finput">
+                  <option value="">Select</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div><label class="lbl">Date of Birth</label><input id="m_dob" type="date" class="finput" /></div>
+              <div><label class="lbl">Phone</label><input id="m_ph" type="tel" class="finput" placeholder="Phone" /></div>
+              <div><label class="lbl">Email</label><input id="m_em" type="email" class="finput" placeholder="Email" /></div>
+              <div><label class="lbl">Aadhar Number</label><input id="m_aad" type="text" class="finput" placeholder="12-digit Aadhar" maxlength="12" /></div>
+              <div><label class="lbl">SRN No</label><input id="m_srn" type="text" class="finput" placeholder="Student SRN" /></div>
+              <div><label class="lbl">Religion</label>
+                <select id="m_rel" class="finput">
+                  <option value="">Select</option>
+                  <option value="Hindu">Hindu</option>
+                  <option value="Muslim">Muslim</option>
+                  <option value="Sikh">Sikh</option>
+                  <option value="Christians">Christians</option>
+                </select>
+              </div>
+              <div><label class="lbl">Caste</label>
+                <select id="m_caste" class="finput">
+                  <option value="">Select</option>
+                  <option value="BC">BC</option>
+                  <option value="BC-A">BC-A</option>
+                  <option value="BC-B">BC-B</option>
+                  <option value="BS">BS</option>
+                  <option value="General">General</option>
+                  <option value="OBC">OBC</option>
+                  <option value="SC">SC</option>
+                  <option value="ST">ST</option>
+                </select>
+              </div>
+              <div><label class="lbl">Nationality</label><input id="m_nat" type="text" class="finput" value="Indian" /></div>
+              <div><label class="lbl">Blood Group</label>
+                <select id="m_bg" class="finput">
+                  <option value="">Select</option>
+                  <option>A+</option>
+                  <option>A-</option>
+                  <option>B+</option>
+                  <option>B-</option>
+                  <option>O+</option>
+                  <option>O-</option>
+                  <option>AB+</option>
+                  <option>AB-</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="font-semibold text-gray-900 mb-3">Academic Details / Transport</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div><label class="lbl">Class/Course</label>
+                <select id="m_cls" class="finput" onchange="loadSections(); updateFeePreview()">
+                  <option value="">Select class</option>
+                </select>
+              </div>
+              <div><label class="lbl">Section</label>
+                <select id="m_sec" class="finput">
+                  <option value="">Select section</option>
+                </select>
+              </div>
+              <div><label class="lbl">Route</label>
+                <select id="m_route" class="finput" onchange="updateRouteMeta()">
+                  <option value="">Select route</option>
+                </select>
+              </div>
+              <div><label class="lbl">Bus Stop</label><input id="m_bus_stop" type="text" class="finput" placeholder="Bus stop" /></div>
+              <div><label class="lbl">Bus No</label><input id="m_bus_no" type="text" class="finput" placeholder="Bus no" /></div>
+              <div><label class="lbl">Vehicle charges</label><input id="m_charge" type="number" class="finput" placeholder="0" readonly /></div>
+              <div><label class="lbl">Tution fee per month</label><input id="m_class_fee" type="number" class="finput" placeholder="0" readonly /></div>
+              <div><label class="lbl">Total Fee</label><input id="m_total_fee" type="number" class="finput" placeholder="0" readonly /></div>
+              <div><label class="lbl">Referral Type</label>
+                <select id="m_ref_type" class="finput" onchange="toggleReferralFields()">
+                  <option value="">Select</option>
+                  <option value="Referral">Referral</option>
+                  <option value="Walk-In">Walk-In</option>
+                  <option value="Campaign">Campaign</option>
+                </select>
+              </div>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+              <div id="ref_num_wrap" class="hidden"><label class="lbl">Referral Number</label><input id="m_ref_num" type="text" class="finput" placeholder="Referral number" /></div>
+              <div id="ref_email_wrap" class="hidden"><label class="lbl">Referral Email</label><input id="m_ref_email" type="email" class="finput" placeholder="Referral email" /></div>
+            </div>
+            <div class="flex flex-wrap gap-4 mt-4 text-sm text-gray-700">
+              <label class="flex items-center gap-2"><input id="m_migration" type="checkbox" class="w-4 h-4 accent-blue-600" />Migration</label>
+              <label class="flex items-center gap-2"><input id="m_lateral" type="checkbox" class="w-4 h-4 accent-blue-600" />Lateral Entry</label>
+            </div>
+            <div class="mt-4">
+              <label class="lbl">For Months</label>
+              <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 text-sm text-gray-700">
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Apr" />Apr</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="May" />May</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Jun" />Jun</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Jul" />Jul</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Aug" />Aug</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Sep" />Sep</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Oct" />Oct</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Nov" />Nov</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Dec" />Dec</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Jan" />Jan</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Feb" />Feb</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Mar" />Mar</label>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="font-semibold text-gray-900 mb-3">Parent / Guardian</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div><label class="lbl">Father Name</label><input id="m_fa" type="text" class="finput" placeholder="Father name" /></div>
+              <div><label class="lbl">Father Phone</label><input id="m_fp" type="tel" class="finput" placeholder="Father phone" /></div>
+              <div><label class="lbl">Father Email</label><input id="m_fe" type="email" class="finput" placeholder="Father email" /></div>
+              <div><label class="lbl">Father Occupation</label><input id="m_fo" type="text" class="finput" placeholder="Occupation" /></div>
+              <div><label class="lbl">Mother Name</label><input id="m_ma" type="text" class="finput" placeholder="Mother name" /></div>
+              <div><label class="lbl">Mother Phone</label><input id="m_mp" type="tel" class="finput" placeholder="Mother phone" /></div>
+              <div><label class="lbl">Guardian Name</label><input id="m_guard" type="text" class="finput" placeholder="Guardian name" /></div>
+              <div><label class="lbl">Guardian Phone</label><input id="m_guard_ph" type="tel" class="finput" placeholder="Guardian phone" /></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="font-semibold text-gray-900">Sibling Detail</h4>
+              <button type="button" onclick="toggleSiblingPanel()" class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-medium hover:bg-emerald-100">Add Sibling Detail</button>
+            </div>
+            <div id="siblingPanel" class="hidden rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div><label class="lbl">Class</label><select id="sib_cls" class="finput" onchange="loadSiblingSections()"><option value="">Select class</option></select></div>
+                <div><label class="lbl">Section</label><select id="sib_sec" class="finput"><option value="">Select section</option></select></div>
+                <div class="md:col-span-2"><label class="lbl">Search Student</label><input id="sib_search" class="finput" placeholder="Admission no, student name, father name, phone" /></div>
+              </div>
+              <div class="flex justify-end">
+                <button type="button" onclick="searchSiblingStudents()" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">Search</button>
+              </div>
+              <div id="siblingSearchResults" class="rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-400 text-center">Search siblings by class, section or name.</div>
+            </div>
+            <div id="selectedSiblingsBox" class="mt-3 rounded-2xl border border-gray-200 bg-white p-4 text-sm text-gray-500">No sibling selected</div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="font-semibold text-gray-900">Present Address</h4>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="lg:col-span-2"><label class="lbl">Address</label><input id="pres_address" type="text" class="finput" placeholder="Address" /></div>
+              <div><label class="lbl">State</label><input id="pres_state" type="text" class="finput" placeholder="State" /></div>
+              <div><label class="lbl">Post Office</label><input id="pres_post" type="text" class="finput" placeholder="Post office" /></div>
+              <div><label class="lbl">Pin Code</label><input id="pres_pin" type="text" class="finput" placeholder="Pin code" /></div>
+              <div><label class="lbl">City</label><input id="pres_city" type="text" class="finput" placeholder="City" /></div>
+              <div><label class="lbl">Phone No</label><input id="pres_phone" type="text" class="finput" placeholder="Phone no" /></div>
+            </div>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="font-semibold text-gray-900">Permanent Address</h4>
+              <label class="flex items-center gap-2 text-sm text-gray-700"><input id="same_addr" type="checkbox" class="w-4 h-4 accent-blue-600" onchange="copyPresentAddress()" />Same as Present Address</label>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div class="lg:col-span-2"><label class="lbl">Address</label><input id="perm_address" type="text" class="finput" placeholder="Address" /></div>
+              <div><label class="lbl">State</label><input id="perm_state" type="text" class="finput" placeholder="State" /></div>
+              <div><label class="lbl">Post Office</label><input id="perm_post" type="text" class="finput" placeholder="Post office" /></div>
+              <div><label class="lbl">Pin Code</label><input id="perm_pin" type="text" class="finput" placeholder="Pin code" /></div>
+              <div><label class="lbl">City</label><input id="perm_city" type="text" class="finput" placeholder="City" /></div>
+              <div><label class="lbl">Phone No</label><input id="perm_phone" type="text" class="finput" placeholder="Phone no" /></div>
+            </div>
+          </div>
+
+          <div>
+            <h4 class="font-semibold text-gray-900 mb-3">Remarks</h4>
+            <textarea id="m_remarks" rows="3" class="finput resize-none" placeholder="Optional remarks"></textarea>
+          </div>
+
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <h4 class="font-semibold text-gray-900">Student Documents</h4>
+              <button type="button" onclick="addDocumentRow()" class="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-xl text-sm font-medium hover:bg-blue-100">+ Add Document</button>
+            </div>
+            <div id="documentRows" class="space-y-3">
+              <div class="grid grid-cols-1 md:grid-cols-[1.2fr_1fr_1.2fr_auto] gap-3 items-end doc-row">
+                <div>
+                  <label class="lbl">Document Type</label>
+                  <input type="text" class="finput doc-type" placeholder="e.g. Birth Certificate" />
+                </div>
+                <div>
+                  <label class="lbl">Document Number</label>
+                  <input type="text" class="finput doc-number" placeholder="Optional number" />
+                </div>
+                <div>
+                  <label class="lbl">Upload File</label>
+                  <input type="file" class="finput doc-file" />
+                </div>
+                <button type="button" onclick="removeDocumentRow(this)" class="px-3 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-medium hover:bg-red-100">Remove</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t sticky bottom-0 bg-white justify-end">
+        <button onclick="document.getElementById('admModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-200">Cancel</button>
+        <button id="admSubmitBtn" onclick="submitAdm()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700 shadow-lg">Admit
+          Student</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="detModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div class="modal-box w-full max-w-6xl max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between px-6 py-4 border-b sticky top-0 bg-white z-10">
+        <h3 class="text-lg font-bold text-gray-900">Student Profile</h3>
+        <button onclick="document.getElementById('detModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl">X</button>
+      </div>
+      <div id="detContent" class="px-6 py-5"></div>
+    </div>
+  </div>
+
+  <div id="promoteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+    <div class="modal-box w-full max-w-2xl">
+      <div class="flex items-center justify-between px-6 py-4 border-b">
+        <div>
+          <h3 class="text-lg font-bold text-gray-900">Promote Student</h3>
+          <p id="promoteHint" class="text-sm text-gray-500 mt-1">Select the next academic year and class to move the student.</p>
+        </div>
+        <button onclick="document.getElementById('promoteModal').style.display='none'" class="p-2 text-gray-400 hover:text-gray-600 rounded-xl">X</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Target Academic Year</label><select id="promote_ay" class="finput" onchange="loadPromotionClasses()"><option value="">Select year</option></select></div>
+          <div><label class="lbl">Target Class</label><select id="promote_class" class="finput" onchange="loadPromotionSections()"><option value="">Select class</option></select></div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div><label class="lbl">Target Section</label><select id="promote_section" class="finput"><option value="">Select section</option></select></div>
+          <div><label class="lbl">Branch</label><select id="promote_branch" class="finput"><option value="">School Branch</option></select></div>
+        </div>
+        <div><label class="lbl">Promotion Remark</label><textarea id="promote_remark" rows="3" class="finput resize-none" placeholder="Optional note for promotion history"></textarea></div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('promoteModal').style.display='none'" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="submitPromotion()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Promote Student</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
+  </div>
+  <style>
+    .lbl {
+      display: block;
+      font-size: .875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: .375rem
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .75rem;
+      border-radius: .75rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s
+    }
+
+    .finput:focus {
+      background: #fff;
+      ring: 2px;
+      ring-color: #3b82f6;
+      border-color: #3b82f6
+    }
+  </style>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('students');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('Student Management', 'Manage admissions and profiles');
+    const studentPageParams = new URLSearchParams(window.location.search);
+    const ayId = localStorage.getItem('ay_id');
+    let currentSchoolId = localStorage.getItem('school_id') || '';
+    let currentSchoolName = 'School';
+    let currentAcademicYearName = '';
+    let curPage = 1, totalPgs = 1;
+    let routeCache = [];
+    let branchCache = [];
+    let selectedBranchCode = studentPageParams.get('branch_code') || '';
+    let currentStudentTab = 'active';
+    let editingStudentId = '';
+    let promotionStudentId = '';
+    let promotionClassCache = [];
+    let selectedSiblingStudents = [];
+    let siblingSearchCache = {};
+
+function renderStudentStatusOptions() {
+  const statusFilter = document.getElementById('filterStatus');
+  if (!statusFilter) return;
+  const previousValue = statusFilter.value || '';
+  if (currentStudentTab === 'transferred') {
+    statusFilter.innerHTML = '<option value="Transferred">Transferred</option>';
+    statusFilter.value = 'Transferred';
+    statusFilter.disabled = true;
+    return;
+  }
+  statusFilter.disabled = false;
+  statusFilter.innerHTML = `
+    <option value="">All Status</option>
+    <option value="Active">Active</option>
+    <option value="Alumni">Alumni</option>
+  `;
+  statusFilter.value = ['Active', 'Alumni'].includes(previousValue) ? previousValue : '';
+}
+
+function switchStudentTab(tab) {
+  currentStudentTab = tab === 'transferred' ? 'transferred' : 'active';
+  document.getElementById('studentTabActive').classList.toggle('active', currentStudentTab === 'active');
+  document.getElementById('studentTabTransferred').classList.toggle('active', currentStudentTab === 'transferred');
+  renderStudentStatusOptions();
+  loadStudents(1);
+}
+
+async function loadStats() {
+  if (!currentSchoolId) return;
+
+  try {
+    const r = await StudentAPI.stats(currentSchoolId, ayId, selectedBranchCode);
+
+    if (r?.data) {
+      const d = r.data;
+
+      document.getElementById('statsRow').innerHTML =
+        statCard('Total', d.total || 0, 'users', 'blue') +
+        statCard('Male', d.by_gender?.male || 0, 'user', 'indigo') +
+        statCard('Female', d.by_gender?.female || 0, 'user-round', 'purple') +
+        statCard('Transferred', d.by_status?.transferred || 0, 'send', 'orange');
+
+      // 🔥 IMPORTANT
+      lucide.createIcons();
+    }
+
+  } catch (e) {}
+}
+
+    async function loadClasses() {
+      if (!currentSchoolId) return;
+      try {
+        const r = await ClassAPI.list(currentSchoolId, ayId); const opts = (r?.data || []).map(c => `<option value="${c.id}" data-fee="${c.class_fee || 0}" data-secs='${JSON.stringify(c.sections)}'>${c.name}</option>`).join('');
+        document.getElementById('filterClass').innerHTML = '<option value="">All Classes</option>' + opts;
+        document.getElementById('m_cls').innerHTML = '<option value="">Select class</option>' + opts;
+        document.getElementById('sib_cls').innerHTML = '<option value="">Select class</option>' + opts;
+      } catch (e) { }
+    }
+
+    async function loadSchoolMeta() {
+      if (!currentSchoolId) return;
+      try {
+        const r = await SchoolAPI.get(currentSchoolId);
+        currentSchoolName = r?.data?.name || 'School';
+        branchCache = r?.data?.branches || [];
+        const branchOpts = `<option value="" data-name="${currentSchoolName}">${currentSchoolName}</option>` + branchCache.map(b => `<option value="${b.code}" data-name="${b.name}">${b.name}</option>`).join('');
+        document.getElementById('m_branch').innerHTML = branchOpts;
+        document.getElementById('filterBranch').innerHTML = '<option value="">All Branches</option>' + branchCache.map(b => `<option value="${b.code}">${b.name}</option>`).join('');
+        selectedBranchCode = applyBranchAccessToSelect('filterBranch', selectedBranchCode);
+        const scopedFormBranch = getScopedBranchCode(document.getElementById('m_branch').value || selectedBranchCode);
+        if (scopedFormBranch && Array.from(document.getElementById('m_branch').options).some(opt => opt.value === scopedFormBranch)) {
+          document.getElementById('m_branch').value = scopedFormBranch;
+        }
+        document.getElementById('m_branch').disabled = !!getAssignedBranchCode();
+        document.getElementById('promote_branch').innerHTML = branchOpts;
+        document.getElementById('promote_branch').disabled = !!getAssignedBranchCode();
+        updateStudentImportMeta();
+      } catch (e) { }
+    }
+
+    async function openPromoteModal(id, studentName, currentAcademicYearId, currentClassroomId, currentSectionId, currentClassroomName, currentSectionName, currentBranchCode) {
+      promotionStudentId = id;
+      promotionClassCache = [];
+      document.getElementById('promoteHint').textContent = `Move ${studentName} to the next academic year/class. Saving will replace the old class assignment.`;
+      document.getElementById('promote_class').innerHTML = '<option value="">Select class</option>';
+      document.getElementById('promote_section').innerHTML = '<option value="">Select section</option>';
+      document.getElementById('promote_remark').value = '';
+      document.getElementById('promote_branch').value = currentBranchCode || '';
+      try {
+        const r = await AcademicYearAPI.list(currentSchoolId);
+        const years = r?.data || [];
+        document.getElementById('promote_ay').innerHTML = '<option value="">Select year</option>' + years.map(year => `<option value="${year.id}">${year.name}${year.is_current ? ' (Current)' : ''}</option>`).join('');
+        const currentIndex = years.findIndex(year => year.id === currentAcademicYearId);
+        const preferredYear = years[currentIndex + 1]?.id || currentAcademicYearId || years[0]?.id || '';
+        document.getElementById('promote_ay').value = preferredYear;
+        await loadPromotionClasses(
+          preferredYear === currentAcademicYearId ? currentClassroomId : '',
+          preferredYear === currentAcademicYearId ? currentSectionId : '',
+          preferredYear === currentAcademicYearId ? currentClassroomName : currentClassroomName,
+          preferredYear === currentAcademicYearId ? currentSectionName : currentSectionName
+        );
+      } catch (e) {
+        showToast('Academic years load failed: ' + e.message, 'error');
+        return;
+      }
+      document.getElementById('promoteModal').style.display = 'flex';
+    }
+
+    async function loadPromotionClasses(preferredClassId = '', preferredSectionId = '', preferredClassName = '', preferredSectionName = '') {
+      const targetAyId = document.getElementById('promote_ay').value;
+      document.getElementById('promote_class').innerHTML = '<option value="">Select class</option>';
+      document.getElementById('promote_section').innerHTML = '<option value="">Select section</option>';
+      if (!currentSchoolId || !targetAyId) return;
+      try {
+        const r = await ClassAPI.list(currentSchoolId, targetAyId);
+        promotionClassCache = r?.data || [];
+        document.getElementById('promote_class').innerHTML = '<option value="">Select class</option>' + promotionClassCache.map(c => `<option value="${c.id}" data-secs='${JSON.stringify(c.sections || [])}'>${c.name}</option>`).join('');
+        if (preferredClassId && promotionClassCache.some(c => c.id === preferredClassId)) {
+          document.getElementById('promote_class').value = preferredClassId;
+        } else if (preferredClassName) {
+          const matchedClass = promotionClassCache.find(c => String(c.name || '').toLowerCase() === String(preferredClassName || '').toLowerCase());
+          if (matchedClass) document.getElementById('promote_class').value = matchedClass.id;
+        }
+        loadPromotionSections(preferredSectionId, preferredSectionName);
+      } catch (e) {
+        showToast('Classes load failed: ' + e.message, 'error');
+      }
+    }
+
+    function loadPromotionSections(preferredSectionId = '', preferredSectionName = '') {
+      const classEl = document.getElementById('promote_class');
+      const secEl = document.getElementById('promote_section');
+      const opt = classEl.options[classEl.selectedIndex];
+      secEl.innerHTML = '<option value="">Select section</option>';
+      if (!opt?.dataset?.secs) return;
+      const sections = JSON.parse(opt.dataset.secs);
+      sections.forEach(s => secEl.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+      if (preferredSectionId && sections.some(s => s.id === preferredSectionId)) {
+        secEl.value = preferredSectionId;
+      } else if (preferredSectionName) {
+        const matchedSection = sections.find(s => String(s.name || '').toLowerCase() === String(preferredSectionName || '').toLowerCase());
+        if (matchedSection) secEl.value = matchedSection.id;
+      }
+    }
+
+    async function submitPromotion() {
+      if (!promotionStudentId) return;
+      const academicYearId = document.getElementById('promote_ay').value;
+      const classroomId = document.getElementById('promote_class').value;
+      const sectionId = document.getElementById('promote_section').value;
+      if (!academicYearId || !classroomId || !sectionId) {
+        showToast('Academic year, class and section are required', 'error');
+        return;
+      }
+      const branchEl = document.getElementById('promote_branch');
+      const selectedBranch = branchEl.value || null;
+      const branchOpt = branchEl.options[branchEl.selectedIndex];
+      try {
+        await StudentAPI.promote(promotionStudentId, {
+          academic_year_id: academicYearId,
+          classroom_id: classroomId,
+          section_id: sectionId,
+          branch_code: selectedBranch,
+          branch_name: branchOpt?.dataset?.name || branchOpt?.textContent || currentSchoolName || null,
+          remarks: document.getElementById('promote_remark').value.trim() || null
+        });
+        showToast('Student promoted successfully');
+        document.getElementById('promoteModal').style.display = 'none';
+        document.getElementById('detModal').style.display = 'none';
+        loadStudents(1);
+        loadStats();
+      } catch (e) {
+        showToast('Promotion failed: ' + e.message, 'error');
+      }
+    }
+
+    async function loadAcademicYearMeta() {
+      if (!currentSchoolId || !ayId) return;
+      try {
+        const r = await AcademicYearAPI.list(currentSchoolId);
+        const years = r?.data || [];
+        currentAcademicYearName = years.find(year => year.id === ayId)?.name || ayId;
+        updateStudentImportMeta();
+      } catch (e) { }
+    }
+
+    function updateStudentImportMeta() {
+      const schoolEl = document.getElementById('studentImportSchool');
+      const yearEl = document.getElementById('studentImportYear');
+      const branchEl = document.getElementById('studentImportBranch');
+      if (schoolEl) schoolEl.textContent = currentSchoolName || 'School';
+      if (yearEl) yearEl.textContent = currentAcademicYearName || ayId || '-';
+      const selectedFilterBranch = document.getElementById('filterBranch')?.value || '';
+      const activeBranchCode = selectedFilterBranch || getAssignedBranchCode() || '';
+      const branch = branchCache.find(b => b.code === activeBranchCode);
+      if (branchEl) branchEl.textContent = branch?.name || currentSchoolName || 'Main School';
+    }
+
+    async function downloadStudentImportTemplate() {
+      try {
+        const token = localStorage.getItem('access_token');
+        const res = await fetch(StudentAPI.templateUrl(currentSchoolId, ayId), {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        if (!res.ok) {
+          let message = 'Template download failed';
+          try {
+            const err = await res.json();
+            message = err.detail || err.message || message;
+          } catch (_) {}
+          throw new Error(message);
+        }
+        const blob = await res.blob();
+        const downloadUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = 'student_import_template.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(downloadUrl);
+        showToast('Template downloaded', 'success');
+      } catch (e) {
+        showToast('Template error: ' + e.message, 'error');
+      }
+    }
+
+    async function exportStudentList() {
+      if (!currentSchoolId) { showToast('Configure school first', 'error'); return; }
+      const exportBtn = document.getElementById('studentExportBtn');
+      const exportText = document.getElementById('studentExportText');
+      const exportSpinner = document.getElementById('studentExportSpinner');
+      let exportTimer = null;
+      const startedAt = Date.now();
+      const setExportLoading = (isLoading) => {
+        if (!exportBtn || !exportText || !exportSpinner) return;
+        exportBtn.disabled = isLoading;
+        exportBtn.classList.toggle('opacity-70', isLoading);
+        exportBtn.classList.toggle('cursor-not-allowed', isLoading);
+        exportSpinner.classList.toggle('hidden', !isLoading);
+        if (!isLoading) exportText.textContent = 'Export List';
+      };
+      try {
+        setExportLoading(true);
+        exportText.textContent = 'Preparing...';
+        exportTimer = setInterval(() => {
+          const seconds = Math.max(1, Math.floor((Date.now() - startedAt) / 1000));
+          exportText.textContent = `Downloading... ${seconds}s`;
+        }, 1000);
+        const params = { school_id: currentSchoolId, student_view: currentStudentTab };
+        if (ayId) params.academic_year_id = ayId;
+        const srch = document.getElementById('searchInput').value.trim();
+        const stat = document.getElementById('filterStatus').value;
+        const branch = document.getElementById('filterBranch').value || selectedBranchCode;
+        const cls = document.getElementById('filterClass').value;
+        if (srch) params.search = srch;
+        if (stat) params.admission_status = stat;
+        if (branch) params.branch_code = branch;
+        if (cls) params.classroom_id = cls;
+        const token = localStorage.getItem('access_token');
+        const res = await fetch(StudentAPI.exportUrl(params), {
+          headers: token ? { Authorization: `Bearer ${token}` } : {}
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || err.message || 'Student export failed');
+        }
+        const blob = await res.blob();
+        const downloadUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = 'student_list.csv';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(downloadUrl);
+        const seconds = Math.max(1, Math.ceil((Date.now() - startedAt) / 1000));
+        showToast(`Student list exported in ${seconds}s`, 'success');
+      } catch (e) {
+        showToast('Export error: ' + e.message, 'error');
+      } finally {
+        if (exportTimer) clearInterval(exportTimer);
+        setExportLoading(false);
+      }
+    }
+
+    async function loadRoutes() {
+      if (!currentSchoolId) return;
+      try {
+        const r = await TransportAPI.getRoutes(currentSchoolId);
+        routeCache = r?.data || [];
+        document.getElementById('m_route').innerHTML = '<option value="">Select route</option>' + routeCache.map(rt => `<option value="${rt.id}">${rt.route_name}</option>`).join('');
+      } catch (e) { }
+    }
+
+    function updateRouteMeta() {
+      const route = routeCache.find(r => r.id === document.getElementById('m_route').value);
+      document.getElementById('m_charge').value = route ? route.fee_per_month || 0 : '';
+      if (route && !document.getElementById('m_bus_stop').value && route.stops?.length) {
+        document.getElementById('m_bus_stop').value = route.stops[0].name || '';
+      }
+      updateFeePreview();
+    }
+
+    function updateFeePreview() {
+      const classEl = document.getElementById('m_cls');
+      const selectedClass = classEl.options[classEl.selectedIndex];
+      const classFee = parseFloat(selectedClass?.dataset?.fee || '0') || 0;
+      const transportFeePerMonth = parseFloat(document.getElementById('m_charge').value || '0') || 0;
+      const selectedMonths = document.querySelectorAll('.m_month:checked').length;
+      document.getElementById('m_class_fee').value = classFee;
+      document.getElementById('m_total_fee').value = classFee + (transportFeePerMonth * selectedMonths);
+    }
+
+    function toggleReferralFields() {
+      const show = document.getElementById('m_ref_type').value === 'Referral';
+      document.getElementById('ref_num_wrap').classList.toggle('hidden', !show);
+      document.getElementById('ref_email_wrap').classList.toggle('hidden', !show);
+    }
+
+    function addDocumentRow() {
+      const row = document.createElement('div');
+      row.className = 'grid grid-cols-1 md:grid-cols-[1.2fr_1fr_1.2fr_auto] gap-3 items-end doc-row';
+      row.innerHTML = `
+        <div>
+          <label class="lbl">Document Type</label>
+          <input type="text" class="finput doc-type" placeholder="e.g. Aadhar Card" />
+        </div>
+        <div>
+          <label class="lbl">Document Number</label>
+          <input type="text" class="finput doc-number" placeholder="Optional number" />
+        </div>
+        <div>
+          <label class="lbl">Upload File</label>
+          <input type="file" class="finput doc-file" />
+        </div>
+        <button type="button" onclick="removeDocumentRow(this)" class="px-3 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-medium hover:bg-red-100">Remove</button>`;
+      document.getElementById('documentRows').appendChild(row);
+    }
+
+    function removeDocumentRow(btn) {
+      const rows = document.querySelectorAll('#documentRows .doc-row');
+      if (rows.length === 1) {
+        rows[0].querySelectorAll('input').forEach(input => input.value = '');
+        return;
+      }
+      btn.closest('.doc-row')?.remove();
+    }
+
+    function collectDocumentRows() {
+  return Array.from(document.querySelectorAll('#documentRows .doc-row'))
+    .map(row => ({
+      docType: row.querySelector('.doc-type')?.value?.trim(),
+      docNumber: row.querySelector('.doc-number')?.value?.trim(),
+      file: row.querySelector('.doc-file')?.files?.[0]
+    }))
+    .filter(item => item.docType && item.file); // 🔥 FIX
+}
+
+    async function uploadStudentDocuments(studentId) {
+      const docs = collectDocumentRows();
+      for (const doc of docs) {
+        if (!doc.docType || !doc.file) continue;
+        const fd = new FormData();
+        fd.append('file', doc.file);
+        fd.append('doc_type', doc.docType);
+        if (doc.docNumber) fd.append('doc_number', doc.docNumber);
+        await StudentAPI.uploadDoc(studentId, fd);
+      }
+    }
+
+    function collectAddress(prefix) {
+      return {
+        address: document.getElementById(`${prefix}_address`).value || null,
+        village_area: null,
+        post_office: document.getElementById(`${prefix}_post`).value || null,
+        city: document.getElementById(`${prefix}_city`).value || null,
+        state: document.getElementById(`${prefix}_state`).value || null,
+        pin_code: document.getElementById(`${prefix}_pin`).value || null,
+        phone_no: document.getElementById(`${prefix}_phone`).value || null
+      };
+    }
+
+    function copyPresentAddress() {
+      if (!document.getElementById('same_addr').checked) return;
+      ['address', 'post', 'city', 'state', 'pin', 'phone'].forEach(field => {
+        document.getElementById(`perm_${field}`).value = document.getElementById(`pres_${field}`).value;
+      });
+    }
+
+    function loadSections() {
+      const el = document.getElementById('m_cls'), secEl = document.getElementById('m_sec');
+      const opt = el.options[el.selectedIndex];
+      secEl.innerHTML = '<option value="">Select section</option>';
+      if (!opt || !opt.dataset.secs) return;
+      JSON.parse(opt.dataset.secs).forEach(s => secEl.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+    }
+
+    function loadSiblingSections() {
+      const classEl = document.getElementById('sib_cls');
+      const sectionEl = document.getElementById('sib_sec');
+      const opt = classEl.options[classEl.selectedIndex];
+      sectionEl.innerHTML = '<option value="">Select section</option>';
+      if (!opt?.dataset?.secs) return;
+      JSON.parse(opt.dataset.secs).forEach(s => sectionEl.innerHTML += `<option value="${s.id}">${s.name}</option>`);
+    }
+
+    function toggleSiblingPanel() {
+      document.getElementById('siblingPanel').classList.toggle('hidden');
+    }
+
+    function renderSelectedSiblings() {
+      const box = document.getElementById('selectedSiblingsBox');
+      if (!selectedSiblingStudents.length) {
+        box.innerHTML = 'No sibling selected';
+        return;
+      }
+      box.innerHTML = selectedSiblingStudents.map(s => `
+        <div class="flex items-center justify-between gap-3 py-2 border-b last:border-b-0 border-slate-100">
+          <div>
+            <div class="font-medium text-slate-900">${s.full_name}</div>
+            <div class="text-xs text-slate-500">${s.admission_no || '-'} · ${s.classroom_name || '-'}${s.section_name ? ' / ' + s.section_name : ''}</div>
+          </div>
+          <button type="button" onclick="removeSibling('${s.id}')" class="px-3 py-1.5 bg-red-50 text-red-600 rounded-xl text-xs font-medium hover:bg-red-100">Remove</button>
+        </div>`).join('');
+    }
+
+    function addSibling(student) {
+      if (!student || selectedSiblingStudents.some(s => s.id === student.id)) return;
+      selectedSiblingStudents.push(student);
+      renderSelectedSiblings();
+    }
+
+    function addSiblingById(id) {
+      addSibling(siblingSearchCache[id]);
+    }
+
+    function removeSibling(id) {
+      selectedSiblingStudents = selectedSiblingStudents.filter(s => s.id !== id);
+      renderSelectedSiblings();
+    }
+
+    async function searchSiblingStudents() {
+      if (!currentSchoolId) return;
+      try {
+        const params = {
+          school_id: currentSchoolId,
+          classroom_id: document.getElementById('sib_cls').value || '',
+          section_id: document.getElementById('sib_sec').value || '',
+          search: document.getElementById('sib_search').value.trim() || ''
+        };
+        const res = await StudentAPI.searchSiblings(params);
+        const data = (res?.data || []).filter(s => s.id !== editingStudentId);
+        siblingSearchCache = {};
+        data.forEach(item => { siblingSearchCache[item.id] = item; });
+        if (!data.length) {
+          document.getElementById('siblingSearchResults').innerHTML = '<div class="text-sm text-slate-400 text-center">No sibling records found</div>';
+          return;
+        }
+        const hdrs = ['Admission No', 'Student Name', 'DOB', 'Father Name', 'Mother Name', 'Class', 'Mobile', 'Address', ''];
+        document.getElementById('siblingSearchResults').innerHTML = buildTable(hdrs, data.map(s => `
+          <td class="px-4 py-3 font-mono text-xs text-gray-500">${s.admission_no || '-'}</td>
+          <td class="px-4 py-3 text-sm font-medium text-gray-900">${s.full_name || '-'}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${s.date_of_birth ? formatDate(s.date_of_birth) : '-'}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${s.father_name || '-'}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${s.mother_name || '-'}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${s.classroom_name || '-'}${s.section_name ? ' / ' + s.section_name : ''}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${s.phone || '-'}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${s.address || '-'}</td>
+          <td class="px-4 py-3"><button type="button" onclick="addSiblingById('${s.id}')" class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-medium hover:bg-emerald-100">Add</button></td>
+        `), 'No sibling records found');
+      } catch (e) {
+        document.getElementById('siblingSearchResults').innerHTML = `<div class="text-sm text-red-400 text-center">${e.message}</div>`;
+      }
+    }
+
+    async function loadStudents(page = 1) {
+      if (!currentSchoolId) { document.getElementById('tblContainer').innerHTML = '<div class="text-center py-12 text-gray-400"><div class="text-4xl mb-2">&#9888;</div><p>Configure school first</p></div>'; return; }
+      const params = { school_id: currentSchoolId, page, per_page: 15, student_view: currentStudentTab };
+      if (ayId) params.academic_year_id = ayId;
+      const srch = document.getElementById('searchInput').value.trim();
+      const stat = document.getElementById('filterStatus').value;
+      const branch = document.getElementById('filterBranch').value || selectedBranchCode;
+      const cls = document.getElementById('filterClass').value;
+      if (srch) params.search = srch;
+      if (stat) params.admission_status = stat;
+      if (branch) params.branch_code = branch;
+      if (cls) params.classroom_id = cls;
+      try {
+        const res = await StudentAPI.list(params);
+        const allStudents = res?.data || [];
+        const students = allStudents.filter(s => currentStudentTab === 'transferred'
+          ? s.admission_status === 'Transferred'
+          : s.admission_status !== 'Transferred');
+        const meta = res?.meta || {};
+        totalPgs = meta.total_pages || 1; curPage = meta.page || 1;
+        const hdrs = ['Adm No', 'Name', 'DOB', 'Class/Sec', 'Gender', 'Father', 'Phone', 'Address', 'Status', 'Actions'];
+        const rows = students.map(s => `
+      <td class="px-4 py-3 font-mono text-xs text-gray-500">
+  ${s.admission_no || '-'}
+</td>
+      <td class="px-4 py-3"><div class="flex items-center gap-2">
+        <div class="w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 font-bold text-xs flex-shrink-0">${s.first_name.charAt(0).toUpperCase()}</div>
+        <div><div class="font-medium text-gray-900 text-sm">${s.full_name}</div><div class="text-xs text-gray-400">${s.student_id || ''}</div></div>
+      </div></td>
+      <td class="px-4 py-3 text-sm text-gray-600">${s.date_of_birth ? formatDate(s.date_of_birth) : '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${s.classroom_name || s.classroom || '-'}${(s.section_name || s.section) ? ' / ' + (s.section_name || s.section) : ''}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${s.gender || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${s.father_name || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${s.phone || s.father_phone || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600 max-w-xs whitespace-normal">${s.current_address || s.permanent_address || s.address || '-'}</td>
+      <td class="px-4 py-3">${tdBadge(s.admission_status, s.admission_status === 'Active' ? 'green' : s.admission_status === 'Transferred' ? 'orange' : 'gray')}</td>
+      <td class="px-4 py-3"><div class="flex gap-1">
+        <button onclick="viewStudent('${s.id}')" class="p-1.5 text-blue-600 hover:bg-blue-50 rounded-lg" title="View">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+        </button>
+        <button onclick="editStudent('${s.id}')" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg" title="Edit">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+        </button>
+        <button onclick="delStudent('${s.id}','${s.full_name.replace(/'/g, "\'")}')" class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" title="Delete">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+        </button>
+      </div></td>
+    `);
+        document.getElementById('tblContainer').innerHTML = buildTable(
+          hdrs,
+          rows,
+          currentStudentTab === 'transferred'
+            ? 'No transferred students found'
+            : 'No students found. Admit your first student!'
+        );
+        document.getElementById('pgn').innerHTML = meta.total ? `<span>Showing ${(curPage - 1) * 15 + 1}–${Math.min(curPage * 15, meta.total)} of ${meta.total}</span><div class="flex gap-2"><button onclick="loadStudents(${curPage - 1})" ${curPage <= 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border disabled:opacity-40 text-sm">&#8592;</button><span class="px-3 py-1.5 text-sm">${curPage}/${totalPgs}</span><button onclick="loadStudents(${curPage + 1})" ${curPage >= totalPgs ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border disabled:opacity-40 text-sm">&#8594;</button></div>` : '';
+      } catch (e) { document.getElementById('tblContainer').innerHTML = `<div class="text-center py-12 text-red-400"><p>Error: ${e.message}</p></div>`; }
+    }
+
+    async function viewStudent(id) {
+      try {
+        const res = await StudentAPI.profile(id);
+        const profile = res?.data || {};
+        const s = profile.student || {};
+        const attendance = profile.attendance_summary || {};
+        const fees = profile.fee_summary || {};
+        const results = profile.results || [];
+        const tcs = profile.transfer_certificates || [];
+        const parent = s.parent_info || {};
+        const medical = s.medical_info || {};
+        const presentAddr = s.current_address_details || {};
+        const permanentAddr = s.permanent_address_details || {};
+        const attendanceRows = (attendance.recent_records || []).length
+          ? (attendance.recent_records || []).map(rec => `
+            <tr class="border-b border-slate-100">
+              <td class="py-2 pr-3">${formatDate(rec.date)}</td>
+              <td class="py-2 pr-3">${tdBadge(rec.status, rec.status === 'Present' ? 'green' : rec.status === 'Late' ? 'yellow' : 'red')}</td>
+              <td class="py-2 text-slate-500">${rec.remarks || '-'}</td>
+            </tr>`).join('')
+          : '<tr><td colspan="3" class="py-4 text-slate-400 text-center">No attendance records found</td></tr>';
+        const feeInvoiceRows = (fees.recent_invoices || []).length
+          ? fees.recent_invoices.map(inv => `
+            <tr class="border-b border-slate-100">
+              <td class="py-2 pr-3 font-mono text-xs">${inv.invoice_no}</td>
+              <td class="py-2 pr-3">${formatCurrency(inv.net_amount || 0)}</td>
+              <td class="py-2 pr-3">${formatCurrency(inv.balance_amount || 0)}</td>
+              <td class="py-2 pr-3">${formatDate(inv.due_date)}</td>
+              <td class="py-2">${tdBadge(inv.status, inv.status === 'Paid' ? 'green' : inv.status === 'Partial' ? 'yellow' : inv.status === 'Overdue' ? 'red' : 'orange')}</td>
+            </tr>`).join('')
+          : '<tr><td colspan="5" class="py-4 text-slate-400 text-center">No invoices found</td></tr>';
+        const paymentRows = (fees.recent_payments || []).length
+          ? fees.recent_payments.map(pay => `
+            <tr class="border-b border-slate-100">
+              <td class="py-2 pr-3 font-mono text-xs">${pay.receipt_no || pay.transaction_no || '-'}</td>
+              <td class="py-2 pr-3">${formatCurrency(pay.amount || 0)}</td>
+              <td class="py-2 pr-3">${pay.payment_mode || '-'}</td>
+              <td class="py-2">${formatDate(pay.payment_date)}</td>
+            </tr>`).join('')
+          : '<tr><td colspan="4" class="py-4 text-slate-400 text-center">No payments found</td></tr>';
+        const resultCards = results.length
+          ? results.map(result => `
+            <div class="rounded-2xl border border-slate-200 p-4 bg-slate-50">
+              <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-3">
+                <div>
+                  <h5 class="font-semibold text-slate-900">${result.exam_name || 'Exam Result'}</h5>
+                  <p class="text-xs text-slate-500">${result.exam_type || '-'} · ${formatDate(result.generated_at)}</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                  <span class="px-3 py-1 rounded-xl bg-white text-sm font-semibold text-slate-700">${result.percentage || 0}%</span>
+                  <span class="px-3 py-1 rounded-xl bg-white text-sm font-semibold text-slate-700">Grade ${result.grade || '-'}</span>
+                  <span class="px-3 py-1 rounded-xl ${result.is_pass ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'} text-sm font-semibold">${result.result_status || (result.is_pass ? 'Pass' : 'Fail')}</span>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3 text-sm">
+                <div class="rounded-xl bg-white p-3"><div class="text-slate-400 text-xs">Obtained</div><div class="font-bold text-slate-900">${result.total_obtained || 0}</div></div>
+                <div class="rounded-xl bg-white p-3"><div class="text-slate-400 text-xs">Max Marks</div><div class="font-bold text-slate-900">${result.total_max || 0}</div></div>
+                <div class="rounded-xl bg-white p-3"><div class="text-slate-400 text-xs">Class Rank</div><div class="font-bold text-slate-900">${result.rank_in_class || '-'}</div></div>
+                <div class="rounded-xl bg-white p-3"><div class="text-slate-400 text-xs">Section Rank</div><div class="font-bold text-slate-900">${result.rank_in_section || '-'}</div></div>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="text-left text-slate-500 border-b border-slate-200">
+                      <th class="py-2 pr-3">Subject</th>
+                      <th class="py-2 pr-3">Marks</th>
+                      <th class="py-2 pr-3">Grade</th>
+                      <th class="py-2">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${(result.subjects || []).map(subject => `
+                      <tr class="border-b border-slate-100">
+                        <td class="py-2 pr-3">${subject.name || '-'}</td>
+                        <td class="py-2 pr-3">${subject.obtained || 0} / ${subject.max || 0}</td>
+                        <td class="py-2 pr-3">${subject.grade || '-'}</td>
+                        <td class="py-2">${tdBadge(subject.is_pass ? 'Pass' : 'Fail', subject.is_pass ? 'green' : 'red')}</td>
+                      </tr>`).join('')}
+                  </tbody>
+                </table>
+              </div>
+            </div>`).join('')
+          : '<div class="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-slate-400">No result records found</div>';
+        const documents = (s.documents || []).length
+          ? (s.documents || []).map(doc => `
+            <div class="rounded-xl border border-slate-200 p-3 bg-white">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <div class="font-medium text-slate-900">${doc.doc_type || 'Document'}</div>
+                  <div class="text-xs text-slate-500">${doc.doc_number || 'No number'} · ${formatDate(doc.uploaded_at)}</div>
+                </div>
+                <div class="flex items-center gap-2">
+                  ${doc.file_path ? `<a href="${doc.file_path.startsWith('/uploads/') ? doc.file_path : '/uploads/' + doc.file_path}" target="_blank" class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100">View</a>` : ''}
+                  ${tdBadge(doc.is_verified ? 'Verified' : 'Pending', doc.is_verified ? 'green' : 'yellow')}
+                </div>
+              </div>
+            </div>`).join('')
+          : '<div class="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-slate-400">No documents uploaded</div>';
+        const tcContent = tcs.length
+          ? tcs.map(tc => `<div class="rounded-xl border border-slate-200 p-3 bg-white"><div class="font-medium text-slate-900">${tc.tc_number}</div><div class="text-xs text-slate-500 mt-1">Issued on ${formatDate(tc.issue_date)}</div></div>`).join('')
+          : '<div class="rounded-2xl border border-dashed border-slate-300 p-6 text-center text-slate-400">No transfer certificates generated</div>';
+        document.getElementById('detContent').innerHTML = `
+      <div class="space-y-6">
+        <div class="rounded-3xl bg-gradient-to-r from-blue-600 via-violet-600 to-indigo-600 p-6 text-white">
+          <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
+            <div class="flex items-center gap-4">
+              ${s.photo ? `<img src="${s.photo}" alt="${s.full_name}" class="w-20 h-20 rounded-3xl object-cover border-4 border-white/20" />`
+                : `<div class="w-20 h-20 rounded-3xl bg-white/15 border border-white/20 flex items-center justify-center text-3xl font-bold">${(s.first_name || s.full_name || 'S').charAt(0).toUpperCase()}</div>`}
+              <div>
+                <h4 class="text-2xl font-bold">${s.full_name || '-'}</h4>
+                <p class="text-sm text-white/80 mt-1">${s.admission_no || '-'} · ${s.branch_name || 'Main School'} · ${s.classroom_name || '-'} ${s.section_name ? '/ ' + s.section_name : ''}</p>
+                <div class="flex flex-wrap gap-2 mt-3">
+                  <span class="px-3 py-1 rounded-xl bg-white/15 text-sm font-medium">${s.admission_status || 'Active'}</span>
+                  <span class="px-3 py-1 rounded-xl bg-white/15 text-sm font-medium">${s.registration_type || 'Manual'}</span>
+                  <span class="px-3 py-1 rounded-xl bg-white/15 text-sm font-medium">${s.academic_year || '-'}</span>
+                </div>
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-3 min-w-[280px]">
+              <div class="rounded-2xl bg-white/12 p-3"><div class="text-xs text-white/70">Attendance</div><div class="text-xl font-bold mt-1">${attendance.attendance_percentage || 0}%</div></div>
+              <div class="rounded-2xl bg-white/12 p-3"><div class="text-xs text-white/70">Pending Fees</div><div class="text-xl font-bold mt-1">${formatCurrency(fees.total_due || 0)}</div></div>
+              <div class="rounded-2xl bg-white/12 p-3"><div class="text-xs text-white/70">Results</div><div class="text-xl font-bold mt-1">${results.length}</div></div>
+              <div class="rounded-2xl bg-white/12 p-3"><div class="text-xs text-white/70">Documents</div><div class="text-xl font-bold mt-1">${(s.documents || []).length}</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-5">
+          <div class="lg:col-span-2 space-y-5">
+            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+              <h5 class="text-base font-bold text-slate-900 mb-4">Personal Biodata</h5>
+              <div class="grid md:grid-cols-2 gap-3 text-sm">
+                <div><span class="text-slate-400">Gender:</span> <span class="font-medium text-slate-900">${s.gender || '-'}</span></div>
+                <div><span class="text-slate-400">DOB:</span> <span class="font-medium text-slate-900">${formatDate(s.date_of_birth)}</span></div>
+                <div><span class="text-slate-400">Phone:</span> <span class="font-medium text-slate-900">${s.phone || '-'}</span></div>
+                <div><span class="text-slate-400">Email:</span> <span class="font-medium text-slate-900">${s.email || '-'}</span></div>
+                <div><span class="text-slate-400">Religion:</span> <span class="font-medium text-slate-900">${s.religion || '-'}</span></div>
+                <div><span class="text-slate-400">Caste:</span> <span class="font-medium text-slate-900">${s.caste || '-'}</span></div>
+                <div><span class="text-slate-400">Nationality:</span> <span class="font-medium text-slate-900">${s.nationality || '-'}</span></div>
+                <div><span class="text-slate-400">Aadhar:</span> <span class="font-medium text-slate-900">${s.aadhar_number || '-'}</span></div>
+                <div><span class="text-slate-400">SRN No:</span> <span class="font-medium text-slate-900">${s.srn_no || '-'}</span></div>
+                <div><span class="text-slate-400">Blood Group:</span> <span class="font-medium text-slate-900">${medical.blood_group || '-'}</span></div>
+                <div><span class="text-slate-400">Height / Weight:</span> <span class="font-medium text-slate-900">${medical.height || '-'} / ${medical.weight || '-'}</span></div>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+              <h5 class="text-base font-bold text-slate-900 mb-4">Parent / Guardian Details</h5>
+              <div class="grid md:grid-cols-2 gap-4 text-sm">
+                <div class="space-y-2">
+                  <div><span class="text-slate-400">Father:</span> <span class="font-medium text-slate-900">${parent.father_name || '-'}</span></div>
+                  <div><span class="text-slate-400">Father Phone:</span> <span class="font-medium text-slate-900">${parent.father_phone || '-'}</span></div>
+                  <div><span class="text-slate-400">Father Email:</span> <span class="font-medium text-slate-900">${parent.father_email || '-'}</span></div>
+                  <div><span class="text-slate-400">Occupation:</span> <span class="font-medium text-slate-900">${parent.father_occupation || '-'}</span></div>
+                </div>
+                <div class="space-y-2">
+                  <div><span class="text-slate-400">Mother:</span> <span class="font-medium text-slate-900">${parent.mother_name || '-'}</span></div>
+                  <div><span class="text-slate-400">Mother Phone:</span> <span class="font-medium text-slate-900">${parent.mother_phone || '-'}</span></div>
+                  <div><span class="text-slate-400">Guardian:</span> <span class="font-medium text-slate-900">${parent.guardian_name || '-'}</span></div>
+                  <div><span class="text-slate-400">Guardian Phone:</span> <span class="font-medium text-slate-900">${parent.guardian_phone || '-'}</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+              <h5 class="text-base font-bold text-slate-900 mb-4">Academic, Transport and Referral</h5>
+              <div class="grid md:grid-cols-2 gap-3 text-sm">
+                <div><span class="text-slate-400">Admission Date:</span> <span class="font-medium text-slate-900">${formatDate(s.admission_date)}</span></div>
+                <div><span class="text-slate-400">Admission Type:</span> <span class="font-medium text-slate-900">${s.admission_type || '-'}</span></div>
+                <div><span class="text-slate-400">Registration Type:</span> <span class="font-medium text-slate-900">${s.registration_type || '-'}</span></div>
+                <div><span class="text-slate-400">Migration / Lateral:</span> <span class="font-medium text-slate-900">${s.migration ? 'Migration' : '-'} ${s.lateral_entry ? '/ Lateral Entry' : ''}</span></div>
+                <div><span class="text-slate-400">Transport Route:</span> <span class="font-medium text-slate-900">${s.transport_route_name || '-'}</span></div>
+                <div><span class="text-slate-400">Transport Charge:</span> <span class="font-medium text-slate-900">${formatCurrency(s.transport_fee_per_month || 0)}</span></div>
+                <div><span class="text-slate-400">Bus Stop:</span> <span class="font-medium text-slate-900">${s.bus_stop || '-'}</span></div>
+                <div><span class="text-slate-400">Months:</span> <span class="font-medium text-slate-900">${(s.transport_months || []).join(', ') || '-'}</span></div>
+                <div><span class="text-slate-400">Referral Type:</span> <span class="font-medium text-slate-900">${s.referral_type || '-'}</span></div>
+                <div><span class="text-slate-400">Referral Contact:</span> <span class="font-medium text-slate-900">${s.referral_number || s.referral_email || '-'}</span></div>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+              <h5 class="text-base font-bold text-slate-900 mb-4">Attendance Summary</h5>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+                <div class="rounded-xl bg-white p-3 border border-slate-200"><div class="text-xs text-slate-400">Working Days</div><div class="text-xl font-bold text-slate-900 mt-1">${attendance.total_working_days || 0}</div></div>
+                <div class="rounded-xl bg-white p-3 border border-slate-200"><div class="text-xs text-slate-400">Present</div><div class="text-xl font-bold text-emerald-600 mt-1">${attendance.present_days || 0}</div></div>
+                <div class="rounded-xl bg-white p-3 border border-slate-200"><div class="text-xs text-slate-400">Absent</div><div class="text-xl font-bold text-red-600 mt-1">${attendance.absent_days || 0}</div></div>
+                <div class="rounded-xl bg-white p-3 border border-slate-200"><div class="text-xs text-slate-400">Late</div><div class="text-xl font-bold text-amber-600 mt-1">${attendance.late_days || 0}</div></div>
+              </div>
+              <div class="overflow-x-auto bg-white rounded-2xl border border-slate-200 p-4">
+                <table class="w-full text-sm">
+                  <thead>
+                    <tr class="text-left text-slate-500 border-b border-slate-200">
+                      <th class="py-2 pr-3">Date</th>
+                      <th class="py-2 pr-3">Status</th>
+                      <th class="py-2">Remarks</th>
+                    </tr>
+                  </thead>
+                  <tbody>${attendanceRows}</tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+              <h5 class="text-base font-bold text-slate-900 mb-4">Exam Results</h5>
+              <div class="space-y-4">${resultCards}</div>
+            </div>
+          </div>
+
+          <div class="space-y-5">
+            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+              <h5 class="text-base font-bold text-slate-900 mb-4">Fees Overview</h5>
+              <div class="grid grid-cols-1 gap-3 mb-4">
+                <div class="rounded-xl bg-white p-3 border border-slate-200"><div class="text-xs text-slate-400">Total Billed</div><div class="text-lg font-bold text-slate-900 mt-1">${formatCurrency(fees.total_billed || 0)}</div></div>
+                <div class="rounded-xl bg-white p-3 border border-slate-200"><div class="text-xs text-slate-400">Total Paid</div><div class="text-lg font-bold text-emerald-600 mt-1">${formatCurrency(fees.total_paid || 0)}</div></div>
+                <div class="rounded-xl bg-white p-3 border border-slate-200"><div class="text-xs text-slate-400">Total Due</div><div class="text-lg font-bold text-red-600 mt-1">${formatCurrency(fees.total_due || 0)}</div></div>
+              </div>
+              <div class="bg-white rounded-2xl border border-slate-200 p-4 mb-4 overflow-x-auto">
+                <h6 class="font-semibold text-slate-900 mb-3">Recent Invoices</h6>
+                <table class="w-full text-sm"><thead><tr class="text-left text-slate-500 border-b border-slate-200"><th class="py-2 pr-3">Invoice</th><th class="py-2 pr-3">Amount</th><th class="py-2 pr-3">Due</th><th class="py-2 pr-3">Date</th><th class="py-2">Status</th></tr></thead><tbody>${feeInvoiceRows}</tbody></table>
+              </div>
+              <div class="bg-white rounded-2xl border border-slate-200 p-4 overflow-x-auto">
+                <h6 class="font-semibold text-slate-900 mb-3">Recent Payments</h6>
+                <table class="w-full text-sm"><thead><tr class="text-left text-slate-500 border-b border-slate-200"><th class="py-2 pr-3">Receipt</th><th class="py-2 pr-3">Amount</th><th class="py-2 pr-3">Mode</th><th class="py-2">Date</th></tr></thead><tbody>${paymentRows}</tbody></table>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+              <h5 class="text-base font-bold text-slate-900 mb-4">Address</h5>
+              <div class="space-y-4 text-sm">
+                <div class="rounded-xl bg-white p-4 border border-slate-200">
+                  <div class="font-semibold text-slate-900 mb-2">Present Address</div>
+                  <div class="text-slate-600">${[presentAddr.address, presentAddr.post_office, presentAddr.city, presentAddr.state, presentAddr.pin_code].filter(Boolean).join(', ') || s.current_address || '-'}</div>
+                </div>
+                <div class="rounded-xl bg-white p-4 border border-slate-200">
+                  <div class="font-semibold text-slate-900 mb-2">Permanent Address</div>
+                  <div class="text-slate-600">${[permanentAddr.address, permanentAddr.post_office, permanentAddr.city, permanentAddr.state, permanentAddr.pin_code].filter(Boolean).join(', ') || s.permanent_address || '-'}</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+              <h5 class="text-base font-bold text-slate-900 mb-4">Documents</h5>
+              <div class="space-y-3">${documents}</div>
+            </div>
+
+            <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200">
+              <h5 class="text-base font-bold text-slate-900 mb-4">Transfer Certificates</h5>
+              <div class="space-y-3">${tcContent}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <button onclick="editStudent('${id}'); document.getElementById('detModal').style.display = 'none';" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-xl text-sm font-medium hover:bg-blue-200">Edit Student</button>
+          <button onclick="openPromoteModal('${id}','${(s.full_name || '').replace(/'/g, "\\'")}','${s.academic_year_id || ''}','${s.classroom_id || ''}','${s.section_id || ''}','${(s.classroom_name || '').replace(/'/g, "\\'")}','${(s.section_name || '').replace(/'/g, "\\'")}','${s.branch_code || ''}')" class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl text-sm font-medium hover:bg-emerald-200">Promote Student</button>
+          <button onclick="genTC('${id}','${(s.full_name || '').replace(/'/g, "\\'")}')" class="px-4 py-2 bg-orange-100 text-orange-700 rounded-xl text-sm font-medium hover:bg-orange-200">Generate TC</button>
+        </div>
+      </div>`;
+        document.getElementById('detModal').style.display = 'flex';
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function genTC(id, name) {
+      if (!confirm('Generate TC for ' + name + '?')) return;
+      try { const r = await StudentAPI.generateTC(id, { conduct: 'Good', fee_clearance: false }); showToast('TC ' + r.data.tc_number + ' generated!'); document.getElementById('detModal').style.display = 'none'; loadStudents(1); loadStats(); }
+      catch (e) { showToast('TC failed: ' + e.message, 'error'); }
+    }
+
+    async function delStudent(id, name) {
+      if (!confirm('Deactivate "' + name + '"?')) return;
+      try { await StudentAPI.delete(id); showToast('Student deactivated'); loadStudents(curPage); loadStats(); }
+      catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    function resetAdmissionModal() {
+      document.querySelectorAll('#admModal input,#admModal select,#admModal textarea').forEach(i => { if (i.type === 'checkbox') i.checked = false; else i.value = ''; });
+      document.getElementById('m_nat').value = 'Indian';
+      document.getElementById('m_class_fee').value = '';
+      document.getElementById('m_total_fee').value = '';
+      document.getElementById('m_charge').value = '';
+      editingStudentId = '';
+      selectedSiblingStudents = [];
+      siblingSearchCache = {};
+      document.getElementById('admModalTitle').textContent = 'New Student Admission';
+      document.getElementById('admModalHint').textContent = 'Add student details, transport and documents.';
+      document.getElementById('admSubmitBtn').textContent = 'Admit Student';
+      document.getElementById('siblingPanel').classList.add('hidden');
+      document.getElementById('siblingSearchResults').innerHTML = 'Search siblings by class, section or name.';
+      renderSelectedSiblings();
+      document.getElementById('documentRows').innerHTML = `
+        <div class="grid grid-cols-1 md:grid-cols-[1.2fr_1fr_1.2fr_auto] gap-3 items-end doc-row">
+          <div>
+            <label class="lbl">Document Type</label>
+            <input type="text" class="finput doc-type" placeholder="e.g. Birth Certificate" />
+          </div>
+          <div>
+            <label class="lbl">Document Number</label>
+            <input type="text" class="finput doc-number" placeholder="Optional number" />
+          </div>
+          <div>
+            <label class="lbl">Upload File</label>
+            <input type="file" class="finput doc-file" />
+          </div>
+          <button type="button" onclick="removeDocumentRow(this)" class="px-3 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-medium hover:bg-red-100">Remove</button>
+        </div>`;
+      toggleReferralFields();
+      updateFeePreview();
+    }
+
+    function openAdmModal() {
+      resetAdmissionModal();
+      document.getElementById('admModal').style.display = 'flex';
+    }
+
+    function setFormValue(id, value, fallback = '') {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = value ?? fallback;
+    }
+
+    function setDateValue(id, value) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = value ? String(value).slice(0, 10) : '';
+    }
+
+    function fillAddress(prefix, data = {}) {
+      setFormValue(`${prefix}_address`, data.address);
+      setFormValue(`${prefix}_village`, data.village_area);
+      setFormValue(`${prefix}_post`, data.post_office);
+      setFormValue(`${prefix}_city`, data.city);
+      setFormValue(`${prefix}_state`, data.state);
+      setFormValue(`${prefix}_pin`, data.pin_code);
+      setFormValue(`${prefix}_phone`, data.phone_no);
+    }
+
+    async function editStudent(id) {
+      try {
+        resetAdmissionModal();
+        const res = await StudentAPI.get(id);
+        const s = res?.data || {};
+        const parent = s.parent_info || {};
+        const medical = s.medical_info || {};
+        editingStudentId = id;
+        document.getElementById('admModalTitle').textContent = 'Edit Student';
+        document.getElementById('admModalHint').textContent = 'Update biodata, branch, transport and optional new documents.';
+        document.getElementById('admSubmitBtn').textContent = 'Update Student';
+        setFormValue('m_fn', s.first_name);
+        setFormValue('m_mn', s.middle_name);
+        setFormValue('m_ln', s.last_name);
+        setFormValue('m_gnd', s.gender);
+        setDateValue('m_dob', s.date_of_birth);
+        setFormValue('m_ph', s.phone);
+        setFormValue('m_em', s.email);
+        setFormValue('m_aad', s.aadhar_number);
+        setFormValue('m_srn', s.srn_no);
+        setFormValue('m_rel', s.religion);
+        setFormValue('m_caste', s.caste);
+        setFormValue('m_nat', s.nationality || 'Indian');
+        setFormValue('m_bg', medical.blood_group);
+        setFormValue('m_branch', s.branch_code);
+        setFormValue('m_at', s.admission_type || 'New');
+        setFormValue('m_reg_type', s.registration_type || 'Manual');
+        setFormValue('m_cls', s.classroom_id);
+        loadSections();
+        setFormValue('m_sec', s.section_id);
+        setFormValue('m_route', s.transport_route_id);
+        setFormValue('m_bus_stop', s.bus_stop);
+        setFormValue('m_bus_no', s.bus_no);
+        setFormValue('m_ref_type', s.referral_type);
+        setFormValue('m_ref_num', s.referral_number);
+        setFormValue('m_ref_email', s.referral_email);
+        document.getElementById('m_migration').checked = !!s.migration;
+        document.getElementById('m_lateral').checked = !!s.lateral_entry;
+        document.querySelectorAll('.m_month').forEach(el => {
+          el.checked = Array.isArray(s.transport_months) && s.transport_months.includes(el.value);
+        });
+        setFormValue('m_fa', parent.father_name);
+        setFormValue('m_fp', parent.father_phone);
+        setFormValue('m_fe', parent.father_email);
+        setFormValue('m_fo', parent.father_occupation);
+        setFormValue('m_ma', parent.mother_name);
+        setFormValue('m_mp', parent.mother_phone);
+        setFormValue('m_guard', parent.guardian_name);
+        setFormValue('m_guard_ph', parent.guardian_phone);
+        fillAddress('pres', s.current_address_details || {});
+        fillAddress('perm', s.permanent_address_details || {});
+        setFormValue('m_remarks', s.remarks);
+        if (Array.isArray(s.sibling_student_ids) && s.sibling_student_ids.length) {
+          const siblingRes = await StudentAPI.searchSiblings({ school_id: currentSchoolId });
+          const siblingPool = siblingRes?.data || [];
+          selectedSiblingStudents = siblingPool.filter(item => s.sibling_student_ids.includes(item.id));
+          renderSelectedSiblings();
+        }
+        if (Array.isArray(s.documents) && s.documents.length) {
+          document.getElementById('documentRows').innerHTML = `
+            <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4 text-sm text-slate-600">
+              Existing documents are already linked with this student. Use the fields below only for uploading additional documents.
+            </div>`;
+          addDocumentRow();
+        }
+        toggleReferralFields();
+        updateRouteMeta();
+        document.getElementById('admModal').style.display = 'flex';
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    function buildStudentPayload() {
+      const branchEl = document.getElementById('m_branch');
+      const branchOpt = branchEl.options[branchEl.selectedIndex];
+      const routeId = document.getElementById('m_route').value || null;
+      const months = Array.from(document.querySelectorAll('.m_month:checked')).map(el => el.value);
+      return {
+        first_name: document.getElementById('m_fn').value.trim(),
+        middle_name: document.getElementById('m_mn').value || null,
+        last_name: document.getElementById('m_ln').value.trim(),
+        gender: document.getElementById('m_gnd').value,
+        date_of_birth: document.getElementById('m_dob').value ? new Date(document.getElementById('m_dob').value).toISOString() : null,
+        phone: document.getElementById('m_ph').value || null,
+        email: document.getElementById('m_em').value || null,
+        religion: document.getElementById('m_rel').value || null,
+        caste: document.getElementById('m_caste').value || null,
+        nationality: document.getElementById('m_nat').value || 'Indian',
+        aadhar_number: document.getElementById('m_aad').value || null,
+        srn_no: document.getElementById('m_srn').value || null,
+        school_id: currentSchoolId,
+        academic_year_id: ayId || null,
+        classroom_id: document.getElementById('m_cls').value,
+        section_id: document.getElementById('m_sec').value,
+        branch_code: branchEl.value || null,
+        branch_name: branchOpt?.dataset?.name || currentSchoolName || null,
+        admission_type: document.getElementById('m_at').value,
+        registration_type: document.getElementById('m_reg_type').value,
+        parent_info: {
+          father_name: document.getElementById('m_fa').value || null,
+          father_phone: document.getElementById('m_fp').value || null,
+          father_email: document.getElementById('m_fe').value || null,
+          father_occupation: document.getElementById('m_fo').value || null,
+          mother_name: document.getElementById('m_ma').value || null,
+          mother_phone: document.getElementById('m_mp').value || null,
+          guardian_name: document.getElementById('m_guard').value || null,
+          guardian_phone: document.getElementById('m_guard_ph').value || null
+        },
+        medical_info: { blood_group: document.getElementById('m_bg').value || null },
+        current_address_details: collectAddress('pres'),
+        permanent_address_details: collectAddress('perm'),
+        uses_transport: !!routeId,
+        transport_route_id: routeId,
+        bus_stop: document.getElementById('m_bus_stop').value || null,
+        bus_no: document.getElementById('m_bus_no').value || null,
+        transport_months: months,
+        migration: document.getElementById('m_migration').checked,
+        lateral_entry: document.getElementById('m_lateral').checked,
+        referral_type: document.getElementById('m_ref_type').value || null,
+        referral_number: document.getElementById('m_ref_num').value || null,
+        referral_email: document.getElementById('m_ref_email').value || null,
+        sibling_student_ids: selectedSiblingStudents.map(s => s.id),
+        remarks: document.getElementById('m_remarks').value || null
+      };
+    }
+
+    async function submitAdm() {
+      if (!currentSchoolId) { showToast('Configure school first', 'error'); return; }
+      try {
+        const payload = buildStudentPayload();
+        const r = editingStudentId
+          ? await StudentAPI.update(editingStudentId, payload)
+          : await StudentAPI.create(payload);
+        const studentId = editingStudentId || r?.data?.id;
+        const photo = document.getElementById('m_photo').files[0];
+        if (photo && studentId) {
+          const fd = new FormData();
+          fd.append('file', photo);
+          await StudentAPI.uploadPhoto(studentId, fd);
+        }
+        if (studentId) await uploadStudentDocuments(studentId);
+        showToast(editingStudentId ? 'Student updated successfully' : 'Admitted! No: ' + r.data.admission_no);
+        document.getElementById('admModal').style.display = 'none';
+        loadStudents(1); loadStats();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function uploadStudentCsv() {
+      if (!currentSchoolId) { showToast('Configure school first', 'error'); return; }
+      if (!ayId) { showToast('Select academic year first', 'error'); return; }
+      const fileInput = document.getElementById('studentImportFile');
+      const resultBox = document.getElementById('studentImportResult');
+      const button = document.getElementById('studentImportBtn');
+      const file = fileInput?.files?.[0];
+      if (!file) { showToast('Please select a CSV file', 'error'); return; }
+      const selectedFilterBranch = document.getElementById('filterBranch')?.value || '';
+      const branchCode = selectedFilterBranch || getAssignedBranchCode() || '';
+      const branch = branchCache.find(b => b.code === branchCode);
+      const fd = new FormData();
+      fd.append('file', file);
+      button.disabled = true;
+      resultBox.innerHTML = `
+        <div class="font-semibold text-slate-800">Uploading and checking student data...</div>
+        <div class="mt-2 text-slate-500">The sheet Adm No will be ignored. Existing matches will be updated, and only new students will receive fresh admission numbers.</div>`;
+      try {
+        const r = await StudentAPI.importCsv(currentSchoolId, ayId, fd, branchCode, branch?.name || currentSchoolName || '');
+        const data = r?.data || {};
+        const rowList = (title, rows, color, emptyText) => {
+          const preview = (rows || []).slice(0, 12);
+          return `
+            <details class="mt-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm" ${preview.length ? 'open' : ''}>
+              <summary class="cursor-pointer font-semibold ${color}">${title}: ${(rows || []).length}</summary>
+              ${preview.length ? `<div class="mt-3 max-h-80 overflow-auto divide-y divide-slate-100 pr-1">${preview.map(row => `
+                <div class="py-3 text-sm text-slate-600">
+                  <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
+                    <span class="rounded-lg bg-slate-100 px-2 py-1 font-mono text-xs text-slate-500">Row ${row.row || '-'}</span>
+                    <span class="font-semibold text-slate-900">${row.admission_no || '-'}</span>
+                    <span class="text-slate-700">${row.name || row.incoming_name || '-'}</span>
+                  </div>
+                  ${row.source_admission_no ? `<span class="block mt-2 text-xs text-slate-400">Sheet Adm No ignored: ${row.source_admission_no}</span>` : ''}
+                  ${row.reason ? `<span class="block mt-2 text-xs ${color}">${row.reason}${row.existing_name ? `: ${row.existing_name}` : ''}</span>` : ''}
+                  ${row.classroom ? `<span class="block mt-2 text-xs text-slate-400">${row.classroom}${row.section ? ' / ' + row.section : ''}${row.branch ? ' · ' + row.branch : ''}</span>` : ''}
+                </div>`).join('')}</div>` : `<div class="mt-2 text-xs text-slate-400">${emptyText}</div>`}
+              ${(rows || []).length > preview.length ? `<div class="mt-2 text-xs text-slate-400">Showing first ${preview.length} rows only.</div>` : ''}
+            </details>`;
+        };
+        resultBox.innerHTML = `
+          <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <div>
+              <div class="font-semibold text-slate-900">Import completed</div>
+              <div class="text-xs text-slate-500 mt-1">New admission numbers were assigned only to newly created students. Existing matches were updated.</div>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-3 mt-4">
+            <div class="rounded-2xl bg-emerald-50 border border-emerald-100 p-4 text-emerald-700"><div class="text-xs font-semibold uppercase tracking-wide">Created</div><div class="text-2xl font-bold mt-1">${data.created || 0}</div></div>
+            <div class="rounded-2xl bg-blue-50 border border-blue-100 p-4 text-blue-700"><div class="text-xs font-semibold uppercase tracking-wide">Updated</div><div class="text-2xl font-bold mt-1">${data.updated || 0}</div></div>
+            <div class="rounded-2xl bg-amber-50 border border-amber-100 p-4 text-amber-700"><div class="text-xs font-semibold uppercase tracking-wide">Existing</div><div class="text-2xl font-bold mt-1">${data.existing || 0}</div></div>
+            <div class="rounded-2xl bg-slate-100 border border-slate-200 p-4 text-slate-700"><div class="text-xs font-semibold uppercase tracking-wide">Skipped</div><div class="text-2xl font-bold mt-1">${data.skipped || 0}</div></div>
+            <div class="rounded-2xl bg-violet-50 border border-violet-100 p-4 text-violet-700"><div class="text-xs font-semibold uppercase tracking-wide">New Class / Section</div><div class="text-2xl font-bold mt-1">${data.classes_created || 0}/${data.sections_created || 0}</div></div>
+          </div>
+          ${rowList('Created rows', data.created_rows || [], 'text-emerald-700', 'No new students created')}
+          ${rowList('Updated rows', data.updated_rows || [], 'text-blue-700', 'No existing students matched this upload')}
+          ${rowList('Other skipped rows', (data.skipped_rows || []).filter(row => row.reason !== 'Admission no already exists'), 'text-red-600', 'No other skipped rows')}
+          <div class="text-slate-500 mt-3 text-xs">${(data.errors || []).slice(0, 5).join(' | ') || 'No import errors'}</div>`;
+        fileInput.value = '';
+        showToast(`Import complete. Created ${data.created || 0}, updated ${data.updated || 0}, skipped ${data.skipped || 0}`, 'success');
+        loadStudents(1);
+        loadStats();
+      } catch (e) {
+        resultBox.textContent = `Import failed: ${e.message}`;
+        showToast('Import error: ' + e.message, 'error');
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+
+    const dbLoad = debounce(() => loadStudents(1));
+    document.querySelectorAll('.m_month').forEach(el => el.addEventListener('change', updateFeePreview));
+    document.getElementById('searchInput').addEventListener('input', dbLoad);
+    document.getElementById('filterStatus').addEventListener('change', () => loadStudents(1));
+    document.getElementById('filterBranch').addEventListener('change', async (e) => {
+      selectedBranchCode = e.target.value || '';
+      updateStudentImportMeta();
+      await loadStats();
+      loadStudents(1);
+    });
+    document.getElementById('filterClass').addEventListener('change', () => loadStudents(1));
+    (async function initStudentPage() {
+      currentSchoolId = await initializeSchoolContext() || currentSchoolId;
+      renderStudentStatusOptions();
+      updateStudentImportMeta();
+      await loadSchoolMeta();
+      await loadStats();
+      loadClasses(); loadAcademicYearMeta(); loadRoutes(); loadStudents();
+    })();
+
+    function statCard(title, value, icon, color) {
+  return `
+    <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
+      
+      <div>
+        <p class="text-sm text-gray-400">${title}</p>
+        <h3 class="text-xl font-bold text-gray-900">${value}</h3>
+      </div>
+
+      <div class="p-3 rounded-xl bg-${color}-100 text-${color}-600">
+        <i data-lucide="${icon}" class="w-5 h-5"></i>
+      </div>
+
+    </div>
+  `;
+}
+
+lucide.createIcons();
+  </script>
+</body>
+
+</html>

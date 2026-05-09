@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f0f2f8;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f0f2f8;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      overflow: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Reports - Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <style>
+    .finput {
+      width: 100%;
+      padding: .625rem .75rem;
+      border-radius: .75rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: .875rem;
+      outline: none
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #3b82f6
+    }
+
+    .stat-big {
+      background: white;
+      border-radius: 1.5rem;
+      padding: 1.5rem;
+      border: 1px solid #f3f4f6;
+      text-align: center
+    }
+
+    .kpi-val {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1
+    }
+  </style>
+</head>
+
+<body >
+  <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+      <div class="p-6 space-y-6">
+
+        <!-- Controls -->
+        <div class="flex flex-wrap gap-3 items-center">
+          <select id="reportAY"
+            class="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none shadow-sm">
+            <option value="">Current Academic Year</option>
+          </select>
+          <input id="reportMonth" type="month"
+            class="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none shadow-sm" />
+          <input id="feeStartDate" type="date"
+            class="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none shadow-sm" />
+          <input id="feeEndDate" type="date"
+            class="px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none shadow-sm" />
+          <button onclick="loadAllReports()"
+            class="px-5 py-2.5 bg-blue-600 flex items-center gap-2 text-white rounded-xl text-sm font-semibold shadow-lg hover:bg-blue-700">  <span data-lucide="refresh-cw" class="w-4 h-4"></span>
+
+            Refresh All</button>
+          <button onclick="window.print()"
+            class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200 flex items-center gap-2 bg-gray-300"><span data-lucide="printer" class="w-4 h-4"></span>
+            Print</button>
+        </div>
+
+        <!-- KPI Cards -->
+        <div id="kpiRow" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+
+        <!-- Row 1: Attendance + Fee Collection -->
+        <div class="grid lg:grid-cols-2 gap-5">
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h4 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><span data-lucide="calendar" class="w-4 h-4"></span>Monthly Attendance Trend</h4>
+            <canvas id="attendanceChart" height="200"></canvas>
+          </div>
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h4 class="font-bold text-gray-900 mb-4 flex items-center gap-2">  <span data-lucide="wallet" class="w-4 h-4"></span> Fee Collection</h4>
+            <canvas id="feeChart" height="200"></canvas>
+          </div>
+        </div>
+
+        <!-- Row 2: Class-wise Students + Gender Distribution -->
+        <div class="grid lg:grid-cols-2 gap-5">
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h4 class="font-bold text-gray-900 mb-4 flex items-center gap-2"><span data-lucide="users" class="w-4 h-4"></span> Students Class-wise</h4>
+            <canvas id="classStudentsChart" height="220"></canvas>
+          </div>
+          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+            <h4 class="font-bold text-gray-900 mb-4 flex items-center gap-2">  <span data-lucide="pie-chart" class="w-4 h-4"></span> Gender Distribution</h4>
+            <div class="flex items-center justify-center h-48">
+              <canvas id="genderChart" height="180"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <!-- Row 3: Today's Attendance Table -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div class="flex justify-between mb-4">
+            <h4 class="font-bold text-gray-900 flex items-center gap-2">  <span data-lucide="bar-chart-3" class="w-4 h-4"></span> Today's Class-wise Attendance</h4>
+            <span id="todayDate" class="text-sm text-gray-400"></span>
+          </div>
+          <div id="attendanceTable"></div>
+        </div>
+
+        <!-- Row 4: Fee Defaulters -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div class="flex justify-between mb-4">
+            <h4 class="font-bold text-gray-900 flex items-center gap-2">  <span data-lucide="alert-triangle" class="w-4 h-4"></span> Fee Defaulters</h4>
+            <div id="defaulterMeta" class="text-sm text-red-500 font-semibold"></div>
+          </div>
+          <div id="defaulterTable"></div>
+        </div>
+
+        <!-- Row 5: Staff Attendance Summary -->
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <h4 class="font-bold text-gray-900 mb-4 flex items-center gap-2">  <span data-lucide="users" class="w-4 h-4"></span> Staff Attendance Summary</h4>
+          <div id="staffAttTable"></div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('reports');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('Reports & Analytics', 'School performance overview');
+    const schoolId = localStorage.getItem('school_id');
+    document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+    // Set default month
+    const now = new Date();
+    document.getElementById('reportMonth').value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const rangeStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    document.getElementById('feeStartDate').value = rangeStart.toISOString().split('T')[0];
+    document.getElementById('feeEndDate').value = now.toISOString().split('T')[0];
+
+    let charts = {};
+    function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+    async function loadOverview() {
+      if (!schoolId) return;
+      try {
+        const r = await ReportsAPI.overview(schoolId); const d = r?.data || {};
+        document.getElementById('kpiRow').innerHTML = `
+      <div class="stat-big shadow-sm">
+        <div class="kpi-val text-blue-600">${d.total_students || 0}</div>
+        <div class="text-sm text-gray-500 mt-1 font-medium">Total Students</div>
+        <div class="flex justify-center gap-3 mt-2 text-xs text-gray-400">
+          <span>👦 ${d.gender_distribution?.male || 0}</span>
+          <span>👧 ${d.gender_distribution?.female || 0}</span>
+        </div>
+      </div>
+      <div class="stat-big shadow-sm">
+        <div class="kpi-val text-emerald-600">${d.total_staff || 0}</div>
+        <div class="text-sm text-gray-500 mt-1 font-medium">Total Staff</div>
+        <div class="text-xs text-gray-400 mt-2">Teaching: ${d.staff_type_distribution?.teaching || 0}</div>
+      </div>
+      <div class="stat-big shadow-sm">
+        <div class="kpi-val text-orange-500">${d.fee_stats?.collection_rate || 0}%</div>
+        <div class="text-sm text-gray-500 mt-1 font-medium">Fee Collection Rate</div>
+        <div class="text-xs text-gray-400 mt-2">Due: ${formatCurrency(d.fee_stats?.total_due || 0)}</div>
+      </div>
+      <div class="stat-big shadow-sm">
+        <div class="kpi-val text-purple-600">${d.attendance_stats?.avg_last_7_days || 0}%</div>
+        <div class="text-sm text-gray-500 mt-1 font-medium">Avg Attendance (7 days)</div>
+        <div class="text-xs text-gray-400 mt-2">${d.total_classes || 0} classes</div>
+      </div>`;
+
+        // Gender Doughnut
+        destroyChart('genderChart');
+        const g = d.gender_distribution || {};
+        charts['genderChart'] = new Chart(document.getElementById('genderChart'), {
+          type: 'doughnut',
+          data: { labels: ['Male', 'Female', 'Other'], datasets: [{ data: [g.male || 0, g.female || 0, g.other || 0], backgroundColor: ['#3b82f6', '#ec4899', '#8b5cf6'], borderWidth: 0 }] },
+          options: { plugins: { legend: { position: 'bottom' } }, cutout: '65%' }
+        });
+      } catch (e) { }
+    }
+
+    async function loadAttendanceTrend() {
+      if (!schoolId) return;
+      const mv = document.getElementById('reportMonth').value || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+      const [yr, mo] = mv.split('-');
+      try {
+        const r = await ReportsAPI.attendanceMonthly(schoolId, yr, mo); const data = r?.data || [];
+        destroyChart('attendanceChart');
+        charts['attendanceChart'] = new Chart(document.getElementById('attendanceChart'), {
+          type: 'line',
+          data: {
+            labels: data.map(d => d.date.slice(8)),
+            datasets: [
+              { label: 'Present', data: data.map(d => d.present), borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.3, fill: true },
+              { label: 'Absent', data: data.map(d => d.absent), borderColor: '#ef4444', backgroundColor: 'rgba(239,68,68,0.05)', tension: 0.3, fill: true }
+            ]
+          },
+          options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+        });
+      } catch (e) { }
+    }
+
+    async function loadFeeCollection() {
+      if (!schoolId) return;
+      const yr = document.getElementById('reportMonth').value?.split('-')[0] || now.getFullYear();
+      const startDate = document.getElementById('feeStartDate').value || '';
+      const endDate = document.getElementById('feeEndDate').value || '';
+      try {
+        const r = await ReportsAPI.feesMonthly(schoolId, yr, startDate, endDate); const data = r?.data || [];
+        destroyChart('feeChart');
+        charts['feeChart'] = new Chart(document.getElementById('feeChart'), {
+          type: 'bar',
+          data: {
+            labels: data.map(d => d.label || d.month_name),
+            datasets: [{ label: 'Collected (₹)', data: data.map(d => d.collected), backgroundColor: 'rgba(59,130,246,0.8)', borderRadius: 6 }]
+          },
+          options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true, ticks: { callback: v => '₹' + v.toLocaleString() } } } }
+        });
+      } catch (e) { }
+    }
+
+    async function loadClassWise() {
+      if (!schoolId) return;
+      try {
+        const r = await ReportsAPI.studentsClassWise(schoolId); const data = r?.data || [];
+        destroyChart('classStudentsChart');
+        charts['classStudentsChart'] = new Chart(document.getElementById('classStudentsChart'), {
+          type: 'bar',
+          data: {
+            labels: data.map(d => d.class_name),
+            datasets: [
+              { label: 'Male', data: data.map(d => d.male), backgroundColor: 'rgba(59,130,246,0.8)', borderRadius: 4 },
+              { label: 'Female', data: data.map(d => d.female), backgroundColor: 'rgba(236,72,153,0.8)', borderRadius: 4 }
+            ]
+          },
+          options: { responsive: true, plugins: { legend: { position: 'top' } }, scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } } }
+        });
+      } catch (e) { }
+    }
+
+    async function loadTodayAttendance() {
+      if (!schoolId) return;
+      try {
+        const r = await ReportsAPI.attendanceClassWise(schoolId); const data = r?.data || [];
+        const hdrs = ['Class', 'Section', 'Total', 'Present', 'Absent', 'Late', '%'];
+        const rows = data.map(a => {
+          const pct = a.percentage || 0;
+          const color = pct >= 90 ? 'text-emerald-600' : pct >= 75 ? 'text-blue-600' : 'text-red-600';
+          return `<td class="px-4 py-3 font-medium text-gray-900 text-sm">${a.classroom || '-'}</td>
+        <td class="px-4 py-3 text-sm text-gray-600">${a.section || '-'}</td>
+        <td class="px-4 py-3 text-center text-sm font-medium">${a.total}</td>
+        <td class="px-4 py-3 text-center text-emerald-600 font-semibold">${a.present}</td>
+        <td class="px-4 py-3 text-center text-red-500 font-semibold">${a.absent}</td>
+        <td class="px-4 py-3 text-center text-orange-500">${a.late}</td>
+        <td class="px-4 py-3 text-center"><span class="font-bold ${color}">${pct}%</span></td>`;
+        });
+        document.getElementById('attendanceTable').innerHTML = buildTable(hdrs, rows, "No attendance marked today");
+      } catch (e) { }
+    }
+
+    async function loadDefaulters() {
+      if (!schoolId) return;
+      try {
+        const r = await ReportsAPI.feeDefaulters(schoolId); const data = r?.data || []; const meta = r?.meta || {};
+        document.getElementById('defaulterMeta').textContent = `${meta.total_defaulters || 0} students · Total Due: ${formatCurrency(meta.total_due || 0)}`;
+        const hdrs = ['Student', 'Class', 'Invoice No', 'Billed', 'Paid', 'Balance', 'Due Date', 'Status'];
+        const rows = data.slice(0, 25).map(d => `
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${d.student_name}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${d.class || '-'}</td>
+      <td class="px-4 py-3 font-mono text-xs text-gray-500">${d.invoice_no}</td>
+      <td class="px-4 py-3 text-sm text-gray-900">${formatCurrency(d.net_amount)}</td>
+      <td class="px-4 py-3 text-sm text-emerald-600 font-medium">${formatCurrency(d.paid_amount)}</td>
+      <td class="px-4 py-3 font-bold text-red-600">${formatCurrency(d.balance)}</td>
+      <td class="px-4 py-3 text-sm ${new Date(d.due_date) < new Date() ? 'text-red-500 font-medium' : 'text-gray-500'}">${formatDate(d.due_date)}</td>
+      <td class="px-4 py-3">${tdBadge(d.status, d.status === 'Overdue' ? 'red' : d.status === 'Partial' ? 'orange' : 'yellow')}</td>
+    `);
+        document.getElementById('defaulterTable').innerHTML = buildTable(hdrs, rows, 'No defaulters found! 🎉');
+      } catch (e) { }
+    }
+
+    async function loadStaffAttendance() {
+      if (!schoolId) return;
+      const mv = document.getElementById('reportMonth').value;
+      const [yr, mo] = mv ? mv.split('-') : [now.getFullYear(), now.getMonth() + 1];
+      try {
+        const r = await ReportsAPI.staffAttendance(schoolId, parseInt(mo), parseInt(yr)); const data = r?.data || [];
+        const hdrs = ['Staff Name', 'Present Days', 'Absent Days', 'Late', 'On Leave', 'Total Working', '%'];
+        const rows = data.map(s => {
+          const total = (s.present || 0) + (s.absent || 0) + (s.late || 0) + (s.on_leave || 0);
+          const pct = total ? Math.round((s.present + s.late) / total * 100) : 0;
+          return `<td class="px-4 py-3 font-medium text-gray-900 text-sm">${s.name}</td>
+        <td class="px-4 py-3 text-center text-emerald-600 font-bold">${s.present || 0}</td>
+        <td class="px-4 py-3 text-center text-red-500 font-bold">${s.absent || 0}</td>
+        <td class="px-4 py-3 text-center text-orange-500">${s.late || 0}</td>
+        <td class="px-4 py-3 text-center text-blue-500">${s.on_leave || 0}</td>
+        <td class="px-4 py-3 text-center text-gray-600">${total}</td>
+        <td class="px-4 py-3 text-center"><span class="font-bold ${pct >= 90 ? 'text-emerald-600' : pct >= 75 ? 'text-blue-600' : 'text-red-600'}">${pct}%</span></td>`;
+        });
+        document.getElementById('staffAttTable').innerHTML = buildTable(hdrs, rows, 'No staff attendance data for this month');
+      } catch (e) { }
+    }
+
+    async function loadAllReports() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      await Promise.allSettled([loadOverview(), loadAttendanceTrend(), loadFeeCollection(), loadClassWise(), loadTodayAttendance(), loadDefaulters(), loadStaffAttendance()]);
+      showToast('Reports refreshed!');
+    }
+
+    document.getElementById('reportMonth').addEventListener('change', loadAllReports);
+    document.getElementById('feeStartDate').addEventListener('change', loadFeeCollection);
+    document.getElementById('feeEndDate').addEventListener('change', loadFeeCollection);
+    loadAllReports();
+    lucide.createIcons();
+  </script>
+</body>
+
+</html>

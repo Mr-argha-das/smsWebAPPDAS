@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f0f2f8;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f0f2f8;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      overflow: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Inventory - Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .finput {
+      width: 100%;
+      padding: .625rem .75rem;
+      border-radius: .75rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: .875rem;
+      outline: none
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #3b82f6
+    }
+
+    .lbl {
+      display: block;
+      font-size: .875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: .375rem
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+  <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+      <div class="p-6 space-y-6">
+        <div id="invStats" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+        <div
+          style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div class="tab-bar">
+            <button onclick="switchTab(0)"
+              class="ivtab px-5 py-4 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap">Assets</button>
+            <button onclick="switchTab(1)"
+              class="ivtab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Stock
+              Items</button>
+            <button onclick="switchTab(2)"
+              class="ivtab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Stock
+              Transactions</button>
+          </div>
+          <!-- Assets -->
+          <div id="ivtab0" class="p-5">
+            <div class="flex flex-col sm:flex-row gap-3 justify-between mb-4">
+              <div class="flex gap-2">
+                <input id="assetSearch" type="text" placeholder="Search assets..."
+                  class="px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-56" />
+                <select id="assetTypeFilter"
+                  class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none">
+                  <option value="">All Types</option>
+                  <option value="Furniture">Furniture</option>
+                  <option value="Electronics">Electronics</option>
+                  <option value="Lab Equipment">Lab Equipment</option>
+                  <option value="Computer">Computer</option>
+                  <option value="Sports">Sports</option>
+                  <option value="Book">Book</option>
+                  <option value="Note Book">Note Book</option>
+                </select>
+              </div>
+              <button onclick="openAssetModal()"
+                class="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg whitespace-nowrap">+
+                Add Asset</button>
+            </div>
+            <div id="assetTable"></div>
+          </div>
+          <!-- Stock Items -->
+          <div id="ivtab1" class="p-5 hidden">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-4">
+              <div class="flex gap-2 flex-wrap items-end">
+                <div><label class="lbl">Search</label><input id="stockSearch" class="px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm" placeholder="Item, code or class" /></div>
+                <div><label class="lbl">Class</label><input id="stockClassFilter" class="px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm" placeholder="Filter by class" /></div>
+                <label class="flex items-center gap-2 text-sm cursor-pointer px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50"><input type="checkbox" id="lowStockOnly"
+                  class="accent-blue-600" onchange="loadStockItems()" /><span>Low stock only</span></label>
+              </div>
+              <button onclick="document.getElementById('stockModal').style.display='flex'"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Add
+                Item</button>
+            </div>
+            <div id="stockTable"></div>
+          </div>
+          <!-- Transactions -->
+          <div id="ivtab2" class="p-5 hidden">
+            <div class="flex items-center gap-4 mb-4">
+              <select id="txnItemSel" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm"
+                onchange="loadTransactions(this.value)">
+                <option value="">Select item</option>
+              </select>
+              <button onclick="document.getElementById('txnModal').style.display='flex';loadTxnItems()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+
+                Transaction</button>
+            </div>
+            <div id="txnTable"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Asset Modal -->
+  <div id="assetModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 id="assetModalTitle" class="font-bold text-gray-900">Add Asset</h3><button
+          onclick="closeAssetModal()"
+          class="text-gray-400 hover:text-gray-600 text-xl px-2">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Asset Name *</label><input id="as_name" class="finput" placeholder="e.g. Projector" />
+          </div>
+          <div><label class="lbl">Type</label><select id="as_type" class="finput">
+              <option value="Electronics">Electronics</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Computer">Computer</option>
+              <option value="Lab Equipment">Lab Equipment</option>
+              <option value="Sports">Sports</option>
+              <option value="Book">Book</option>
+              <option value="Note Book">Note Book</option>
+              <option value="Other">Other</option>
+            </select></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Brand</label><input id="as_brand" class="finput" placeholder="Brand" /></div>
+          <div><label class="lbl">Model/Serial No</label><input id="as_serial" class="finput"
+              placeholder="Serial/Model" /></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Price (₹)</label><input id="as_price" type="number" class="finput"
+              placeholder="0" /></div>
+          <div><label class="lbl">Which Class</label><input id="as_class" class="finput" placeholder="e.g. Nursery, 5th" /></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Purchase Date</label><input id="as_pdate" type="date" class="finput" /></div>
+          <div><label class="lbl">Location</label><input id="as_loc" class="finput" placeholder="Room/Lab" /></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Condition</label><select id="as_cond" class="finput">
+              <option value="Excellent">Excellent</option>
+              <option value="Good" selected>Good</option>
+              <option value="Fair">Fair</option>
+              <option value="Poor">Poor</option>
+            </select></div>
+          <div><label class="lbl">Status</label><select id="as_status" class="finput">
+              <option value="Available">Available</option>
+              <option value="In-Use">In-Use</option>
+              <option value="Under-Maintenance">Under-Maintenance</option>
+              <option value="Disposed">Disposed</option>
+            </select></div>
+        </div>
+        <div><label class="lbl">Assigned To</label><input id="as_assign" class="finput"
+            placeholder="Person/Department" /></div>
+        <div><label class="lbl">Warranty Expiry</label><input id="as_warr" type="date" class="finput" /></div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="closeAssetModal()"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveAsset()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stock Modal -->
+  <div id="stockModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold text-gray-900">Add Stock Item</h3><button
+          onclick="document.getElementById('stockModal').style.display='none'"
+          class="text-gray-400 hover:text-gray-600 text-xl px-2">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Item Name *</label><input id="sk_name" class="finput" placeholder="e.g. A4 Paper" />
+          </div>
+          <div><label class="lbl">Item Code *</label><input id="sk_code" class="finput" placeholder="e.g. ST001" />
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Category</label><select id="sk_cat" class="finput">
+              <option value="Stationery">Stationery</option>
+              <option value="Cleaning">Cleaning</option>
+              <option value="Lab Consumable">Lab Consumable</option>
+              <option value="Sports">Sports</option>
+              <option value="Books">Books</option>
+              <option value="Other">Other</option>
+            </select></div>
+          <div><label class="lbl">Unit</label><select id="sk_unit" class="finput">
+              <option value="Nos">Nos</option>
+              <option value="Kg">Kg</option>
+              <option value="Litre">Litre</option>
+              <option value="Box">Box</option>
+              <option value="Ream">Ream</option>
+            </select></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Initial Stock</label><input id="sk_stock" type="number" class="finput" value="0" />
+          </div>
+          <div><label class="lbl">Unit Price (₹)</label><input id="sk_price" type="number" class="finput"
+              placeholder="0" /></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Class</label><input id="sk_class" class="finput" placeholder="e.g. 5th, Nursery" /></div>
+          <div><label class="lbl">Min Stock Alert</label><input id="sk_min" type="number" class="finput" value="10" />
+          </div>
+          <div><label class="lbl">Location</label><input id="sk_loc" class="finput" placeholder="Store room" /></div>
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('stockModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveStockItem()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Transaction Modal -->
+  <div id="txnModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold text-gray-900">Stock Transaction</h3><button
+          onclick="document.getElementById('txnModal').style.display='none'"
+          class="text-gray-400 hover:text-gray-600 text-xl px-2">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Item *</label><select id="txn_item" class="finput">
+            <option value="">Select item</option>
+          </select></div>
+        <div><label class="lbl">Type *</label><select id="txn_type" class="finput">
+            <option value="In">Stock In (Purchase/Receive)</option>
+            <option value="Out">Stock Out (Issue/Use)</option>
+            <option value="Adjustment">Adjustment</option>
+          </select></div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Quantity *</label><input id="txn_qty" type="number" class="finput" placeholder="0"
+              min="0.1" step="0.1" /></div>
+          <div><label class="lbl">Unit Price (₹)</label><input id="txn_uprice" type="number" class="finput"
+              placeholder="0" /></div>
+        </div>
+        <div><label class="lbl">Vendor/Purpose</label><input id="txn_vendor" class="finput"
+            placeholder="Vendor or purpose" /></div>
+        <div><label class="lbl">Remarks</label><input id="txn_rem" class="finput" placeholder="Optional remarks" />
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('txnModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveTransaction()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('inventory');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('Inventory & Assets', 'Manage school assets and stock');
+    const schoolId = localStorage.getItem('school_id');
+    let editingAssetId = '';
+    let assetCache = {};
+    let editingStockItemId = '';
+
+    function switchTab(idx) {
+      document.querySelectorAll('.ivtab').forEach((b, i) => { b.classList.toggle('border-blue-600', i === idx); b.classList.toggle('text-blue-600', i === idx); b.classList.toggle('border-transparent', i !== idx); b.classList.toggle('text-gray-500', i !== idx); });
+      document.querySelectorAll('[id^="ivtab"]').forEach(t => { t.classList.toggle('hidden', parseInt(t.id.replace('ivtab', '')) !== idx); });
+      if (idx === 0) loadAssets(); if (idx === 1) loadStockItems(); if (idx === 2) loadTxnItems();
+    }
+
+    async function loadStats() {
+      if (!schoolId) return;
+      try {
+        const r = await InventoryAPI.getStats(schoolId); const d = r?.data || {};
+        document.getElementById('invStats').innerHTML =
+  statCard('Total Assets', d.total_assets || 0, 'building', 'blue') +
+  statCard('Asset Value', formatCurrency(d.total_asset_value || 0), 'wallet', 'green') +
+  statCard('Stock Items', d.total_stock_items || 0, 'boxes', 'purple') +
+  statCard('Low Stock', d.low_stock_items || 0, 'alert-triangle', 'red');
+
+// 🔥 IMPORTANT
+lucide.createIcons();
+      } catch (e) { }
+    }
+    function statCard(title, value, icon, color) {
+  return `
+    <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
+      <div>
+        <p class="text-sm text-gray-400">${title}</p>
+        <h3 class="text-xl font-bold text-gray-900">${value}</h3>
+      </div>
+      <div class="p-3 rounded-xl bg-${color}-100 text-${color}-600">
+        <i data-lucide="${icon}" class="w-5 h-5"></i>
+      </div>
+    </div>
+  `;
+}
+
+    async function loadAssetCats() {
+      if (!schoolId) return;
+      // No separate call needed as type is predefined
+    }
+
+    function closeAssetModal() {
+      document.getElementById('assetModal').style.display = 'none';
+    }
+
+    function resetAssetForm() {
+      editingAssetId = '';
+      document.getElementById('assetModalTitle').textContent = 'Add Asset';
+      document.getElementById('as_name').value = '';
+      document.getElementById('as_type').value = 'Electronics';
+      document.getElementById('as_brand').value = '';
+      document.getElementById('as_serial').value = '';
+      document.getElementById('as_price').value = '';
+      document.getElementById('as_class').value = '';
+      document.getElementById('as_pdate').value = '';
+      document.getElementById('as_loc').value = '';
+      document.getElementById('as_cond').value = 'Good';
+      document.getElementById('as_status').value = 'Available';
+      document.getElementById('as_assign').value = '';
+      document.getElementById('as_warr').value = '';
+    }
+
+    function openAssetModal(assetId = '') {
+      resetAssetForm();
+      loadAssetCats();
+      if (assetId && assetCache[assetId]) {
+        const asset = assetCache[assetId];
+        editingAssetId = asset.id;
+        document.getElementById('assetModalTitle').textContent = 'Edit Asset';
+        document.getElementById('as_name').value = asset.asset_name || '';
+        document.getElementById('as_type').value = asset.asset_type || 'Other';
+        document.getElementById('as_brand').value = asset.brand || '';
+        document.getElementById('as_serial').value = asset.serial_no || asset.model_no || '';
+        document.getElementById('as_price').value = asset.purchase_price || 0;
+        document.getElementById('as_class').value = asset.class_name || '';
+        document.getElementById('as_pdate').value = asset.purchase_date ? asset.purchase_date.slice(0, 10) : '';
+        document.getElementById('as_loc').value = asset.location || '';
+        document.getElementById('as_cond').value = asset.condition || 'Good';
+        document.getElementById('as_status').value = asset.status || 'Available';
+        document.getElementById('as_assign').value = asset.assigned_to || '';
+        document.getElementById('as_warr').value = asset.warranty_expiry ? asset.warranty_expiry.slice(0, 10) : '';
+      }
+      document.getElementById('assetModal').style.display = 'flex';
+    }
+
+    async function loadAssets(page = 1) {
+      if (!schoolId) { document.getElementById('assetTable').innerHTML = '<div class="text-center py-8 text-gray-400">Configure school first</div>'; return; }
+      const params = { school_id: schoolId, page, per_page: 15 };
+      const srch = document.getElementById('assetSearch').value.trim();
+      const type = document.getElementById('assetTypeFilter').value;
+      if (srch) params.search = srch; if (type) params.asset_type = type;
+      try {
+        const r = await InventoryAPI.getAssets(params); const assets = r?.data || [];
+        assetCache = Object.fromEntries(assets.map(a => [a.id, a]));
+        const hdrs = ['Asset Name', 'Type', 'Class', 'Brand', 'Price', 'Condition', 'Status', 'Location', 'Assigned To', 'Action'];
+        const rows = assets.map(a => `
+      <td class="px-4 py-3"><div class="font-medium text-gray-900 text-sm">${a.asset_name}</div><div class="text-xs text-gray-400">${a.asset_code}</div></td>
+      <td class="px-4 py-3">${tdBadge(a.asset_type, 'blue')}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${a.class_name || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${a.brand || '-'}</td>
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${formatCurrency(a.purchase_price)}</td>
+      <td class="px-4 py-3">${tdBadge(a.condition, a.condition === 'Excellent' || a.condition === 'Good' ? 'green' : a.condition === 'Fair' ? 'yellow' : 'red')}</td>
+      <td class="px-4 py-3">${tdBadge(a.status, a.status === 'Available' ? 'green' : a.status === 'In-Use' ? 'blue' : a.status === 'Under-Maintenance' ? 'orange' : 'red')}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${a.location || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${a.assigned_to || '-'}</td>
+      <td class="px-4 py-3 whitespace-nowrap"><button onclick="openAssetModal('${a.id}')" class="text-xs text-blue-600 hover:underline mr-3">Edit</button><button onclick="deleteAsset('${a.id}')" class="text-xs text-red-500 hover:underline">Delete</button></td>
+    `);
+        document.getElementById('assetTable').innerHTML = buildTable(hdrs, rows, 'No assets added yet');
+      } catch (e) { document.getElementById('assetTable').innerHTML = `<p class="text-red-400 text-sm p-4">Error: ${e.message}</p>`; }
+    }
+
+    async function saveAsset() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const name = document.getElementById('as_name').value.trim();
+      if (!name) { showToast('Asset name required', 'error'); return; }
+      try {
+        const payload = { school_id: schoolId, asset_name: name, asset_type: document.getElementById('as_type').value, class_name: document.getElementById('as_class').value || null, brand: document.getElementById('as_brand').value || null, serial_no: document.getElementById('as_serial').value || null, purchase_price: parseFloat(document.getElementById('as_price').value) || 0, current_value: parseFloat(document.getElementById('as_price').value) || 0, purchase_date: document.getElementById('as_pdate').value || null, location: document.getElementById('as_loc').value || null, condition: document.getElementById('as_cond').value, status: document.getElementById('as_status').value, assigned_to: document.getElementById('as_assign').value || null, warranty_expiry: document.getElementById('as_warr').value || null };
+        if (editingAssetId) {
+          await InventoryAPI.updateAsset(editingAssetId, payload);
+          showToast('Asset updated!');
+        } else {
+          await InventoryAPI.addAsset(payload);
+          showToast('Asset added!');
+        }
+        closeAssetModal(); loadAssets(); loadStats();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function deleteAsset(id) {
+      if (!confirm('Delete this asset?')) return;
+      try {
+        await InventoryAPI.deleteAsset(id);
+        showToast('Asset deleted');
+        loadAssets();
+        loadStats();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadStockItems() {
+      if (!schoolId) { document.getElementById('stockTable').innerHTML = '<div class="text-center py-8 text-gray-400">Configure school first</div>'; return; }
+      const lowOnly = document.getElementById('lowStockOnly').checked;
+      const search = document.getElementById('stockSearch').value.trim();
+      const className = document.getElementById('stockClassFilter').value.trim();
+      try {
+        const r = await InventoryAPI.getStockItems(schoolId, lowOnly, search, className); const items = r?.data || [];
+        // Load items into transaction select too
+        const opts = '<option value="">Select item</option>' + items.map(i => `<option value="${i.id}">${i.item_name} (${i.current_stock} ${i.unit})</option>`).join('');
+        document.getElementById('txnItemSel').innerHTML = opts; document.getElementById('txn_item').innerHTML = opts;
+        const hdrs = ['Item Name', 'Code', 'Class', 'Category', 'Stock', 'Unit', 'Min Stock', 'Unit Price', 'Value', 'Alert', 'Action'];
+        const rows = items.map(i => `
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${i.item_name}</td>
+      <td class="px-4 py-3 font-mono text-xs text-gray-500">${i.item_code}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${i.class_name || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${i.category}</td>
+      <td class="px-4 py-3 text-center font-bold text-lg ${i.is_low_stock ? 'text-red-600' : 'text-gray-900'}">${i.current_stock}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${i.unit}</td>
+      <td class="px-4 py-3 text-center text-sm text-gray-500">${i.minimum_stock}</td>
+      <td class="px-4 py-3 text-sm font-medium text-gray-900">${formatCurrency(i.unit_price)}</td>
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${formatCurrency(i.stock_value)}</td>
+      <td class="px-4 py-3">${i.is_low_stock ? '<span class="px-2 py-1 bg-red-100 text-red-700 rounded-lg text-xs font-bold">LOW STOCK</span>' : ''}</td>
+      <td class="px-4 py-3 whitespace-nowrap"><button onclick='editStockItem(${JSON.stringify(JSON.stringify(i))})' class="text-xs text-blue-600 hover:underline mr-3">Edit</button><button onclick="deleteStockItem('${i.id}')" class="text-xs text-red-500 hover:underline">Delete</button></td>
+    `);
+        document.getElementById('stockTable').innerHTML = buildTable(hdrs, rows, 'No stock items');
+      } catch (e) { }
+    }
+
+    async function saveStockItem() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const name = document.getElementById('sk_name').value.trim(), code = document.getElementById('sk_code').value.trim();
+      if (!name || !code) { showToast('Name and code required', 'error'); return; }
+      try {
+        const payload = { school_id: schoolId, item_name: name, item_code: code, class_name: document.getElementById('sk_class').value || null, category: document.getElementById('sk_cat').value, unit: document.getElementById('sk_unit').value, current_stock: parseFloat(document.getElementById('sk_stock').value) || 0, unit_price: parseFloat(document.getElementById('sk_price').value) || 0, minimum_stock: parseFloat(document.getElementById('sk_min').value) || 10, location: document.getElementById('sk_loc').value || null };
+        if (editingStockItemId) {
+          await InventoryAPI.updateStockItem(editingStockItemId, payload);
+          showToast('Stock item updated!');
+        } else {
+          await InventoryAPI.addStockItem(payload);
+          showToast('Stock item added!');
+        }
+        editingStockItemId = '';
+        document.getElementById('stockModal').style.display = 'none'; loadStockItems(); loadStats();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    function editStockItem(raw) {
+      const item = JSON.parse(raw);
+      editingStockItemId = item.id;
+      document.getElementById('stockModal').style.display = 'flex';
+      document.getElementById('sk_name').value = item.item_name || '';
+      document.getElementById('sk_code').value = item.item_code || '';
+      document.getElementById('sk_class').value = item.class_name || '';
+      document.getElementById('sk_cat').value = item.category || 'Other';
+      document.getElementById('sk_unit').value = item.unit || 'Nos';
+      document.getElementById('sk_stock').value = item.current_stock || 0;
+      document.getElementById('sk_price').value = item.unit_price || 0;
+      document.getElementById('sk_min').value = item.minimum_stock || 10;
+      document.getElementById('sk_loc').value = item.location || '';
+    }
+
+    async function deleteStockItem(id) {
+      if (!confirm('Delete this stock item?')) return;
+      try {
+        await InventoryAPI.deleteStockItem(id);
+        showToast('Stock item deleted');
+        loadStockItems();
+        loadStats();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadTxnItems() {
+      await loadStockItems();
+    }
+
+    async function loadTransactions(itemId) {
+      if (!itemId) { document.getElementById('txnTable').innerHTML = ''; return; }
+      try {
+        const r = await InventoryAPI.getStockTransactions(itemId); const txns = r?.data || [];
+        const hdrs = ['Type', 'Qty', 'Unit Price', 'Total', 'Vendor/Purpose', 'Done By', 'Balance', 'Date'];
+        const rows = txns.map(t => `
+      <td class="px-4 py-3">${tdBadge(t.type, t.type === 'In' ? 'green' : t.type === 'Out' ? 'red' : 'gray')}</td>
+      <td class="px-4 py-3 font-bold text-gray-900 text-sm">${t.quantity}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${formatCurrency(t.unit_price)}</td>
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${formatCurrency(t.total_price)}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${t.vendor || t.purpose || '-'}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${t.done_by || '-'}</td>
+      <td class="px-4 py-3 font-bold text-blue-600 text-sm">${t.balance_after}</td>
+      <td class="px-4 py-3 text-sm text-gray-500">${formatDate(t.date)}</td>
+    `);
+        document.getElementById('txnTable').innerHTML = buildTable(hdrs, rows, 'No transactions');
+      } catch (e) { }
+    }
+
+    async function saveTransaction() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const itemId = document.getElementById('txn_item').value, type = document.getElementById('txn_type').value, qty = parseFloat(document.getElementById('txn_qty').value);
+      if (!itemId || !type || !qty) { showToast('Fill all required fields', 'error'); return; }
+      try {
+        const r = await InventoryAPI.addStockTransaction({ school_id: schoolId, item_id: itemId, transaction_type: type, quantity: qty, unit_price: parseFloat(document.getElementById('txn_uprice').value) || 0, vendor: document.getElementById('txn_vendor').value || null, remarks: document.getElementById('txn_rem').value || null });
+        showToast('Transaction saved! New balance: ' + r.data.new_balance); document.getElementById('txnModal').style.display = 'none'; loadStockItems(); loadStats();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    const dbLoad = debounce(() => loadAssets(1));
+    document.getElementById('assetSearch').addEventListener('input', dbLoad);
+    document.getElementById('assetTypeFilter').addEventListener('change', () => loadAssets(1));
+    const dbStockLoad = debounce(() => loadStockItems());
+    document.getElementById('stockSearch').addEventListener('input', dbStockLoad);
+    document.getElementById('stockClassFilter').addEventListener('input', dbStockLoad);
+    loadStats(); loadAssets();
+  </script>
+</body>
+
+</html>

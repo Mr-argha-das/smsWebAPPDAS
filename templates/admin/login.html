@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login | EduManage</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('admin_static', path='admin/styles.css') }}">
+</head>
+<body class="login-page">
+    <section class="login-card">
+        <div class="login-copy">
+            <span class="eyebrow">EduManage Pro</span>
+            <h1>School admin, with a cleaner server-side flow.</h1>
+            <p>This panel is separate from your frontend app and is powered by FastAPI, MongoEngine, Uvicorn, and Jinja templates.</p>
+            <ul class="feature-list">
+                <li>Dashboard insights across school operations</li>
+                <li>Server-rendered admin pages with no frontend rebuild needed</li>
+                <li>Quick forms for users, classes, students, staff, and invoices</li>
+            </ul>
+        </div>
+
+        <form method="post" action="/admin/login" class="panel form-panel">
+            <div class="panel-heading">
+                <span class="eyebrow">Sign in</span>
+                <h2>Admin access</h2>
+            </div>
+
+            {% if message %}
+            <div class="flash {{ message_type }}">{{ message }}</div>
+            {% endif %}
+
+            <label>
+                Username or email
+                <input type="text" name="username" placeholder="admin or admin@school.com" required>
+            </label>
+
+            <label>
+                Password
+                <input type="password" name="password" placeholder="Enter password" required>
+            </label>
+
+            <button type="submit" class="primary-button">Open admin panel</button>
+            <p class="helper-text">Use any active user from the existing `users` collection.</p>
+        </form>
+    </section>
+</body>
+</html>

@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f0f2f8;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f0f2f8;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      overflow: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Communication - Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .finput {
+      width: 100%;
+      padding: .625rem .75rem;
+      border-radius: .75rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: .875rem;
+      outline: none
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #3b82f6
+    }
+
+    .lbl {
+      display: block;
+      font-size: .875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: .375rem
+    }
+  </style>
+</head>
+
+<body>
+  <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+      <div class="p-6 space-y-6">
+
+        <!-- Stats Row -->
+        <div id="commStats" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+
+        <!-- Notification Bell Badge -->
+        <div id="unreadBanner"
+          class="hidden bg-blue-50 border border-blue-200 rounded-xl px-5 py-3 flex items-center gap-3">
+          <span class="text-2xl">🔔</span>
+          <span class="text-sm font-medium text-blue-800">You have <strong id="unreadCount">0</strong> unread
+            notifications</span>
+          <button onclick="markAllRead()" class="ml-auto text-xs text-blue-600 underline hover:no-underline">Mark all
+            read</button>
+        </div>
+
+        <div
+          style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div class="tab-bar">
+            <button onclick="switchTab(0)"
+              class="ctab px-5 py-4 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap">
+              Notices</button>
+            <button onclick="switchTab(1)"
+              class="ctab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+              Events</button>
+            <button onclick="switchTab(2)"
+              class="ctab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+              Messages</button>
+            <button onclick="switchTab(3)"
+              class="ctab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">
+              Notifications</button>
+          </div>
+
+          <!-- Notices -->
+          <div id="ctab0" class="p-5">
+            <div class="flex flex-col sm:flex-row gap-3 justify-between mb-5">
+              <div class="flex gap-2 flex-wrap">
+                <input id="noticeSearch" type="text" placeholder="Search notices..."
+                  class="px-4 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-56" />
+                <select id="noticeTypeFilter" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm"
+                  onchange="loadNotices()">
+                  <option value="">All Types</option>
+                  <option value="General">General</option>
+                  <option value="Exam">Exam</option>
+                  <option value="Fee">Fee</option>
+                  <option value="Holiday">Holiday</option>
+                  <option value="Event">Event</option>
+                  <option value="Urgent">Urgent</option>
+                </select>
+              </div>
+              <button onclick="document.getElementById('noticeModal').style.display='flex'"
+                class="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg whitespace-nowrap">+
+                Create Notice</button>
+            </div>
+            <div id="noticeCards" class="space-y-3"></div>
+            <div id="noticePgn" class="flex justify-between items-center mt-4 text-sm text-gray-500"></div>
+          </div>
+
+          <!-- Events -->
+          <div id="ctab1" class="p-5 hidden">
+            <div class="flex justify-between mb-5">
+              <div class="flex gap-2">
+                <label
+                  class="flex items-center gap-2 text-sm cursor-pointer px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50">
+                  <input type="checkbox" id="upcomingOnly" class="accent-blue-600"
+                    onchange="loadEvents()" /><span>Upcoming only</span>
+                </label>
+              </div>
+              <button onclick="document.getElementById('eventModal').style.display='flex'"
+                class="px-5 py-2.5 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg">+
+                Add Event</button>
+            </div>
+            <div id="eventCards" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+          </div>
+
+          <!-- Messages -->
+          <div id="ctab2" class="p-5 hidden">
+            <div class="grid lg:grid-cols-3 gap-5">
+              <div class="lg:col-span-1 space-y-3">
+                <div class="flex gap-2 mb-3">
+                  <button onclick="showMsgBox('inbox')" id="inboxBtn"
+                    class="flex-1 px-3 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">Inbox</button>
+                  <button onclick="showMsgBox('sent')" id="sentBtn"
+                    class="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium">Sent</button>
+                </div>
+                <div id="msgList" class="space-y-2 max-h-96 overflow-y-auto"></div>
+              </div>
+              <div class="lg:col-span-2">
+                <div id="msgPreview"
+                  class="bg-gray-50 rounded-2xl p-6 h-full min-h-48 flex items-center justify-center text-gray-400 text-sm">
+                  Select a message to view</div>
+                <div class="mt-4">
+                  <h5 class="text-sm font-semibold text-gray-700 mb-3">Compose New Message</h5>
+                  <div class="space-y-3">
+                    <input id="msg_to" class="finput" placeholder="Recipient ID or name" />
+                    <input id="msg_subject" class="finput" placeholder="Subject" />
+                    <textarea id="msg_content" rows="4" class="finput resize-none"
+                      placeholder="Message content..."></textarea>
+                    <button onclick="sendMessage()"
+                      class="px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">Send
+                      Message</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notifications -->
+          <div id="ctab3" class="p-5 hidden">
+            <div class="flex justify-between mb-4">
+              <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" id="unreadOnly"
+                  class="accent-blue-600" onchange="loadNotifications()" /><span>Unread only</span></label>
+              <button onclick="loadNotifications()" class="text-sm text-blue-600 underline">Refresh</button>
+            </div>
+            <div id="notifList" class="space-y-2"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Notice Modal -->
+  <div id="noticeModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold text-gray-900">Create Notice</h3><button
+          onclick="document.getElementById('noticeModal').style.display='none'"
+          class="text-gray-400 hover:text-gray-600 text-2xl px-2">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Title *</label><input id="nt_title" class="finput" placeholder="Notice title" /></div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Type *</label><select id="nt_type" class="finput">
+              <option value="General">General</option>
+              <option value="Exam">Exam</option>
+              <option value="Fee">Fee</option>
+              <option value="Holiday">Holiday</option>
+              <option value="Event">Event</option>
+              <option value="Urgent">Urgent</option>
+              <option value="Meeting">Meeting</option>
+            </select></div>
+          <div><label class="lbl">Target Audience</label><select id="nt_audience" class="finput">
+              <option value="All">All</option>
+              <option value="Students">Students</option>
+              <option value="Staff">Staff</option>
+              <option value="Parents">Parents</option>
+            </select></div>
+        </div>
+        <div><label class="lbl">Content *</label><textarea id="nt_content" rows="5" class="finput resize-none"
+            placeholder="Notice content..."></textarea></div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Expiry Date</label><input id="nt_expiry" type="date" class="finput" /></div>
+          <div class="flex items-end pb-1"><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox"
+                id="nt_pinned" class="w-4 h-4 accent-blue-600" /><span class="text-sm text-gray-700 font-medium">Pin
+                this notice</span></label></div>
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('noticeModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveNotice()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold">Publish</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Event Modal -->
+  <div id="eventModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-lg">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold text-gray-900">Add Event</h3><button
+          onclick="document.getElementById('eventModal').style.display='none'"
+          class="text-gray-400 hover:text-gray-600 text-2xl px-2">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Event Title *</label><input id="ev_title" class="finput" placeholder="Event name" />
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Type</label><select id="ev_type" class="finput">
+              <option value="Academic">Academic</option>
+              <option value="Sports">Sports</option>
+              <option value="Cultural">Cultural</option>
+              <option value="Meeting">Meeting</option>
+              <option value="Exam">Exam</option>
+              <option value="Holiday">Holiday</option>
+              <option value="Trip">Trip</option>
+            </select></div>
+          <div><label class="lbl">Venue</label><input id="ev_venue" class="finput" placeholder="Venue/Location" /></div>
+        </div>
+        <div class="grid grid-cols-2 gap-4">
+          <div><label class="lbl">Start Date & Time *</label><input id="ev_start" type="datetime-local"
+              class="finput" /></div>
+          <div><label class="lbl">End Date & Time</label><input id="ev_end" type="datetime-local" class="finput" />
+          </div>
+        </div>
+        <div><label class="lbl">Description</label><textarea id="ev_desc" rows="3" class="finput resize-none"
+            placeholder="Event details..."></textarea></div>
+        <div><label class="lbl">Organizer</label><input id="ev_organizer" class="finput" placeholder="Organizer name" />
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('eventModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveEvent()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('communication');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('Communication', 'Notices, events, messages and notifications');
+    const schoolId = localStorage.getItem('school_id');
+    const user = getUser();
+    let noticePage = 1, msgBox = 'inbox';
+
+    function switchTab(i) {
+      document.querySelectorAll('.ctab').forEach((b, j) => { b.classList.toggle('border-blue-600', j === i); b.classList.toggle('text-blue-600', j === i); b.classList.toggle('border-transparent', j !== i); b.classList.toggle('text-gray-500', j !== i); });
+      document.querySelectorAll('[id^="ctab"]').forEach(t => { t.classList.toggle('hidden', parseInt(t.id.replace('ctab', '')) !== i); });
+      if (i === 0) loadNotices(); if (i === 1) loadEvents(); if (i === 2) loadMessages(); if (i === 3) loadNotifications();
+    }
+
+    // ── Notices ──────────────────────────────────────────────────────────────────
+    async function loadNotices(page = 1) {
+      if (!schoolId) { document.getElementById('noticeCards').innerHTML = '<p class="text-gray-400 text-sm">Configure school first</p>'; return; }
+      const params = { school_id: schoolId, page, per_page: 10 };
+      const t = document.getElementById('noticeTypeFilter').value; if (t) params.notice_type = t;
+      const s = document.getElementById('noticeSearch').value.trim();
+      try {
+        const r = await CommAPI.getNotices(params); const notices = r?.data || [];
+        const meta = r?.meta || {};
+        document.getElementById('noticeCards').innerHTML = notices.map(n => {
+          const typeColors = { General: 'blue', Exam: 'purple', Fee: 'orange', Holiday: 'green', Event: 'teal', Urgent: 'red', Meeting: 'indigo' };
+          const color = typeColors[n.notice_type] || 'blue';
+          return `<div class="border border-gray-100 rounded-xl p-5 hover:shadow-sm transition-shadow">
+        <div class="flex justify-between items-start">
+          <div class="flex-1">
+            <div class="flex items-center gap-2 mb-1">
+              ${n.is_pinned ? '<span class="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">📌 Pinned</span>' : ''}
+              <span class="text-xs bg-${color}-100 text-${color}-700 px-2 py-0.5 rounded-full font-medium">${n.notice_type}</span>
+              <span class="text-xs text-gray-400">${n.target_audience?.join(', ') || 'All'}</span>
+            </div>
+            <h4 class="font-bold text-gray-900">${n.title}</h4>
+            <p class="text-sm text-gray-600 mt-1 line-clamp-2">${n.content}</p>
+            <div class="flex items-center gap-4 mt-2 text-xs text-gray-400">
+              <span>By ${n.created_by || 'Admin'}</span>
+              <span>${formatDate(n.publish_date)}</span>
+              ${n.expiry_date ? '<span class="text-orange-500">Expires: ' + formatDate(n.expiry_date) + '</span>' : ''}
+              <span>${n.views || 0} views</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+        }).join('') || '<p class="text-center py-8 text-gray-400">No notices published</p>';
+        document.getElementById('noticePgn').innerHTML = meta.total ? `<span>${(page - 1) * 10 + 1}–${Math.min(page * 10, meta.total)} of ${meta.total}</span><div class="flex gap-2"><button onclick="loadNotices(${page - 1})" ${page <= 1 ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border disabled:opacity-40 text-sm">&#8592;</button><button onclick="loadNotices(${page + 1})" ${page * 10 >= meta.total ? 'disabled' : ''} class="px-3 py-1.5 rounded-lg border disabled:opacity-40 text-sm">&#8594;</button></div>` : '';
+      } catch (e) { document.getElementById('noticeCards').innerHTML = `<p class="text-red-400 text-sm">Error: ${e.message}</p>`; }
+    }
+
+    async function saveNotice() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const title = document.getElementById('nt_title').value.trim(), content = document.getElementById('nt_content').value.trim();
+      if (!title || !content) { showToast('Title and content required', 'error'); return; }
+      try {
+        await CommAPI.createNotice({ school_id: schoolId, title, content, notice_type: document.getElementById('nt_type').value, target_audience: [document.getElementById('nt_audience').value], is_pinned: document.getElementById('nt_pinned').checked, expiry_date: document.getElementById('nt_expiry').value || null });
+        showToast('Notice published!'); document.getElementById('noticeModal').style.display = 'none'; loadNotices();
+        ['nt_title', 'nt_content', 'nt_expiry'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('nt_pinned').checked = false;
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    // ── Events ────────────────────────────────────────────────────────────────────
+    async function loadEvents() {
+      if (!schoolId) { document.getElementById('eventCards').innerHTML = '<p class="text-gray-400 text-sm col-span-3">Configure school first</p>'; return; }
+      const upcoming = document.getElementById('upcomingOnly').checked;
+      try {
+        const r = await CommAPI.getEvents(schoolId, upcoming); const events = r?.data || [];
+        const typeIcons = { Academic: '📚', Sports: '⚽', Cultural: '🎭', Meeting: '🤝', Exam: '📝', Holiday: '🎉', Trip: '🚌', Other: '📅' };
+        document.getElementById('eventCards').innerHTML = events.map(ev => {
+          const start = new Date(ev.start_datetime); const isPast = start < new Date();
+          return `<div class="border border-gray-100 rounded-2xl p-5 hover:shadow-md transition-shadow ${isPast ? 'opacity-60' : ''}">
+        <div class="flex items-start justify-between mb-3">
+          <span class="text-2xl">${typeIcons[ev.event_type] || '📅'}</span>
+          ${tdBadge(ev.status, ev.status === 'Upcoming' ? 'green' : ev.status === 'Ongoing' ? 'blue' : 'gray')}
+        </div>
+        <h4 class="font-bold text-gray-900 mb-1">${ev.title}</h4>
+        <p class="text-xs text-gray-500 mb-3">${ev.description || ''}</p>
+        <div class="space-y-1 text-xs text-gray-500">
+          <div class="flex items-center gap-1.5"><span>📍</span><span>${ev.venue || 'TBD'}</span></div>
+          <div class="flex items-center gap-1.5"><span>📅</span><span>${formatDate(ev.start_datetime)}</span></div>
+          <div class="flex items-center gap-1.5"><span>👤</span><span>By ${ev.organizer || '-'}</span></div>
+        </div>
+      </div>`;
+        }).join('') || '<p class="text-center py-8 text-gray-400 col-span-3">No events scheduled</p>';
+      } catch (e) { }
+    }
+
+    async function saveEvent() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const title = document.getElementById('ev_title').value.trim(), start = document.getElementById('ev_start').value;
+      if (!title || !start) { showToast('Title and start date required', 'error'); return; }
+      try {
+        await CommAPI.createEvent({ school_id: schoolId, title, description: document.getElementById('ev_desc').value || null, event_type: document.getElementById('ev_type').value, venue: document.getElementById('ev_venue').value || null, start_datetime: start, end_datetime: document.getElementById('ev_end').value || null, organizer: document.getElementById('ev_organizer').value || null });
+        showToast('Event added!'); document.getElementById('eventModal').style.display = 'none'; loadEvents();
+        ['ev_title', 'ev_desc', 'ev_venue', 'ev_start', 'ev_end', 'ev_organizer'].forEach(id => document.getElementById(id).value = '');
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    // ── Messages ──────────────────────────────────────────────────────────────────
+    async function loadMessages() {
+      if (!schoolId || !user) return;
+      try {
+        const r = await CommAPI.getMessages(user.id, schoolId); const data = r?.data || {};
+        const msgs = msgBox === 'inbox' ? data.inbox || [] : data.sent || [];
+        document.getElementById('msgList').innerHTML = msgs.map(m => {
+          const isUnread = msgBox === 'inbox' && !m.is_read;
+          return `<div onclick="showMsg('${m.id}','${m.sender_name}','${m.recipient_name}','${m.subject || '(no subject)'}','${m.content}','${formatDate(m.sent_at)}')" class="p-3 rounded-xl cursor-pointer hover:bg-gray-50 border ${isUnread ? 'border-blue-200 bg-blue-50' : 'border-gray-100'}">
+        <div class="flex justify-between items-start">
+          <span class="text-sm font-medium text-gray-900 ${isUnread ? 'font-bold' : ''}">${msgBox === 'inbox' ? m.sender_name : m.recipient_name || '-'}</span>
+          <span class="text-xs text-gray-400">${formatDate(m.sent_at)}</span>
+        </div>
+        <p class="text-xs text-gray-500 mt-0.5 truncate">${m.subject || m.content}</p>
+      </div>`;
+        }).join('') || `<p class="text-center py-8 text-gray-400 text-sm">No messages in ${msgBox}</p>`;
+      } catch (e) { }
+    }
+
+    function showMsgBox(box) {
+      msgBox = box;
+      document.getElementById('inboxBtn').className = `flex-1 px-3 py-2 rounded-xl text-sm font-medium ${box === 'inbox' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`;
+      document.getElementById('sentBtn').className = `flex-1 px-3 py-2 rounded-xl text-sm font-medium ${box === 'sent' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700'}`;
+      loadMessages();
+    }
+
+    function showMsg(id, from, to, subj, content, date) {
+      document.getElementById('msgPreview').innerHTML = `<div class="space-y-4 text-left w-full">
+    <div class="border-b pb-3"><h4 class="font-bold text-gray-900 text-lg">${subj}</h4><div class="flex gap-4 text-sm text-gray-500 mt-1"><span>From: <strong>${from}</strong></span><span>To: <strong>${to || '-'}</strong></span><span>${date}</span></div></div>
+    <p class="text-gray-700 leading-relaxed whitespace-pre-line">${content}</p>
+  </div>`;
+    }
+
+    async function sendMessage() {
+      if (!schoolId || !user) { showToast('Configure school first', 'error'); return; }
+      const to = document.getElementById('msg_to').value.trim(), content = document.getElementById('msg_content').value.trim();
+      if (!to || !content) { showToast('Recipient and message required', 'error'); return; }
+      try {
+        await CommAPI.sendMessage({ school_id: schoolId, recipient_id: to, recipient_name: to, subject: document.getElementById('msg_subject').value || null, content, sender_type: 'Admin' });
+        showToast('Message sent!');['msg_to', 'msg_subject', 'msg_content'].forEach(id => document.getElementById(id).value = '');
+        loadMessages();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    // ── Notifications ─────────────────────────────────────────────────────────────
+    async function loadNotifications() {
+      if (!schoolId || !user) return;
+      const unreadOnly = document.getElementById('unreadOnly').checked;
+      try {
+        const r = await CommAPI.getNotifications(user.id, schoolId, unreadOnly); const notifs = r?.data || []; const meta = r?.meta || {};
+        if (meta.unread_count > 0) { document.getElementById('unreadCount').textContent = meta.unread_count; document.getElementById('unreadBanner').style.display = 'flex'; } else document.getElementById('unreadBanner').style.display = 'none';
+        const typeIcons = { Attendance: '📅', Fee: '💰', Result: '📊', Homework: '📚', Notice: '📢', Message: '✉️', Leave: '🏖️', Alert: '⚠️', General: '🔔' };
+        document.getElementById('notifList').innerHTML = notifs.map(n => {
+          return `<div onclick="markRead('${n.id}',${n.is_read})" class="flex items-start gap-3 p-4 rounded-xl border cursor-pointer hover:shadow-sm transition-shadow ${!n.is_read ? 'bg-blue-50 border-blue-200' : 'border-gray-100'}">
+        <span class="text-2xl">${typeIcons[n.type] || '🔔'}</span>
+        <div class="flex-1">
+          <div class="flex justify-between">
+            <h5 class="font-semibold text-gray-900 text-sm ${!n.is_read ? 'font-bold' : ''}">${n.title}</h5>
+            <span class="text-xs text-gray-400 ml-2 whitespace-nowrap">${formatDate(n.sent_at)}</span>
+          </div>
+          <p class="text-sm text-gray-600 mt-0.5">${n.body}</p>
+          ${!n.is_read ? '<span class="inline-block w-2 h-2 bg-blue-600 rounded-full mt-1"></span>' : ''}
+        </div>
+      </div>`;
+        }).join('') || '<p class="text-center py-12 text-gray-400">No notifications</p>';
+      } catch (e) { }
+    }
+
+    async function markRead(id, alreadyRead) {
+      if (alreadyRead) return;
+      try { await CommAPI.markRead(id); loadNotifications(); } catch (e) { }
+    }
+
+    async function markAllRead() {
+      showToast('All notifications marked as read'); loadNotifications();
+    }
+
+    const db = debounce(() => loadNotices(1));
+    document.getElementById('noticeSearch').addEventListener('input', db);
+    loadNotices();
+  </script>
+</body>
+
+</html>

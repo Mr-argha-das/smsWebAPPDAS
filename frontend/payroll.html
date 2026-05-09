@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+      <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <script src="https://unpkg.com/lucide@latest"></script>
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f0f2f8;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f0f2f8;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      overflow: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Payroll - Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .finput {
+      width: 100%;
+      padding: .625rem .75rem;
+      border-radius: .75rem;
+      border: 1px solid #e5e7eb;
+      background: #f9fafb;
+      font-size: .875rem;
+      outline: none
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #3b82f6
+    }
+
+    .lbl {
+      display: block;
+      font-size: .875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: .375rem
+    }
+  </style>
+</head>
+
+<body>
+  <div class="min-h-screen">
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+      <div class="p-6 space-y-6">
+
+        <div id="payrollStats" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+
+        <div
+          style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+          <div class="tab-bar">
+            <button onclick="switchTab(0)"
+              class="prtab px-5 py-4 text-sm flex items-center gap-2 font-semibold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap"><span data-lucide="briefcase" class="w-4 h-4"></span>
+              Payroll</button>
+            <button onclick="switchTab(1)"
+              class="prtab px-5 py-4 text-sm flex items-center gap-2 font-semibold border-b-2 border-transparent text-gray-500 whitespace-nowrap"><span data-lucide="wallet" class="w-4 h-4"></span>
+              Salary Structures</button>
+            <button onclick="switchTab(2)"
+              class="prtab px-5 py-4 text-sm flex items-center gap-2 font-semibold border-b-2 border-transparent text-gray-500 whitespace-nowrap"><span data-lucide="settings" class="w-4 h-4"></span>
+              Config</button>
+          </div>
+
+          <!-- Payroll -->
+          <div id="prtab0" class="p-5">
+            <div class="flex flex-wrap gap-3 mb-5 items-center">
+              <div class="flex gap-2">
+                <select id="payMonth" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm">
+                  <option value="1">January</option>
+                  <option value="2">February</option>
+                  <option value="3">March</option>
+                  <option value="4">April</option>
+                  <option value="5">May</option>
+                  <option value="6">June</option>
+                  <option value="7">July</option>
+                  <option value="8">August</option>
+                  <option value="9">September</option>
+                  <option value="10">October</option>
+                  <option value="11">November</option>
+                  <option value="12">December</option>
+                </select>
+                <select id="payYear" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm"></select>
+                <button onclick="loadPayroll()"
+                  class="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium hover:bg-gray-200">Load</button>
+              </div>
+              <button onclick="generatePayroll()"
+                class="px-5 py-2.5 bg-blue-600 text-white rounded-xl flex items-center gap-2 text-sm font-semibold hover:bg-blue-700 shadow-lg"><span data-lucide="settings" class="w-4 h-4"></span>
+                Generate Payroll</button>
+              <button onclick="approveAll()"
+                class="px-5 py-2.5 bg-emerald-600 text-white rounded-xl flex items-center gap-2 text-sm font-semibold hover:bg-emerald-700"> <span data-lucide="check-circle" class="w-4 h-4"></span>
+                Approve All</button>
+            </div>
+            <div id="payrollMeta" class="grid grid-cols-3 gap-4 mb-5"></div>
+            <div id="payrollTable"></div>
+          </div>
+
+          <!-- Salary Structures -->
+          <div id="prtab1" class="p-5 hidden">
+            <div class="flex justify-between mb-5">
+              <h4 class="font-bold text-gray-900">Staff Salary Structures</h4>
+              <button onclick="openSalaryModal()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Set
+                Salary</button>
+            </div>
+            <div id="salaryTable"></div>
+          </div>
+
+          <!-- Config -->
+          <div id="prtab2" class="p-5 hidden">
+            <h4 class="font-bold text-gray-900 mb-5">Payroll Configuration</h4>
+            <div class="max-w-xl space-y-5">
+              <div class="grid grid-cols-2 gap-4">
+                <div><label class="lbl">Pay Day (of month)</label><input id="cfg_payday" type="number" class="finput"
+                    min="1" max="31" value="1" /></div>
+                <div><label class="lbl">Professional Tax (₹/mo)</label><input id="cfg_pt" type="number" class="finput"
+                    value="200" /></div>
+              </div>
+              <div class="bg-gray-50 rounded-xl p-4 space-y-3">
+                <h5 class="font-semibold text-gray-800 text-sm">EPF (Employees' Provident Fund)</h5>
+                <div class="grid grid-cols-2 gap-4">
+                  <div><label class="lbl">Employee Contribution %</label><input id="cfg_epf_e" type="number" step="0.01"
+                      class="finput" value="12" /></div>
+                  <div><label class="lbl">Employer Contribution %</label><input id="cfg_epf_er" type="number"
+                      step="0.01" class="finput" value="12" /></div>
+                </div>
+              </div>
+              <div class="bg-gray-50 rounded-xl p-4 space-y-3">
+                <h5 class="font-semibold text-gray-800 text-sm">ESI (Employee State Insurance)</h5>
+                <div class="grid grid-cols-2 gap-4">
+                  <div><label class="lbl">Employee Contribution %</label><input id="cfg_esi_e" type="number" step="0.01"
+                      class="finput" value="0.75" /></div>
+                  <div><label class="lbl">Employer Contribution %</label><input id="cfg_esi_er" type="number"
+                      step="0.01" class="finput" value="3.25" /></div>
+                </div>
+              </div>
+              <div><label class="lbl">TDS Threshold (Annual ₹)</label><input id="cfg_tds" type="number" class="finput"
+                  value="250000" /></div>
+              <button onclick="saveConfig()"
+                class="px-6 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700">Save
+                Configuration</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Salary Modal -->
+  <div id="salaryModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold">Set Salary Structure</h3><button
+          onclick="document.getElementById('salaryModal').style.display='none'"
+          class="text-gray-400 hover:text-gray-600 text-xl px-2">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <div><label class="lbl">Staff *</label><select id="sal_staff" class="finput">
+            <option value="">Select staff</option>
+          </select></div>
+        <div class="bg-emerald-50 rounded-xl p-4 space-y-3">
+          <h5 class="font-semibold text-emerald-800 text-sm">💚 Earnings</h5>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="lbl">Basic Salary *</label><input id="sal_basic" type="number" class="finput"
+                placeholder="0" oninput="calcGross()" /></div>
+            <div><label class="lbl">HRA</label><input id="sal_hra" type="number" class="finput" placeholder="0"
+                oninput="calcGross()" /></div>
+            <div><label class="lbl">DA</label><input id="sal_da" type="number" class="finput" placeholder="0"
+                oninput="calcGross()" /></div>
+            <div><label class="lbl">Travel Allowance</label><input id="sal_ta" type="number" class="finput"
+                placeholder="0" oninput="calcGross()" /></div>
+            <div><label class="lbl">Medical Allowance</label><input id="sal_med" type="number" class="finput"
+                placeholder="0" oninput="calcGross()" /></div>
+            <div><label class="lbl">Special Allowance</label><input id="sal_spl" type="number" class="finput"
+                placeholder="0" oninput="calcGross()" /></div>
+          </div>
+        </div>
+        <div class="bg-red-50 rounded-xl p-4 space-y-3">
+          <h5 class="font-semibold text-red-800 text-sm">❤️ Deductions</h5>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label class="lbl">Loan EMI</label><input id="sal_loan" type="number" class="finput" placeholder="0"
+                oninput="calcGross()" /></div>
+            <div><label class="lbl">Advance Recovery</label><input id="sal_adv" type="number" class="finput"
+                placeholder="0" oninput="calcGross()" /></div>
+          </div>
+        </div>
+        <div class="bg-blue-50 rounded-xl p-4">
+          <div class="flex justify-between text-sm font-semibold text-blue-900">
+            <span>Gross Salary</span><span id="grossPreview">₹0</span>
+          </div>
+          <div class="text-xs text-blue-600 mt-1">EPF + PT deducted automatically from basic salary</div>
+        </div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="document.getElementById('salaryModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="saveSalaryStructure()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payslip Modal -->
+  <div id="payslipModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-lg max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold">Payslip</h3>
+        <div class="flex gap-2">
+          <button onclick="window.print()" class="px-3 py-2 bg-gray-100 flex items-center gap-2 text-gray-700 rounded-xl text-xs"><span data-lucide="printer" class="w-4 h-4"></span>
+            Print</button>
+          <button onclick="document.getElementById('payslipModal').style.display='none'"
+            class="text-gray-400 hover:text-gray-600 text-xl px-2">×</button>
+        </div>
+      </div>
+      <div id="payslipContent" class="px-6 py-5"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
+  </div>
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('payroll');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('HR & Payroll', 'Manage salary structures and monthly payroll');
+    const schoolId = localStorage.getItem('school_id');
+    const now = new Date();
+
+    // Populate years
+    const yrSel = document.getElementById('payYear');
+    for (let y = now.getFullYear() + 1; y >= now.getFullYear() - 3; y--) yrSel.innerHTML += `<option value="${y}" ${y === now.getFullYear() ? 'selected' : ''}>${y}</option>`;
+    document.getElementById('payMonth').value = now.getMonth() + 1;
+
+    function switchTab(i) {
+      document.querySelectorAll('.prtab').forEach((b, j) => { b.classList.toggle('border-blue-600', j === i); b.classList.toggle('text-blue-600', j === i); b.classList.toggle('border-transparent', j !== i); b.classList.toggle('text-gray-500', j !== i); });
+      document.querySelectorAll('[id^="prtab"]').forEach(t => { t.classList.toggle('hidden', parseInt(t.id.replace('prtab', '')) !== i); });
+      if (i === 0) loadPayroll(); if (i === 1) loadSalaryStructures(); if (i === 2) loadConfig();
+    }
+
+    async function loadStats() {
+  if (!schoolId) return;
+
+  try {
+    const r = await PayrollAPI.getSummary(schoolId);
+    const d = r?.data || {};
+
+    document.getElementById('payrollStats').innerHTML =
+      statCard('Total Staff', d.total_staff || 0, 'users', 'blue') +
+      statCard('Gross Payroll', formatCurrency(d.total_gross || 0), 'wallet', 'green') +
+      statCard('Net Payroll', formatCurrency(d.total_net || 0), 'indian-rupee', 'emerald') +
+      statCard('Pending Payment', d.pending_count || 0, 'clock', 'orange');
+
+    // 🔥 IMPORTANT
+    lucide.createIcons();
+
+  } catch (e) {
+    console.log(e);
+  }
+}
+    async function loadPayroll() {
+      if (!schoolId) return;
+      const m = document.getElementById('payMonth').value, y = document.getElementById('payYear').value;
+      try {
+        const r = await PayrollAPI.list(schoolId, m, y); const data = r?.data || []; const meta = r?.meta || {};
+        document.getElementById('payrollMeta').innerHTML = `
+      <div class="bg-blue-50 rounded-xl p-4 text-center"><div class="text-2xl font-bold text-blue-700">${data.length}</div><div class="text-xs text-blue-600 mt-1">Staff Records</div></div>
+      <div class="bg-emerald-50 rounded-xl p-4 text-center"><div class="text-2xl font-bold text-emerald-700">${formatCurrency(meta.total_gross || 0)}</div><div class="text-xs text-emerald-600 mt-1">Total Gross</div></div>
+      <div class="bg-orange-50 rounded-xl p-4 text-center"><div class="text-2xl font-bold text-orange-700">${formatCurrency(meta.total_net || 0)}</div><div class="text-xs text-orange-600 mt-1">Total Net Pay</div></div>
+    `;
+        const hdrs = ['Employee', 'ID', 'Designation', 'Working', 'Present', 'LOP', 'Gross', 'Deductions', 'Net Pay', 'Status', 'Actions'];
+        const rows = data.map(p => `
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${p.staff_name}</td>
+      <td class="px-4 py-3 font-mono text-xs text-gray-500">${p.employee_id}</td>
+      <td class="px-4 py-3 text-sm text-gray-600">${p.designation || '-'}</td>
+      <td class="px-4 py-3 text-center text-sm">${p.working_days}</td>
+      <td class="px-4 py-3 text-center text-emerald-600 font-medium">${p.present_days}</td>
+      <td class="px-4 py-3 text-center ${p.lop_days > 0 ? 'text-red-500 font-bold' : 'text-gray-400'}">${p.lop_days}</td>
+      <td class="px-4 py-3 font-medium text-gray-900">${formatCurrency(p.gross_earnings)}</td>
+      <td class="px-4 py-3 text-red-500 font-medium">${formatCurrency(p.total_deductions)}</td>
+      <td class="px-4 py-3 font-bold text-blue-700 text-base">${formatCurrency(p.net_pay)}</td>
+      <td class="px-4 py-3">${tdBadge(p.status, p.status === 'Paid' ? 'green' : p.status === 'Approved' ? 'blue' : p.status === 'Draft' ? 'gray' : 'orange')}</td>
+      <td class="px-4 py-3">
+        <div class="flex gap-1">
+          ${p.status === 'Draft' ? `<button onclick="approve('${p.id}')" class="px-2 py-1 bg-blue-100 text-blue-700 rounded-lg text-xs">Approve</button>` : ''}
+          ${p.status === 'Approved' ? `<button onclick="markPaid('${p.id}')" class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-lg text-xs">Mark Paid</button>` : ''}
+          <button onclick="viewPayslip('${p.id}')" class="px-2 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs">Payslip</button>
+        </div>
+      </td>
+    `);
+        document.getElementById('payrollTable').innerHTML = buildTable(hdrs, rows, `No payroll for ${['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'][m]} ${y}. Click "Generate Payroll" to create.`);
+      } catch (e) { }
+    }
+
+    async function generatePayroll() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const m = parseInt(document.getElementById('payMonth').value), y = parseInt(document.getElementById('payYear').value);
+      const working = parseInt(prompt('Working days this month:', '26') || '26');
+      if (!working) return;
+      try {
+        const r = await PayrollAPI.generate({ school_id: schoolId, month: m, year: y, working_days: working, lop_days: 0 });
+        showToast(`Generated ${r.data.created} payrolls! (${r.data.skipped} skipped)`); loadPayroll(); loadStats();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function approve(id) { try { await PayrollAPI.approve(id); showToast('Approved!'); loadPayroll(); } catch (e) { showToast('Error: ' + e.message, 'error'); } }
+
+    async function approveAll() {
+      showToast('Approving all draft payrolls...');
+      const m = document.getElementById('payMonth').value, y = document.getElementById('payYear').value;
+      try {
+        const r = await PayrollAPI.list(schoolId, m, y); const drafts = (r?.data || []).filter(p => p.status === 'Draft');
+        await Promise.all(drafts.map(p => PayrollAPI.approve(p.id))); showToast(`${drafts.length} payrolls approved!`); loadPayroll();
+      } catch (e) { showToast('Error', 'error'); }
+    }
+
+    async function markPaid(id) {
+      const mode = confirm('Bank Transfer?\n(OK = Bank Transfer, Cancel = Cash)') ? 'Bank Transfer' : 'Cash';
+      const ref = mode === 'Bank Transfer' ? prompt('Bank Reference No:', '') : null;
+      try { await PayrollAPI.markPaid(id, { payment_mode: mode, bank_ref: ref }); showToast('Payment recorded!'); loadPayroll(); } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function viewPayslip(id) {
+      try {
+        const r = await PayrollAPI.getPayslip(id); const d = r?.data || {};
+        const months = ['', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        document.getElementById('payslipContent').innerHTML = `
+      <div class="text-center border-b pb-4 mb-4">
+        <h2 class="text-xl font-bold text-gray-900">${d.school_name}</h2>
+        <p class="text-sm text-gray-500">${d.school_address || ''}</p>
+        <p class="text-lg font-semibold mt-2 text-blue-700">SALARY SLIP — ${months[d.month]} ${d.year}</p>
+      </div>
+      <div class="grid grid-cols-2 gap-2 text-sm mb-4">
+        <div><span class="text-gray-500">Employee:</span> <strong>${d.employee_name}</strong></div>
+        <div><span class="text-gray-500">ID:</span> <strong>${d.employee_id}</strong></div>
+        <div><span class="text-gray-500">Designation:</span> <strong>${d.designation}</strong></div>
+        <div><span class="text-gray-500">Department:</span> <strong>${d.department || '-'}</strong></div>
+        <div><span class="text-gray-500">Working Days:</span> <strong>${d.working_days}</strong></div>
+        <div><span class="text-gray-500">Present Days:</span> <strong>${d.present_days}</strong></div>
+        ${d.lop_days ? `<div><span class="text-gray-500">LOP Days:</span> <strong class="text-red-500">${d.lop_days}</strong></div>` : ''}
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <h5 class="font-bold text-emerald-700 mb-2 text-sm">EARNINGS</h5>
+          <table class="w-full text-sm">
+            ${[['Basic', d.earnings?.basic], ['HRA', d.earnings?.hra], ['DA', d.earnings?.da], ['Travel', d.earnings?.ta], ['Medical', d.earnings?.medical], ['Special', d.earnings?.special]].filter(x => x[1] > 0).map(([k, v]) => `<tr><td class="py-1 text-gray-600">${k}</td><td class="py-1 text-right font-medium">${formatCurrency(v)}</td></tr>`).join('')}
+            <tr class="border-t font-bold"><td class="pt-2 text-emerald-700">Gross</td><td class="pt-2 text-right text-emerald-700">${formatCurrency(d.earnings?.gross)}</td></tr>
+          </table>
+        </div>
+        <div>
+          <h5 class="font-bold text-red-600 mb-2 text-sm">DEDUCTIONS</h5>
+          <table class="w-full text-sm">
+            ${[['EPF (12%)', d.deductions?.epf], ['ESI', d.deductions?.esi], ['Prof. Tax', d.deductions?.pt], ['Loan', d.deductions?.loan], ['Advance', d.deductions?.advance]].filter(x => x[1] > 0).map(([k, v]) => `<tr><td class="py-1 text-gray-600">${k}</td><td class="py-1 text-right font-medium text-red-500">${formatCurrency(v)}</td></tr>`).join('')}
+            <tr class="border-t font-bold"><td class="pt-2 text-red-600">Total</td><td class="pt-2 text-right text-red-600">${formatCurrency(d.deductions?.total)}</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="mt-4 bg-blue-600 text-white rounded-xl p-4 flex justify-between items-center">
+        <span class="font-bold text-lg">NET PAY</span>
+        <span class="font-bold text-2xl">${formatCurrency(d.net_pay)}</span>
+      </div>
+      ${d.payment_date ? `<p class="text-xs text-center mt-3 text-gray-500">Paid on ${formatDate(d.payment_date)} via ${d.payment_mode}</p>` : ''}
+    `;
+        document.getElementById('payslipModal').style.display = 'flex';
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function openSalaryModal() {
+      document.getElementById('salaryModal').style.display = 'flex';
+      if (!schoolId) return;
+      try { const r = await StaffAPI.list({ school_id: schoolId, per_page: 200 }); document.getElementById('sal_staff').innerHTML = '<option value="">Select staff</option>' + (r?.data || []).map(s => `<option value="${s.id}">${s.full_name} (${s.employee_id})</option>`).join(''); } catch (e) { }
+    }
+
+    document.getElementById('sal_staff').addEventListener('change', async function () {
+      if (!this.value) return;
+      try {
+        const r = await PayrollAPI.getStaffSalary(this.value); const d = r?.data || {};
+        document.getElementById('sal_basic').value = d.basic_salary || 0; document.getElementById('sal_hra').value = d.hra || 0;
+        document.getElementById('sal_da').value = d.da || 0; document.getElementById('sal_ta').value = d.ta || 0;
+        document.getElementById('sal_med').value = d.medical_allowance || 0; document.getElementById('sal_spl').value = d.special_allowance || 0;
+        document.getElementById('sal_loan').value = d.loan_deduction || 0; document.getElementById('sal_adv').value = d.advance_deduction || 0;
+        calcGross();
+      } catch (e) { }
+    });
+
+    function calcGross() {
+      const vals = [sal_basic, sal_hra, sal_da, sal_ta, sal_med, sal_spl].map(id => parseFloat(document.getElementById(id).value) || 0);
+      const gross = vals.reduce((a, b) => a + b, 0);
+      document.getElementById('grossPreview').textContent = formatCurrency(gross);
+    }
+
+    async function saveSalaryStructure() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      const staffId = document.getElementById('sal_staff').value;
+      if (!staffId) { showToast('Select staff', 'error'); return; }
+      try {
+        const r = await PayrollAPI.setSalaryStructure({ school_id: schoolId, staff_id: staffId, basic_salary: parseFloat(document.getElementById('sal_basic').value) || 0, hra: parseFloat(document.getElementById('sal_hra').value) || 0, da: parseFloat(document.getElementById('sal_da').value) || 0, ta: parseFloat(document.getElementById('sal_ta').value) || 0, medical_allowance: parseFloat(document.getElementById('sal_med').value) || 0, special_allowance: parseFloat(document.getElementById('sal_spl').value) || 0, loan_deduction: parseFloat(document.getElementById('sal_loan').value) || 0, advance_deduction: parseFloat(document.getElementById('sal_adv').value) || 0 });
+        showToast(`Saved! Gross: ${formatCurrency(r.data.gross)} | Net: ${formatCurrency(r.data.net)}`); document.getElementById('salaryModal').style.display = 'none'; loadSalaryStructures();
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+
+    async function loadSalaryStructures() {
+      if (!schoolId) return;
+      try {
+        const r = await PayrollAPI.listSalaryStructures(schoolId); const data = r?.data || [];
+        const hdrs = ['Employee', 'Employee ID', 'Basic Salary', 'Gross Salary', 'Net Salary (Est.)', 'Action'];
+        const rows = data.map(s => `
+      <td class="px-4 py-3 font-medium text-gray-900 text-sm">${s.staff_name}</td>
+      <td class="px-4 py-3 font-mono text-xs text-gray-500">${s.employee_id}</td>
+      <td class="px-4 py-3 font-medium text-gray-900">${formatCurrency(s.basic_salary)}</td>
+      <td class="px-4 py-3 font-medium text-emerald-700">${formatCurrency(s.gross_salary)}</td>
+      <td class="px-4 py-3 font-bold text-blue-700">${formatCurrency(s.net_salary)}</td>
+      <td class="px-4 py-3"><button onclick="editSalary('${s.staff_name}')" class="text-xs text-blue-500 hover:underline">Edit</button></td>
+    `);
+        document.getElementById('salaryTable').innerHTML = buildTable(hdrs, rows, 'No salary structures set. Click "+ Set Salary" to add.');
+      } catch (e) { }
+    }
+
+    async function loadConfig() {
+      if (!schoolId) return;
+      try {
+        const r = await PayrollAPI.getConfig(schoolId); const d = r?.data || {};
+        document.getElementById('cfg_payday').value = d.pay_day || 1; document.getElementById('cfg_pt').value = d.professional_tax || 200;
+        document.getElementById('cfg_epf_e').value = d.epf_employee_pct || 12; document.getElementById('cfg_epf_er').value = d.epf_employer_pct || 12;
+        document.getElementById('cfg_esi_e').value = d.esi_employee_pct || 0.75; document.getElementById('cfg_esi_er').value = d.esi_employer_pct || 3.25;
+        document.getElementById('cfg_tds').value = d.tds_threshold || 250000;
+      } catch (e) { }
+    }
+
+    async function saveConfig() {
+      if (!schoolId) { showToast('Configure school first', 'error'); return; }
+      try {
+        await PayrollAPI.saveConfig({ school_id: schoolId, pay_day: parseInt(document.getElementById('cfg_payday').value), professional_tax: parseFloat(document.getElementById('cfg_pt').value), epf_employee_pct: parseFloat(document.getElementById('cfg_epf_e').value), epf_employer_pct: parseFloat(document.getElementById('cfg_epf_er').value), esi_employee_pct: parseFloat(document.getElementById('cfg_esi_e').value), esi_employer_pct: parseFloat(document.getElementById('cfg_esi_er').value), tds_threshold: parseFloat(document.getElementById('cfg_tds').value) });
+        showToast('Configuration saved!');
+      } catch (e) { showToast('Error: ' + e.message, 'error'); }
+    }
+    function statCard(title, value, icon, color) {
+  return `
+    <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
+      
+      <div>
+        <p class="text-sm text-gray-400">${title}</p>
+        <h3 class="text-xl font-bold text-gray-900">${value}</h3>
+      </div>
+
+      <div class="p-3 rounded-xl bg-${color}-100 text-${color}-600">
+        <i data-lucide="${icon}" class="w-5 h-5"></i>
+      </div>
+
+    </div>
+  `;
+}
+
+    loadStats(); loadPayroll();
+  </script>
+</body>
+
+</html>
