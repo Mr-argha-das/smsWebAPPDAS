@@ -1,35 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <link rel="icon" type="image/png" href="/public/circlelogo.png" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box}
-body{font-family:"DM Sans",sans-serif;background:#f0f2f8;color:#1e293b}
-h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
-.finput{width:100%;padding:.625rem .875rem;border-radius:.75rem;border:1.5px solid #e2e8f0;background:#f0f2f8;font-size:.875rem;outline:none;transition:all .15s;color:#1e293b}
-.finput:focus{background:#fff;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.12)}
-.lbl{display:block;font-size:.8125rem;font-weight:600;color:#475569;margin-bottom:.375rem}
-    .modal-overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:1.5rem 1rem;background:rgba(15,23,42,.55);backdrop-filter:blur(4px)}
-    .modal-box{background:#fff;border-radius:1.5rem;box-shadow:0 25px 50px rgba(0,0,0,.22);width:100%;max-height:calc(100vh - 3rem);overflow-y:auto;animation:modalIn .2s ease}
-@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.tab-bar{display:flex;border-bottom:2px solid #f1f5f9;overflow-x:auto;gap:.25rem;padding:0 1rem}
-.tab-bar::-webkit-scrollbar{display:none}
-.tab-btn{padding:.875rem 1.125rem;font-size:.8125rem;font-weight:600;background:none;border:none;cursor:pointer;white-space:nowrap;color:#94a3b8;border-bottom:2.5px solid transparent;margin-bottom:-2px;transition:all .15s;font-family:"DM Sans",sans-serif}
-.tab-btn.active{color:#6366f1;border-bottom-color:#6366f1}
-.tab-btn:not(.active):hover{color:#475569}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}
-.finput:focus{background:#fff;border-color:#3b82f6}
-.lbl{display:block;font-size:.875rem;font-weight:500;color:#374151;margin-bottom:.375rem}
-</style>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Fees - Scholar Desk</title>
-<script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f0f2f8;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f0f2f8;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow-y: auto;
+      padding: 1.5rem 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      max-height: calc(100vh - 3rem);
+      overflow-y: auto;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #3b82f6
+    }
+
+    .lbl {
+      display: block;
+      font-size: .875rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: .375rem
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Fees </title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
 <body>
@@ -40,10 +163,12 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
       <div id="topbarContainer"></div>
       <div class="p-6 space-y-6">
 
-        <div style="background:#fff;border-radius:1.25rem;padding:1rem 1.25rem;border:1.5px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
+        <div
+          style="background:#fff;border-radius:1.25rem;padding:1rem 1.25rem;border:1.5px solid #f1f5f9;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap">
           <div>
             <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Branch Filter</p>
-            <p id="feeBranchLabel" class="text-sm font-semibold text-slate-900 mt-1">All branches in logged-in school</p>
+            <p id="feeBranchLabel" class="text-sm font-semibold text-slate-900 mt-1">All branches in logged-in school
+            </p>
           </div>
           <div class="min-w-[240px]">
             <select id="feeBranchFilter" class="finput">
@@ -55,14 +180,26 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
         <!-- Fee Stats -->
         <div id="feeStats" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
 
-        <div style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
+        <div
+          style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
           <div class="tab-bar">
-            <button onclick="switchFeeTab(0)" class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap">Invoices</button>
-            <button onclick="switchFeeTab(1)" class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Collect Payment</button>
-            <button onclick="switchFeeTab(2)" class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Fee Structure</button>
-            <button onclick="switchFeeTab(3)" class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Dues Report</button>
-            <button onclick="switchFeeTab(4)" class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Fee Estimate</button>
-            <button onclick="switchFeeTab(5)" class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Payment History</button>
+            <button onclick="switchFeeTab(0)"
+              class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap">Invoices</button>
+            <button onclick="switchFeeTab(1)"
+              class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Collect
+              Payment</button>
+            <button onclick="switchFeeTab(2)"
+              class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Fee
+              Structure</button>
+            <button onclick="switchFeeTab(3)"
+              class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Dues
+              Report</button>
+            <button onclick="switchFeeTab(4)"
+              class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Fee
+              Estimate</button>
+            <button onclick="switchFeeTab(5)"
+              class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Payment
+              History</button>
           </div>
 
           <!-- Invoices -->
@@ -71,7 +208,8 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
               <div class="flex gap-2 flex-wrap items-end">
                 <div>
                   <label class="lbl">Invoice View</label>
-                  <select id="invStatus" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <select id="invStatus"
+                    class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">All Invoices</option>
                     <option value="Due">Open Dues</option>
                     <option value="Completed">Completed Fees</option>
@@ -83,17 +221,22 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
                 </div>
                 <div>
                   <label class="lbl">Class</label>
-                  <select id="invClassFilter" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <select id="invClassFilter"
+                    class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">All Classes</option>
                   </select>
                 </div>
                 <div>
-                  <label class="lbl">Father Name</label>
-                  <input id="invFatherFilter" type="text" placeholder="Search father name" class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-52" />
+                  <label class="lbl">Search</label>
+                  <input id="invSearchFilter" type="text" placeholder="Search father or student name"
+                    class="px-3 py-2.5 rounded-xl border border-gray-200 bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm w-52" />
                 </div>
-                <button onclick="resetInvoicePagination(); loadInvoices();" class="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200">Apply</button>
+                <button onclick="resetInvoicePagination(); loadInvoices();"
+                  class="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200">Apply</button>
               </div>
-              <button onclick="openInvoiceModal()" class="px-5 py-2.5 max-h-10 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg whitespace-nowrap">+ Create Invoice</button>
+              <button onclick="openInvoiceModal()"
+                class="px-5 py-2.5 max-h-10 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg whitespace-nowrap">+
+                Create Invoice</button>
             </div>
             <div id="invTable"></div>
             <div id="invPagination" class="mt-4"></div>
@@ -104,28 +247,56 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
             <h4 class="font-bold text-gray-900 mb-5">Record Fee Payment</h4>
             <div class="max-w-lg space-y-4">
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div><label class="lbl">Class</label><select id="pay_class" class="finput" onchange="loadPaySections(); loadPayStudents()"><option value="">Select class</option></select></div>
-                <div><label class="lbl">Section</label><select id="pay_section" class="finput" onchange="loadPayStudents()"><option value="">Select section</option></select></div>
+                <div><label class="lbl">Class</label><select id="pay_class" class="finput"
+                    onchange="loadPaySections(); loadPayStudents()">
+                    <option value="">Select class</option>
+                  </select></div>
+                <div><label class="lbl">Section</label><select id="pay_section" class="finput"
+                    onchange="loadPayStudents()">
+                    <option value="">Select section</option>
+                  </select></div>
               </div>
               <div>
                 <label class="lbl">Father Name</label>
-                <input id="pay_father_name" class="finput" placeholder="Type father name to show all children" oninput="handlePayFatherNameInput()" />
-                <p class="mt-1 text-xs text-slate-400">Optional. If entered, all matching children for that parent will be shown.</p>
+                <input id="pay_father_name" class="finput" placeholder="Type father name to show all children"
+                  oninput="handlePayFatherNameInput()" />
+                <p class="mt-1 text-xs text-slate-400">Optional. If entered, all matching children for that parent will
+                  be shown.</p>
               </div>
-              <div><label class="lbl">Student *</label><select id="pay_student" class="finput" onchange="loadStudentInvoices()"><option value="">Select student</option></select></div>
-              <div><label class="lbl">Invoice *</label><select id="pay_invoice" class="finput"><option value="">Select invoice</option></select></div>
+              <div><label class="lbl">Student *</label><select id="pay_student" class="finput"
+                  onchange="loadStudentInvoices()">
+                  <option value="">Select student</option>
+                </select></div>
+              <div><label class="lbl">Invoice *</label><select id="pay_invoice" class="finput">
+                  <option value="">Select invoice</option>
+                </select></div>
               <div id="invoiceDetails" class="hidden bg-blue-50 rounded-xl p-4 text-sm">
-                <div class="flex justify-between mb-1"><span class="text-blue-700">Total Amount:</span><span id="inv_total" class="font-bold text-blue-900"></span></div>
-                <div class="flex justify-between mb-1"><span class="text-blue-700">Paid:</span><span id="inv_paid" class="font-bold text-emerald-700"></span></div>
-                <div class="flex justify-between"><span class="text-blue-700">Balance:</span><span id="inv_bal" class="font-bold text-red-600"></span></div>
+                <div class="flex justify-between mb-1"><span class="text-blue-700">Total Amount:</span><span
+                    id="inv_total" class="font-bold text-blue-900"></span></div>
+                <div class="flex justify-between mb-1"><span class="text-blue-700">Paid:</span><span id="inv_paid"
+                    class="font-bold text-emerald-700"></span></div>
+                <div class="flex justify-between"><span class="text-blue-700">Balance:</span><span id="inv_bal"
+                    class="font-bold text-red-600"></span></div>
               </div>
-              <div><label class="lbl">Amount (₹) *</label><input id="pay_amount" type="number" class="finput" placeholder="Enter amount"/></div>
-              <div><label class="lbl">Payment Collected By *</label><input id="pay_collected_by" class="finput" placeholder="Enter collector name"/></div>
+              <div><label class="lbl">Amount (₹) *</label><input id="pay_amount" type="number" class="finput"
+                  placeholder="Enter amount" /></div>
+              <div><label class="lbl">Payment Collected By *</label><input id="pay_collected_by" class="finput"
+                  placeholder="Enter collector name" /></div>
               <div><label class="lbl">Payment Mode *</label>
-                <select id="pay_mode" class="finput"><option value="Cash">Cash</option><option value="Online">Online</option><option value="Cheque">Cheque</option><option value="UPI">UPI</option><option value="NEFT">NEFT</option><option value="Card">Card</option></select>
+                <select id="pay_mode" class="finput">
+                  <option value="Cash">Cash</option>
+                  <option value="Online">Online</option>
+                  <option value="Cheque">Cheque</option>
+                  <option value="UPI">UPI</option>
+                  <option value="NEFT">NEFT</option>
+                  <option value="Card">Card</option>
+                </select>
               </div>
-              <div><label class="lbl">Remarks</label><input id="pay_remarks" class="finput" placeholder="Optional remarks"/></div>
-              <button onclick="collectPayment()" class="px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 shadow-lg text-sm w-full">Collect Payment</button>
+              <div><label class="lbl">Remarks</label><input id="pay_remarks" class="finput"
+                  placeholder="Optional remarks" /></div>
+              <button onclick="collectPayment()"
+                class="px-6 py-3 bg-emerald-600 text-white rounded-xl font-semibold hover:bg-emerald-700 shadow-lg text-sm w-full">Collect
+                Payment</button>
             </div>
           </div>
 
@@ -133,7 +304,8 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
           <div id="ftab2" class="p-5 hidden">
             <div class="flex justify-between mb-4">
               <h4 class="font-bold text-gray-900">Fee Structures</h4>
-              <button onclick="openFeeStructureModal()" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">+ Create Structure</button>
+              <button onclick="openFeeStructureModal()"
+                class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">+ Create Structure</button>
             </div>
             <div id="structTable"></div>
           </div>
@@ -143,7 +315,8 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
             <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-4">
               <div>
                 <h4 class="font-bold text-gray-900">Fee Dues Report</h4>
-                <p class="text-sm text-slate-500 mt-1">Class-wise report with parent contact details for class teacher follow-up.</p>
+                <p class="text-sm text-slate-500 mt-1">Class-wise report with parent contact details for class teacher
+                  follow-up.</p>
               </div>
               <div class="flex flex-col sm:flex-row gap-3">
                 <div class="min-w-[220px]">
@@ -153,8 +326,10 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
                   </select>
                 </div>
                 <div class="flex gap-2 items-end">
-                  <button onclick="loadDues()" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">Refresh</button>
-                  <button onclick="printDuesReport()" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200">Print</button>
+                  <button onclick="loadDues()"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">Refresh</button>
+                  <button onclick="printDuesReport()"
+                    class="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200">Print</button>
                 </div>
               </div>
             </div>
@@ -166,57 +341,95 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
             <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-5">
               <div>
                 <h4 class="font-bold text-gray-900">Fee Estimate Calculator</h4>
-                <p class="text-sm text-slate-500 mt-1">Create a fee estimate using manually entered student details. This is only a preview and will not be saved or converted into an invoice.</p>
+                <p class="text-sm text-slate-500 mt-1">Create a fee estimate using manually entered student details.
+                  This is only a preview and will not be saved or converted into an invoice.</p>
               </div>
               <div class="flex gap-2 flex-wrap">
-                <button onclick="printFeeEstimate()" class="px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">Print Estimate</button>
-                <button onclick="resetFeeEstimateForm()" class="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200">Reset Estimate</button>
+                <button onclick="printFeeEstimate()"
+                  class="px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">Print
+                  Estimate</button>
+                <button onclick="resetFeeEstimateForm()"
+                  class="px-4 py-2.5 bg-slate-100 text-slate-700 rounded-xl text-sm font-medium hover:bg-slate-200">Reset
+                  Estimate</button>
               </div>
             </div>
             <div class="grid grid-cols-1 xl:grid-cols-[1.1fr_.9fr] gap-6">
               <div class="space-y-4">
                 <div class="rounded-2xl border border-slate-200 bg-blue-50 p-4 text-sm text-blue-900">
                   <div class="font-semibold">Estimate only</div>
-                  <div class="text-xs mt-1 text-blue-700">Enter the details manually to view the total and balance based on the class fee, fee structure, transport route, and additional items.</div>
+                  <div class="text-xs mt-1 text-blue-700">Enter the details manually to view the total and balance based
+                    on the class fee, fee structure, transport route, and additional items.</div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div><label class="lbl">Student Name</label><input id="est_student_name" class="finput" placeholder="Student name" /></div>
-                  <div><label class="lbl">Admission No</label><input id="est_admission_no" class="finput" placeholder="Admission no" /></div>
+                  <div><label class="lbl">Student Name</label><input id="est_student_name" class="finput"
+                      placeholder="Student name" /></div>
+                  <div><label class="lbl">Admission No</label><input id="est_admission_no" class="finput"
+                      placeholder="Admission no" /></div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div><label class="lbl">Father Name</label><input id="est_father_name" class="finput" placeholder="Father name" /></div>
-                  <div><label class="lbl">Phone Number</label><input id="est_phone" class="finput" placeholder="Phone number" /></div>
+                  <div><label class="lbl">Father Name</label><input id="est_father_name" class="finput"
+                      placeholder="Father name" /></div>
+                  <div><label class="lbl">Phone Number</label><input id="est_phone" class="finput"
+                      placeholder="Phone number" /></div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div><label class="lbl">Gender</label><select id="est_gender" class="finput"><option value="">Select gender</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+                  <div><label class="lbl">Gender</label><select id="est_gender" class="finput">
+                      <option value="">Select gender</option>
+                      <option>Male</option>
+                      <option>Female</option>
+                      <option>Other</option>
+                    </select></div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div><label class="lbl">Class *</label><select id="est_class" class="finput" onchange="loadEstimateSections(); loadEstimateStructures(); renderFeeEstimate()"><option value="">Select class</option></select></div>
-                  <div><label class="lbl">Section</label><select id="est_section" class="finput" onchange="renderFeeEstimate()"><option value="">Select section</option></select></div>
+                  <div><label class="lbl">Class *</label><select id="est_class" class="finput"
+                      onchange="loadEstimateSections(); loadEstimateStructures(); renderFeeEstimate()">
+                      <option value="">Select class</option>
+                    </select></div>
+                  <div><label class="lbl">Section</label><select id="est_section" class="finput"
+                      onchange="renderFeeEstimate()">
+                      <option value="">Select section</option>
+                    </select></div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div><label class="lbl">Concession</label><select id="est_concession" class="finput"></select></div>
-                  <div><label class="lbl">Fee Structure</label><select id="est_structure" class="finput"><option value="">Select fee structure</option></select></div>
+                  <div><label class="lbl">Fee Structure</label><select id="est_structure" class="finput">
+                      <option value="">Select fee structure</option>
+                    </select></div>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div><label class="lbl">Transport Route</label><select id="est_route" class="finput"><option value="">No transport</option></select></div>
-                  <div><label class="lbl">Paid Amount (₹)</label><input id="est_paid" type="number" class="finput" value="0" /></div>
+                  <div><label class="lbl">Transport Route</label><select id="est_route" class="finput">
+                      <option value="">No transport</option>
+                    </select></div>
+                  <div><label class="lbl">Paid Amount (₹)</label><input id="est_paid" type="number" class="finput"
+                      value="0" /></div>
                 </div>
                 <div>
                   <label class="lbl">Transport Months</label>
                   <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 text-sm text-gray-700">
-                    <label class="flex items-center gap-2"><input type="checkbox" class="est_month w-4 h-4 accent-blue-600" value="Apr" />Apr</label>
-                    <label class="flex items-center gap-2"><input type="checkbox" class="est_month w-4 h-4 accent-blue-600" value="May" />May</label>
-                    <label class="flex items-center gap-2"><input type="checkbox" class="est_month w-4 h-4 accent-blue-600" value="Jun" />Jun</label>
-                    <label class="flex items-center gap-2"><input type="checkbox" class="est_month w-4 h-4 accent-blue-600" value="Jul" />Jul</label>
-                    <label class="flex items-center gap-2"><input type="checkbox" class="est_month w-4 h-4 accent-blue-600" value="Aug" />Aug</label>
-                    <label class="flex items-center gap-2"><input type="checkbox" class="est_month w-4 h-4 accent-blue-600" value="Sep" />Sep</label>
-                    <label class="flex items-center gap-2"><input type="checkbox" class="est_month w-4 h-4 accent-blue-600" value="Oct" />Oct</label>
-                    <label class="flex items-center gap-2"><input type="checkbox" class="est_month w-4 h-4 accent-blue-600" value="Nov" />Nov</label>
-                    <label class="flex items-center gap-2"><input type="checkbox" class="est_month w-4 h-4 accent-blue-600" value="Dec" />Dec</label>
-                    <label class="flex items-center gap-2"><input type="checkbox" class="est_month w-4 h-4 accent-blue-600" value="Jan" />Jan</label>
-                    <label class="flex items-center gap-2"><input type="checkbox" class="est_month w-4 h-4 accent-blue-600" value="Feb" />Feb</label>
-                    <label class="flex items-center gap-2"><input type="checkbox" class="est_month w-4 h-4 accent-blue-600" value="Mar" />Mar</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"
+                        class="est_month w-4 h-4 accent-blue-600" value="Apr" />Apr</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"
+                        class="est_month w-4 h-4 accent-blue-600" value="May" />May</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"
+                        class="est_month w-4 h-4 accent-blue-600" value="Jun" />Jun</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"
+                        class="est_month w-4 h-4 accent-blue-600" value="Jul" />Jul</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"
+                        class="est_month w-4 h-4 accent-blue-600" value="Aug" />Aug</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"
+                        class="est_month w-4 h-4 accent-blue-600" value="Sep" />Sep</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"
+                        class="est_month w-4 h-4 accent-blue-600" value="Oct" />Oct</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"
+                        class="est_month w-4 h-4 accent-blue-600" value="Nov" />Nov</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"
+                        class="est_month w-4 h-4 accent-blue-600" value="Dec" />Dec</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"
+                        class="est_month w-4 h-4 accent-blue-600" value="Jan" />Jan</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"
+                        class="est_month w-4 h-4 accent-blue-600" value="Feb" />Feb</label>
+                    <label class="flex items-center gap-2"><input type="checkbox"
+                        class="est_month w-4 h-4 accent-blue-600" value="Mar" />Mar</label>
                   </div>
                 </div>
                 <div id="estItemsContainer">
@@ -225,20 +438,25 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
                     <div class="flex gap-2 items-center">
                       <input type="text" placeholder="Description" class="est-desc finput flex-1" />
                       <input type="number" placeholder="Amount" class="est-amt finput w-32" />
-                      <button onclick="removeEstItem(this)" class="text-red-400 hover:text-red-600 text-lg px-2">×</button>
+                      <button onclick="removeEstItem(this)"
+                        class="text-red-400 hover:text-red-600 text-lg px-2">×</button>
                     </div>
                   </div>
-                  <button onclick="addEstItem()" class="mt-2 text-blue-600 text-sm hover:underline font-medium">+ Add Item</button>
+                  <button onclick="addEstItem()" class="mt-2 text-blue-600 text-sm hover:underline font-medium">+ Add
+                    Item</button>
                 </div>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div><label class="lbl">Discount (₹)</label><input id="est_discount" type="number" class="finput" value="0" /></div>
-                  <div><label class="lbl">Notes</label><input id="est_notes" class="finput" placeholder="Optional remarks" /></div>
+                  <div><label class="lbl">Discount (₹)</label><input id="est_discount" type="number" class="finput"
+                      value="0" /></div>
+                  <div><label class="lbl">Notes</label><input id="est_notes" class="finput"
+                      placeholder="Optional remarks" /></div>
                 </div>
               </div>
               <div class="space-y-4">
                 <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
                   <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Estimate Summary</p>
-                  <div id="estStudentSummary" class="mt-3 text-sm text-slate-500">Enter the student details and select a class to preview the estimate.</div>
+                  <div id="estStudentSummary" class="mt-3 text-sm text-slate-500">Enter the student details and select a
+                    class to preview the estimate.</div>
                 </div>
                 <div class="rounded-2xl border border-slate-200 bg-white p-4">
                   <div class="flex items-center justify-between mb-3">
@@ -249,11 +467,16 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
                     <div class="rounded-xl bg-slate-50 px-3 py-3 text-slate-400">No estimate yet</div>
                   </div>
                   <div class="mt-4 space-y-2 border-t border-slate-100 pt-3 text-sm">
-                    <div class="flex justify-between"><span class="text-slate-500">Gross</span><span id="estGross" class="font-semibold text-slate-900">₹0.00</span></div>
-                    <div class="flex justify-between"><span class="text-slate-500">Manual Discount</span><span id="estDiscountValue" class="font-semibold text-red-500">₹0.00</span></div>
-                    <div class="flex justify-between"><span class="text-slate-500">Net Fee</span><span id="estNet" class="font-semibold text-blue-700">₹0.00</span></div>
-                    <div class="flex justify-between"><span class="text-slate-500">Paid</span><span id="estPaidValue" class="font-semibold text-emerald-600">₹0.00</span></div>
-                    <div class="flex justify-between text-base"><span class="font-semibold text-slate-900">Balance </span><span id="estBalance" class="font-bold text-red-600">₹0.00</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Gross</span><span id="estGross"
+                        class="font-semibold text-slate-900">₹0.00</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Manual Discount</span><span
+                        id="estDiscountValue" class="font-semibold text-red-500">₹0.00</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Net Fee</span><span id="estNet"
+                        class="font-semibold text-blue-700">₹0.00</span></div>
+                    <div class="flex justify-between"><span class="text-slate-500">Paid</span><span id="estPaidValue"
+                        class="font-semibold text-emerald-600">₹0.00</span></div>
+                    <div class="flex justify-between text-base"><span class="font-semibold text-slate-900">Balance
+                      </span><span id="estBalance" class="font-bold text-red-600">₹0.00</span></div>
                   </div>
                 </div>
               </div>
@@ -265,7 +488,8 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
             <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-4">
               <div>
                 <h4 class="font-bold text-gray-900">Collect Payment History</h4>
-                <p class="text-sm text-slate-500 mt-1">Invoice payment collection log with date, time and remaining balance.</p>
+                <p class="text-sm text-slate-500 mt-1">Invoice payment collection log with date, time and remaining
+                  balance.</p>
               </div>
               <div class="flex flex-col sm:flex-row gap-3">
                 <div class="min-w-[220px]">
@@ -274,7 +498,8 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
                     <option value="">All Classes</option>
                   </select>
                 </div>
-                <button onclick="loadPaymentHistory()" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">Refresh</button>
+                <button onclick="loadPaymentHistory()"
+                  class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">Refresh</button>
               </div>
             </div>
             <div id="paymentHistoryTable"></div>
@@ -288,88 +513,136 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
   <!-- Invoice Modal -->
   <div id="invModal" class="modal-overlay" style="display:none">
     <div class="modal-box w-full max-w-3xl">
-      <div class="flex justify-between items-center px-6 py-4 border-b"><h3 id="invoiceModalTitle" class="font-bold text-gray-900">Create Invoice</h3><button onclick="document.getElementById('invModal').style.display='none'" class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button></div>
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 id="invoiceModalTitle" class="font-bold text-gray-900">Create Invoice</h3><button
+          onclick="document.getElementById('invModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button>
+      </div>
       <div class="px-6 py-5 grid grid-cols-1 xl:grid-cols-[1.1fr_.9fr] gap-6">
         <div class="space-y-4">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div><label class="lbl">Class</label><select id="inv_class" class="finput" onchange="loadInvoiceSections(); loadInvStudents()"><option value="">Select class</option></select></div>
-          <div><label class="lbl">Section</label><select id="inv_section" class="finput" onchange="loadInvStudents()"><option value="">Select section</option></select></div>
-        </div>
-        <div><label class="lbl">Student *</label><select id="inv_student" class="finput" onchange="loadInvoiceStudentMeta()"><option value="">Select student</option></select></div>
-        <div><label class="lbl">Concession</label><select id="inv_concession" class="finput" onchange="renderInvoiceEstimate()"></select></div>
-        <div><label class="lbl">Fee Structure</label><select id="inv_structure" class="finput"><option value="">Select fee structure</option></select></div>
-        <div id="invAnnualHeadsWrap" class="hidden rounded-xl border border-slate-200 bg-slate-50 p-3">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <label class="lbl mb-1">Annual Fee Heads</label>
-              <p class="text-xs text-slate-500">Select registration, annual exam, books, and notebook fees only once per academic year.</p>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div><label class="lbl">Class</label><select id="inv_class" class="finput"
+                onchange="loadInvoiceSections(); loadInvStudents()">
+                <option value="">Select class</option>
+              </select></div>
+            <div><label class="lbl">Section</label><select id="inv_section" class="finput" onchange="loadInvStudents()">
+                <option value="">Select section</option>
+              </select></div>
+          </div>
+          <div><label class="lbl">Student *</label><select id="inv_student" class="finput"
+              onchange="loadInvoiceStudentMeta()">
+              <option value="">Select student</option>
+            </select></div>
+          <div><label class="lbl">Concession</label><select id="inv_concession" class="finput"
+              onchange="renderInvoiceEstimate()"></select></div>
+          <div><label class="lbl">Fee Structure</label><select id="inv_structure" class="finput">
+              <option value="">Select fee structure</option>
+            </select></div>
+          <div id="invAnnualHeadsWrap" class="hidden rounded-xl border border-slate-200 bg-slate-50 p-3">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <label class="lbl mb-1">Annual Fee Heads</label>
+                <p class="text-xs text-slate-500">Select registration, annual exam, books, and notebook fees only once
+                  per academic year.</p>
+              </div>
+              <button type="button" onclick="selectAvailableAnnualHeads()"
+                class="text-xs font-semibold text-blue-600 hover:underline">Select available</button>
             </div>
-            <button type="button" onclick="selectAvailableAnnualHeads()" class="text-xs font-semibold text-blue-600 hover:underline">Select available</button>
+            <div id="invAnnualHeads" class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700"></div>
           </div>
-          <div id="invAnnualHeads" class="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-gray-700"></div>
-        </div>
-        <div>
-          <label class="lbl">Tuition Months</label>
-          <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 text-sm text-gray-700">
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_tuition_month w-4 h-4 accent-blue-600" value="Apr" />Apr</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_tuition_month w-4 h-4 accent-blue-600" value="May" />May</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_tuition_month w-4 h-4 accent-blue-600" value="Jun" />Jun</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_tuition_month w-4 h-4 accent-blue-600" value="Jul" />Jul</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_tuition_month w-4 h-4 accent-blue-600" value="Aug" />Aug</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_tuition_month w-4 h-4 accent-blue-600" value="Sep" />Sep</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_tuition_month w-4 h-4 accent-blue-600" value="Oct" />Oct</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_tuition_month w-4 h-4 accent-blue-600" value="Nov" />Nov</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_tuition_month w-4 h-4 accent-blue-600" value="Dec" />Dec</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_tuition_month w-4 h-4 accent-blue-600" value="Jan" />Jan</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_tuition_month w-4 h-4 accent-blue-600" value="Feb" />Feb</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_tuition_month w-4 h-4 accent-blue-600" value="Mar" />Mar</label>
+          <div>
+            <label class="lbl">Tuition Months</label>
+            <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 text-sm text-gray-700">
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_tuition_month w-4 h-4 accent-blue-600" value="Apr" />Apr</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_tuition_month w-4 h-4 accent-blue-600" value="May" />May</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_tuition_month w-4 h-4 accent-blue-600" value="Jun" />Jun</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_tuition_month w-4 h-4 accent-blue-600" value="Jul" />Jul</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_tuition_month w-4 h-4 accent-blue-600" value="Aug" />Aug</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_tuition_month w-4 h-4 accent-blue-600" value="Sep" />Sep</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_tuition_month w-4 h-4 accent-blue-600" value="Oct" />Oct</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_tuition_month w-4 h-4 accent-blue-600" value="Nov" />Nov</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_tuition_month w-4 h-4 accent-blue-600" value="Dec" />Dec</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_tuition_month w-4 h-4 accent-blue-600" value="Jan" />Jan</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_tuition_month w-4 h-4 accent-blue-600" value="Feb" />Feb</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_tuition_month w-4 h-4 accent-blue-600" value="Mar" />Mar</label>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">The tuition amount will be multiplied by the selected months.</p>
           </div>
-          <p class="text-xs text-slate-500 mt-1">The tuition amount will be multiplied by the selected months.</p>
-        </div>
-        <label class="flex items-center gap-2"><input id="inv_transport_toggle" type="checkbox" class="w-4 h-4 accent-blue-600" /><span class="text-sm text-gray-700">Include transport fee from student route</span></label>
-        <div id="inv_transport_meta" class="hidden bg-blue-50 rounded-xl p-4 text-sm text-blue-900"></div>
-        <div>
-          <label class="lbl">Transport Months</label>
-          <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 text-sm text-gray-700">
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_transport_month w-4 h-4 accent-blue-600" value="Apr" />Apr</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_transport_month w-4 h-4 accent-blue-600" value="May" />May</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_transport_month w-4 h-4 accent-blue-600" value="Jun" />Jun</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_transport_month w-4 h-4 accent-blue-600" value="Jul" />Jul</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_transport_month w-4 h-4 accent-blue-600" value="Aug" />Aug</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_transport_month w-4 h-4 accent-blue-600" value="Sep" />Sep</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_transport_month w-4 h-4 accent-blue-600" value="Oct" />Oct</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_transport_month w-4 h-4 accent-blue-600" value="Nov" />Nov</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_transport_month w-4 h-4 accent-blue-600" value="Dec" />Dec</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_transport_month w-4 h-4 accent-blue-600" value="Jan" />Jan</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_transport_month w-4 h-4 accent-blue-600" value="Feb" />Feb</label>
-            <label class="flex items-center gap-2"><input type="checkbox" class="inv_transport_month w-4 h-4 accent-blue-600" value="Mar" />Mar</label>
-          </div>
-        </div>
-        <div><label class="lbl">Due Date</label><input id="inv_due" type="date" class="finput"/></div>
-        <div id="invItemsContainer">
-          <label class="lbl">Fee Items</label>
-          <div id="invItems" class="space-y-2">
-            <div class="flex gap-2 items-center">
-              <input type="text" placeholder="Description" class="inv-desc finput flex-1" />
-              <input type="number" placeholder="Amount" class="inv-amt finput w-32" />
-              <button onclick="removeInvItem(this)" class="text-red-400 hover:text-red-600 text-lg px-2">×</button>
+          <label class="flex items-center gap-2"><input id="inv_transport_toggle" type="checkbox"
+              class="w-4 h-4 accent-blue-600" /><span class="text-sm text-gray-700">Include transport fee from student
+              route</span></label>
+          <div id="inv_transport_meta" class="hidden bg-blue-50 rounded-xl p-4 text-sm text-blue-900"></div>
+          <div>
+            <label class="lbl">Transport Months</label>
+            <div class="grid grid-cols-3 sm:grid-cols-4 gap-2 text-sm text-gray-700">
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_transport_month w-4 h-4 accent-blue-600" value="Apr" />Apr</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_transport_month w-4 h-4 accent-blue-600" value="May" />May</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_transport_month w-4 h-4 accent-blue-600" value="Jun" />Jun</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_transport_month w-4 h-4 accent-blue-600" value="Jul" />Jul</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_transport_month w-4 h-4 accent-blue-600" value="Aug" />Aug</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_transport_month w-4 h-4 accent-blue-600" value="Sep" />Sep</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_transport_month w-4 h-4 accent-blue-600" value="Oct" />Oct</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_transport_month w-4 h-4 accent-blue-600" value="Nov" />Nov</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_transport_month w-4 h-4 accent-blue-600" value="Dec" />Dec</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_transport_month w-4 h-4 accent-blue-600" value="Jan" />Jan</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_transport_month w-4 h-4 accent-blue-600" value="Feb" />Feb</label>
+              <label class="flex items-center gap-2"><input type="checkbox"
+                  class="inv_transport_month w-4 h-4 accent-blue-600" value="Mar" />Mar</label>
             </div>
           </div>
-          <button onclick="addInvItem()" class="mt-2 text-blue-600 text-sm hover:underline font-medium">+ Add Item</button>
-        </div>
-        <div><label class="lbl">Discount (₹)</label><input id="inv_disc" type="number" class="finput" value="0"/></div>
-        <div><label class="lbl">Remarks</label><input id="inv_rem" class="finput" placeholder="Remarks"/></div>
-        <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
-          <p class="text-sm font-semibold text-slate-800">After Create</p>
-          <label class="flex items-center gap-2 text-sm text-slate-700"><input id="inv_send_parent" type="checkbox" class="w-4 h-4 accent-blue-600" checked />Send to parent email</label>
-          <label class="flex items-center gap-2 text-sm text-slate-700"><input id="inv_send_student" type="checkbox" class="w-4 h-4 accent-blue-600" />Send to student email</label>
-          <p class="text-xs text-slate-500">The invoice PDF will download automatically.</p>
-        </div>
+          <div><label class="lbl">Due Date</label><input id="inv_due" type="date" class="finput" /></div>
+          <div id="invItemsContainer">
+            <label class="lbl">Fee Items</label>
+            <div id="invItems" class="space-y-2">
+              <div class="flex gap-2 items-center">
+                <input type="text" placeholder="Description" class="inv-desc finput flex-1" />
+                <input type="number" placeholder="Amount" class="inv-amt finput w-32" />
+                <button onclick="removeInvItem(this)" class="text-red-400 hover:text-red-600 text-lg px-2">×</button>
+              </div>
+            </div>
+            <button onclick="addInvItem()" class="mt-2 text-blue-600 text-sm hover:underline font-medium">+ Add
+              Item</button>
+          </div>
+          <div><label class="lbl">Discount (₹)</label><input id="inv_disc" type="number" class="finput" value="0" />
+          </div>
+          <div><label class="lbl">Remarks</label><input id="inv_rem" class="finput" placeholder="Remarks" /></div>
+          <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+            <p class="text-sm font-semibold text-slate-800">After Create</p>
+            <label class="flex items-center gap-2 text-sm text-slate-700"><input id="inv_send_parent" type="checkbox"
+                class="w-4 h-4 accent-blue-600" checked />Send to parent email</label>
+            <label class="flex items-center gap-2 text-sm text-slate-700"><input id="inv_send_student" type="checkbox"
+                class="w-4 h-4 accent-blue-600" />Send to student email</label>
+            <p class="text-xs text-slate-500">The invoice PDF will download automatically.</p>
+          </div>
         </div>
         <div class="space-y-4">
           <div class="rounded-2xl border border-slate-200 bg-slate-50 p-4">
             <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">Estimate Preview</p>
-            <div id="invStudentSummary" class="mt-3 text-sm text-slate-500">Select a student to load class fee, concession and transport details.</div>
+            <div id="invStudentSummary" class="mt-3 text-sm text-slate-500">Select a student to load class fee,
+              concession and transport details.</div>
           </div>
           <div class="rounded-2xl border border-slate-200 bg-white p-4">
             <div class="flex items-center justify-between mb-3">
@@ -380,16 +653,21 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
               <div class="rounded-xl bg-slate-50 px-3 py-3 text-slate-400">No estimate yet</div>
             </div>
             <div class="mt-4 space-y-2 border-t border-slate-100 pt-3 text-sm">
-              <div class="flex justify-between"><span class="text-slate-500">Gross</span><span id="invEstimateGross" class="font-semibold text-slate-900">₹0.00</span></div>
-              <div class="flex justify-between"><span class="text-slate-500">Manual Discount</span><span id="invEstimateDiscount" class="font-semibold text-red-500">₹0.00</span></div>
-              <div class="flex justify-between text-base"><span class="font-semibold text-slate-900">Net Amount</span><span id="invEstimateNet" class="font-bold text-blue-700">₹0.00</span></div>
+              <div class="flex justify-between"><span class="text-slate-500">Gross</span><span id="invEstimateGross"
+                  class="font-semibold text-slate-900">₹0.00</span></div>
+              <div class="flex justify-between"><span class="text-slate-500">Manual Discount</span><span
+                  id="invEstimateDiscount" class="font-semibold text-red-500">₹0.00</span></div>
+              <div class="flex justify-between text-base"><span class="font-semibold text-slate-900">Net
+                  Amount</span><span id="invEstimateNet" class="font-bold text-blue-700">₹0.00</span></div>
             </div>
           </div>
         </div>
       </div>
       <div class="flex gap-3 px-6 py-4 border-t justify-end">
-        <button onclick="document.getElementById('invModal').style.display='none'" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
-        <button id="invoiceSubmitBtn" onclick="createInvoice()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Create</button>
+        <button onclick="document.getElementById('invModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button id="invoiceSubmitBtn" onclick="createInvoice()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Create</button>
       </div>
     </div>
   </div>
@@ -397,24 +675,40 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
   <!-- Fee Structure Modal -->
   <div id="structModal" class="modal-overlay" style="display:none">
     <div class="modal-box w-full max-w-md">
-      <div class="flex justify-between items-center px-6 py-4 border-b"><h3 id="structModalTitle" class="font-bold text-gray-900">Create Fee Structure</h3><button onclick="document.getElementById('structModal').style.display='none'" class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button></div>
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 id="structModalTitle" class="font-bold text-gray-900">Create Fee Structure</h3><button
+          onclick="document.getElementById('structModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button>
+      </div>
       <div class="px-6 py-5 space-y-4">
-        <div><label class="lbl">Structure Name *</label><input id="str_name" class="finput" placeholder="e.g. Class 10 Fee 2024-25"/></div>
-        <div><label class="lbl">Class *</label><select id="str_cls" class="finput"><option value="">Select class</option></select></div>
-        <div><label class="lbl">Installments</label><select id="str_inst" class="finput"><option value="1">Yearly / Annual (1 payment)</option><option value="2">Half-yearly (2 payments)</option><option value="4">Quarterly (4 payments)</option><option value="12">Monthly (12 payments)</option></select></div>
-        <div><label class="lbl">Late Fee per Day (₹)</label><input id="str_late" type="number" class="finput" value="0"/></div>
+        <div><label class="lbl">Structure Name *</label><input id="str_name" class="finput"
+            placeholder="e.g. Class 10 Fee 2024-25" /></div>
+        <div><label class="lbl">Class *</label><select id="str_cls" class="finput">
+            <option value="">Select class</option>
+          </select></div>
+        <div><label class="lbl">Installments</label><select id="str_inst" class="finput">
+            <option value="1">Yearly / Annual (1 payment)</option>
+            <option value="2">Half-yearly (2 payments)</option>
+            <option value="4">Quarterly (4 payments)</option>
+            <option value="12">Monthly (12 payments)</option>
+          </select></div>
+        <div><label class="lbl">Late Fee per Day (₹)</label><input id="str_late" type="number" class="finput"
+            value="0" /></div>
         <div id="strCatItems" class="space-y-2">
           <label class="lbl">Fee Categories</label>
         </div>
       </div>
       <div class="flex gap-3 px-6 py-4 border-t justify-end">
-        <button onclick="document.getElementById('structModal').style.display='none'" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
-        <button id="structSubmitBtn" onclick="createFeeStructure()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+        <button onclick="document.getElementById('structModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button id="structSubmitBtn" onclick="createFeeStructure()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
       </div>
     </div>
   </div>
 
-  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl"></div>
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
+  </div>
 
   <script src="js/api.js"></script>
   <script src="js/layout.js"></script>
@@ -606,29 +900,29 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
         </div>
       `;
     }
-async function loadFeeStats() {
-  if (!schoolId) return;
+    async function loadFeeStats() {
+      if (!schoolId) return;
 
-  try {
-    const r = await FeesAPI.getSummary(schoolId, selectedBranchCode);
-    const d = r?.data || {};
+      try {
+        const r = await FeesAPI.getSummary(schoolId, selectedBranchCode);
+        const d = r?.data || {};
 
-    document.getElementById('feeStats').innerHTML =
-      statCard('Total Billed', formatCurrency(d.total_billed || 0), 'wallet', 'blue') +
-      statCard('Collected', formatCurrency(d.total_collected || 0), 'check-circle', 'green') +
-      statCard('Pending', formatCurrency(d.total_due || 0), 'clock', 'orange') +
-      statCard('Collection Rate', (d.collection_rate || 0) + '%', 'bar-chart-3', 'purple');
+        document.getElementById('feeStats').innerHTML =
+          statCard('Total Billed', formatCurrency(d.total_billed || 0), 'wallet', 'blue') +
+          statCard('Collected', formatCurrency(d.total_collected || 0), 'check-circle', 'green') +
+          statCard('Pending', formatCurrency(d.total_due || 0), 'clock', 'orange') +
+          statCard('Collection Rate', (d.collection_rate || 0) + '%', 'bar-chart-3', 'purple');
 
-    // 🔥 IMPORTANT
-    lucide.createIcons();
+        // 🔥 IMPORTANT
+        lucide.createIcons();
 
-  } catch (e) {
-    console.log(e);
-  }
-}
+      } catch (e) {
+        console.log(e);
+      }
+    }
 
-function statCard(title, value, icon, color) {
-  return `
+    function statCard(title, value, icon, color) {
+      return `
     <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
       <div>
         <p class="text-sm text-gray-400">${title}</p>
@@ -639,7 +933,7 @@ function statCard(title, value, icon, color) {
       </div>
     </div>
   `;
-}
+    }
 
     async function loadInvoiceClasses() {
       if (!schoolId) return;
@@ -650,7 +944,7 @@ function statCard(title, value, icon, color) {
         document.getElementById('inv_class').innerHTML = '<option value="">Select class</option>' +
           invoiceClassCache.map(c => `<option value="${c.id}" data-name="${c.name}" data-secs='${JSON.stringify(c.sections || [])}'>${c.name}</option>`).join('');
         loadInvoiceSections();
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function loadInvoiceFilterClasses() {
@@ -663,7 +957,7 @@ function statCard(title, value, icon, color) {
         const current = sel.value || '';
         sel.innerHTML = '<option value="">All Classes</option>' + classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
         if (current && classes.some(c => c.id === current)) sel.value = current;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     function loadInvoiceSections() {
@@ -756,7 +1050,7 @@ function statCard(title, value, icon, color) {
           structureEl.value = nextValue;
         }
         return filteredStructures;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     function getDefaultInvoiceStructureForStudent(student = invoiceStudentMeta) {
@@ -813,7 +1107,7 @@ function statCard(title, value, icon, color) {
             <div class="flex justify-between mt-1"><span>Default Months</span><span class="font-semibold">${months}</span></div>`;
         }
         renderInvoiceEstimate();
-      } catch (e) {}
+      } catch (e) { }
     }
 
     function resetInvoiceEstimate() {
@@ -1060,7 +1354,7 @@ function statCard(title, value, icon, color) {
             }
           });
         });
-      } catch (e) {}
+      } catch (e) { }
     }
 
     function getSelectedInvoiceConcession() {
@@ -1220,7 +1514,7 @@ function statCard(title, value, icon, color) {
           estimateClassCache.map(c => `<option value="${c.id}" data-name="${c.name}" data-fee="${c.class_fee || 0}" data-secs='${JSON.stringify(c.sections || [])}'>${c.name}</option>`).join('');
         if (current && estimateClassCache.some(c => c.id === current)) select.value = current;
         loadEstimateSections();
-      } catch (e) {}
+      } catch (e) { }
     }
 
     function loadEstimateSections() {
@@ -1249,7 +1543,7 @@ function statCard(title, value, icon, color) {
         select.innerHTML = '<option value="">No transport</option>' +
           estimateRouteCache.map(route => `<option value="${route.id}" data-name="${route.route_name}" data-fee="${route.fee_per_month || 0}">${route.route_name} • ${formatCurrency(route.fee_per_month || 0)}/month</option>`).join('');
         if (current && estimateRouteCache.some(route => route.id === current)) select.value = current;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function loadEstimateStructures() {
@@ -1265,7 +1559,7 @@ function statCard(title, value, icon, color) {
         select.innerHTML = '<option value="">Select fee structure</option>' +
           filteredStructures.map(s => `<option value="${s.id}">${s.name} (${s.classroom || 'All'})</option>`).join('');
         if (current && filteredStructures.some(s => s.id === current)) select.value = current;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     function getSelectedEstimateConcession() {
@@ -1695,7 +1989,8 @@ function statCard(title, value, icon, color) {
       const params = { school_id: schoolId, branch_code: selectedBranchCode, page: invoiceCurrentPage, per_page: invoicePerPage, include_items: false };
       const stat = document.getElementById('invStatus').value; if (stat) params.status = stat;
       const classroomId = document.getElementById('invClassFilter').value; if (classroomId) params.classroom_id = classroomId;
-      const fatherName = document.getElementById('invFatherFilter').value.trim(); if (fatherName) params.father_name = fatherName;
+      const search = document.getElementById('invSearchFilter').value.trim();
+      if (search) params.search = search;
       if (academicYearId) params.academic_year_id = academicYearId;
       try {
         const r = await FeesAPI.getInvoices(params); const invs = r?.data || [];
@@ -1800,7 +2095,7 @@ function statCard(title, value, icon, color) {
         document.getElementById('pay_class').innerHTML = '<option value="">Select class</option>' +
           paymentClassCache.map(c => `<option value="${c.id}" data-secs='${JSON.stringify(c.sections || [])}'>${c.name}</option>`).join('');
         loadPaySections();
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function loadDuesClasses() {
@@ -1814,7 +2109,7 @@ function statCard(title, value, icon, color) {
         filter.innerHTML = '<option value="">All Classes</option>' +
           duesClassCache.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
         if (current && duesClassCache.some(c => c.id === current)) filter.value = current;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function loadPaymentHistoryClasses() {
@@ -1828,7 +2123,7 @@ function statCard(title, value, icon, color) {
         filter.innerHTML = '<option value="">All Classes</option>' +
           classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
         if (current && classes.some(c => c.id === current)) filter.value = current;
-      } catch (e) {}
+      } catch (e) { }
     }
 
     function loadPaySections() {
@@ -1866,7 +2161,7 @@ function statCard(title, value, icon, color) {
           document.getElementById('pay_amount').value = opt.dataset.bal;
           document.getElementById('invoiceDetails').style.display = 'flex';
         };
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function collectPayment() {
@@ -1937,7 +2232,7 @@ function statCard(title, value, icon, color) {
             updateFeeStructureYearlyTotal();
           }
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     function updateFeeStructureYearlyTotal() {
@@ -2036,7 +2331,7 @@ function statCard(title, value, icon, color) {
         const createdCount = Math.max(0, afterCount - beforeCount);
         showToast(createdCount ? 'Default categories created!' : 'Default categories already exist');
         loadStructCats();
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function createFeeStructure() {
@@ -2097,7 +2392,7 @@ function statCard(title, value, icon, color) {
           <td class="px-4 py-3 whitespace-nowrap"><button onclick="openFeeStructureModal('${s.id}')" class="text-xs text-blue-600 hover:underline mr-3">Edit</button><button onclick="deleteFeeStructure('${s.id}')" class="text-xs text-red-600 hover:underline">Delete</button></td>
         `);
         document.getElementById('structTable').innerHTML = buildTable(hdrs, rows, 'No fee structures');
-      } catch (e) {}
+      } catch (e) { }
     }
 
     async function loadDues() {
@@ -2165,7 +2460,7 @@ function statCard(title, value, icon, color) {
 
     document.getElementById('invStatus').addEventListener('change', () => { resetInvoicePagination(); loadInvoices(); });
     document.getElementById('invClassFilter').addEventListener('change', () => { resetInvoicePagination(); loadInvoices(); });
-    document.getElementById('invFatherFilter').addEventListener('input', debounce(() => { resetInvoicePagination(); loadInvoices(); }));
+    document.getElementById('invSearchFilter').addEventListener('input', debounce(() => { resetInvoicePagination(); loadInvoices(); }));
     document.getElementById('inv_structure').addEventListener('change', () => {
       renderAnnualFeeHeadOptions();
       renderInvoiceEstimate();
@@ -2176,7 +2471,7 @@ function statCard(title, value, icon, color) {
     document.querySelectorAll('.inv-desc, .inv-amt').forEach(el => el.addEventListener('input', renderInvoiceEstimate));
     document.getElementById('inv_concession').innerHTML = invoiceConcessionOptions.map(option => `<option value="${option.label === 'Select' ? '' : option.label}" data-percent="${option.percent}">${option.label}</option>`).join('');
     document.getElementById('est_concession').innerHTML = invoiceConcessionOptions.map(option => `<option value="${option.label === 'Select' ? '' : option.label}" data-percent="${option.percent}">${option.label}</option>`).join('');
-    ['est_student_name','est_admission_no','est_father_name','est_phone','est_paid','est_discount','est_notes'].forEach(id => {
+    ['est_student_name', 'est_admission_no', 'est_father_name', 'est_phone', 'est_paid', 'est_discount', 'est_notes'].forEach(id => {
       document.getElementById(id).addEventListener('input', renderFeeEstimate);
     });
     document.getElementById('est_gender').addEventListener('change', renderFeeEstimate);
@@ -2196,4 +2491,5 @@ function statCard(title, value, icon, color) {
     })();
   </script>
 </body>
+
 </html>

@@ -1,327 +1,517 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+  <link rel="icon" type="image/png" href="/public/circlelogo.png" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box}
-body{font-family:"DM Sans",sans-serif;background:#f8fafc;color:#1e293b}
-h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
-.finput{width:100%;padding:.625rem .875rem;border-radius:.75rem;border:1.5px solid #e2e8f0;background:#f8fafc;font-size:.875rem;outline:none;transition:all .15s;color:#1e293b}
-.finput:focus{background:#fff;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.12)}
-.lbl{display:block;font-size:.8125rem;font-weight:600;color:#475569;margin-bottom:.375rem}
-.modal-overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(15,23,42,.55);backdrop-filter:blur(4px)}
-.modal-box{background:#fff;border-radius:1.5rem;box-shadow:0 25px 50px rgba(0,0,0,.22);width:100%;overflow:hidden;animation:modalIn .2s ease}
-@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.tab-bar{display:flex;border-bottom:2px solid #f1f5f9;overflow-x:auto;gap:.25rem;padding:0 1rem}
-.tab-bar::-webkit-scrollbar{display:none}
-.tab-btn{padding:.875rem 1.125rem;font-size:.8125rem;font-weight:600;background:none;border:none;cursor:pointer;white-space:nowrap;color:#94a3b8;border-bottom:2.5px solid transparent;margin-bottom:-2px;transition:all .15s;font-family:"DM Sans",sans-serif}
-.tab-btn.active{color:#6366f1;border-bottom-color:#6366f1}
-.tab-btn:not(.active):hover{color:#475569}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}
-</style>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Online Admission Form</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-.finput{width:100%;padding:.75rem 1rem;border-radius:.875rem;border:1.5px solid #e5e7eb;background:#fff;font-size:.875rem;outline:none;transition:border-color .2s}
-.finput:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
-.lbl{display:block;font-size:.875rem;font-weight:600;color:#374151;margin-bottom:.375rem}
-.step{display:none}.step.active{display:block}
-.step-dot{width:2rem;height:2rem;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:700}
-</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f8fafc;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f8fafc;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      overflow: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Online Admission Form</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .finput {
+      width: 100%;
+      padding: .75rem 1rem;
+      border-radius: .875rem;
+      border: 1.5px solid #e5e7eb;
+      background: #fff;
+      font-size: .875rem;
+      outline: none;
+      transition: border-color .2s
+    }
+
+    .finput:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, .1)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .875rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: .375rem
+    }
+
+    .step {
+      display: none
+    }
+
+    .step.active {
+      display: block
+    }
+
+    .step-dot {
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .75rem;
+      font-weight: 700
+    }
+  </style>
 </head>
+
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen py-8">
-<div class="max-w-2xl mx-auto px-4">
+  <div class="max-w-2xl mx-auto px-4">
 
-  <!-- Header -->
-  <div id="schoolHeader" class="text-center mb-8">
-    <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl text-white text-3xl mb-4 shadow-xl">🏫</div>
-    <h1 id="schoolName" class="text-2xl font-bold text-gray-900">School Admission Form</h1>
-    <p id="ayInfo" class="text-gray-500 mt-1"></p>
-  </div>
-
-  <!-- Closed Notice -->
-  <div id="closedNotice" class="hidden bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
-    <div class="text-5xl mb-4">🔒</div>
-    <h3 class="text-xl font-bold text-red-700">Admissions Closed</h3>
-    <p class="text-red-500 mt-2">Admissions are currently closed. Please contact the school for more information.</p>
-    <p id="contactInfo" class="text-gray-600 mt-4 text-sm"></p>
-  </div>
-
-  <!-- Welcome Message -->
-  <div id="welcomeBox" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
-    <p id="welcomeMsg" class="text-gray-700 leading-relaxed"></p>
-    <div id="docList" class="mt-4 hidden">
-      <p class="font-semibold text-gray-800 mb-2">Required Documents:</p>
-      <ul id="docItems" class="list-disc pl-5 space-y-1 text-sm text-gray-600"></ul>
+    <!-- Header -->
+    <div id="schoolHeader" class="text-center mb-8">
+      <div
+        class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl text-white text-3xl mb-4 shadow-xl">
+        🏫</div>
+      <h1 id="schoolName" class="text-2xl font-bold text-gray-900">School Admission Form</h1>
+      <p id="ayInfo" class="text-gray-500 mt-1"></p>
     </div>
-  </div>
 
-  <!-- Form Container -->
-  <div id="formContainer" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-    <!-- Step Indicator -->
-    <div class="flex items-center justify-between mb-8">
-      <div class="flex items-center gap-2" id="step1ind">
-        <div class="step-dot bg-blue-600 text-white" id="dot1">1</div>
-        <span class="text-sm font-semibold text-blue-700">Student Info</span>
-      </div>
-      <div class="flex-1 h-0.5 bg-gray-200 mx-2" id="line12"></div>
-      <div class="flex items-center gap-2" id="step2ind">
-        <div class="step-dot bg-gray-200 text-gray-500" id="dot2">2</div>
-        <span class="text-sm font-medium text-gray-400" id="step2label">Parent Info</span>
-      </div>
-      <div class="flex-1 h-0.5 bg-gray-200 mx-2" id="line23"></div>
-      <div class="flex items-center gap-2" id="step3ind">
-        <div class="step-dot bg-gray-200 text-gray-500" id="dot3">3</div>
-        <span class="text-sm font-medium text-gray-400" id="step3label">Address & Docs</span>
+    <!-- Closed Notice -->
+    <div id="closedNotice" class="hidden bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
+      <div class="text-5xl mb-4">🔒</div>
+      <h3 class="text-xl font-bold text-red-700">Admissions Closed</h3>
+      <p class="text-red-500 mt-2">Admissions are currently closed. Please contact the school for more information.</p>
+      <p id="contactInfo" class="text-gray-600 mt-4 text-sm"></p>
+    </div>
+
+    <!-- Welcome Message -->
+    <div id="welcomeBox" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-6">
+      <p id="welcomeMsg" class="text-gray-700 leading-relaxed"></p>
+      <div id="docList" class="mt-4 hidden">
+        <p class="font-semibold text-gray-800 mb-2">Required Documents:</p>
+        <ul id="docItems" class="list-disc pl-5 space-y-1 text-sm text-gray-600"></ul>
       </div>
     </div>
 
-    <!-- Step 1: Student Details -->
-    <div class="step active" id="step1">
-      <h3 class="text-lg font-bold text-gray-900 mb-5">Student Details</h3>
-      <div class="space-y-4">
-        <div><label class="lbl">Full Name *</label><input id="s_name" class="finput" placeholder="Student's full name"/></div>
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="lbl">Class Applying For *</label>
-            <select id="s_class" class="finput"><option value="">Select class</option></select>
-          </div>
-          <div>
-            <label class="lbl">Gender *</label>
-            <select id="s_gender" class="finput"><option value="">Select</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select>
-          </div>
+    <!-- Form Container -->
+    <div id="formContainer" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <!-- Step Indicator -->
+      <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center gap-2" id="step1ind">
+          <div class="step-dot bg-blue-600 text-white" id="dot1">1</div>
+          <span class="text-sm font-semibold text-blue-700">Student Info</span>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div><label class="lbl">Date of Birth *</label><input id="s_dob" type="date" class="finput"/></div>
-          <div>
-            <label class="lbl">Category</label>
-            <select id="s_cat" class="finput"><option value="General">General</option><option value="OBC">OBC</option><option value="SC">SC</option><option value="ST">ST</option><option value="EWS">EWS</option></select>
-          </div>
+        <div class="flex-1 h-0.5 bg-gray-200 mx-2" id="line12"></div>
+        <div class="flex items-center gap-2" id="step2ind">
+          <div class="step-dot bg-gray-200 text-gray-500" id="dot2">2</div>
+          <span class="text-sm font-medium text-gray-400" id="step2label">Parent Info</span>
         </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div><label class="lbl">Religion</label><input id="s_religion" class="finput" placeholder="Religion"/></div>
-          <div><label class="lbl">Aadhar Number</label><input id="s_aadhar" class="finput" placeholder="12 digit" maxlength="12"/></div>
-        </div>
-        <div>
-          <label class="lbl">Previous School</label>
-          <input id="s_prev_school" class="finput" placeholder="Previous school name (if any)"/>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div><label class="lbl">Previous Class</label><input id="s_prev_class" class="finput" placeholder="e.g. Class 5"/></div>
-          <div><label class="lbl">Percentage / Grade</label><input id="s_pct" type="number" class="finput" placeholder="e.g. 85"/></div>
+        <div class="flex-1 h-0.5 bg-gray-200 mx-2" id="line23"></div>
+        <div class="flex items-center gap-2" id="step3ind">
+          <div class="step-dot bg-gray-200 text-gray-500" id="dot3">3</div>
+          <span class="text-sm font-medium text-gray-400" id="step3label">Address & Docs</span>
         </div>
       </div>
-      <div class="flex justify-end mt-6">
-        <button onclick="goStep(2)" class="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-lg">Next →</button>
-      </div>
-    </div>
 
-    <!-- Step 2: Parent Details -->
-    <div class="step" id="step2">
-      <h3 class="text-lg font-bold text-gray-900 mb-5">Parent / Guardian Details</h3>
-      <div class="space-y-4">
-        <div class="bg-gray-50 rounded-xl p-4 space-y-3">
-          <h5 class="font-semibold text-gray-700">Father's Information</h5>
+      <!-- Step 1: Student Details -->
+      <div class="step active" id="step1">
+        <h3 class="text-lg font-bold text-gray-900 mb-5">Student Details</h3>
+        <div class="space-y-4">
+          <div><label class="lbl">Full Name *</label><input id="s_name" class="finput"
+              placeholder="Student's full name" /></div>
           <div class="grid grid-cols-2 gap-4">
-            <div><label class="lbl">Name *</label><input id="p_fname" class="finput" placeholder="Father's full name"/></div>
-            <div><label class="lbl">Occupation</label><input id="p_focc" class="finput" placeholder="Occupation"/></div>
+            <div>
+              <label class="lbl">Class Applying For *</label>
+              <select id="s_class" class="finput">
+                <option value="">Select class</option>
+              </select>
+            </div>
+            <div>
+              <label class="lbl">Gender *</label>
+              <select id="s_gender" class="finput">
+                <option value="">Select</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
           </div>
           <div class="grid grid-cols-2 gap-4">
-            <div><label class="lbl">Phone *</label><input id="p_fph" type="tel" class="finput" placeholder="Mobile number"/></div>
-            <div><label class="lbl">Email</label><input id="p_femail" type="email" class="finput" placeholder="Email"/></div>
+            <div><label class="lbl">Date of Birth *</label><input id="s_dob" type="date" class="finput" /></div>
+            <div>
+              <label class="lbl">Category</label>
+              <select id="s_cat" class="finput">
+                <option value="General">General</option>
+                <option value="OBC">OBC</option>
+                <option value="SC">SC</option>
+                <option value="ST">ST</option>
+                <option value="EWS">EWS</option>
+              </select>
+            </div>
           </div>
-        </div>
-        <div class="bg-gray-50 rounded-xl p-4 space-y-3">
-          <h5 class="font-semibold text-gray-700">Mother's Information</h5>
           <div class="grid grid-cols-2 gap-4">
-            <div><label class="lbl">Name</label><input id="p_mname" class="finput" placeholder="Mother's full name"/></div>
-            <div><label class="lbl">Occupation</label><input id="p_mocc" class="finput" placeholder="Occupation"/></div>
+            <div><label class="lbl">Religion</label><input id="s_religion" class="finput" placeholder="Religion" />
+            </div>
+            <div><label class="lbl">Aadhar Number</label><input id="s_aadhar" class="finput" placeholder="12 digit"
+                maxlength="12" /></div>
           </div>
-          <div><label class="lbl">Phone</label><input id="p_mph" type="tel" class="finput" placeholder="Mobile number"/></div>
+          <div>
+            <label class="lbl">Previous School</label>
+            <input id="s_prev_school" class="finput" placeholder="Previous school name (if any)" />
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div><label class="lbl">Previous Class</label><input id="s_prev_class" class="finput"
+                placeholder="e.g. Class 5" /></div>
+            <div><label class="lbl">Percentage / Grade</label><input id="s_pct" type="number" class="finput"
+                placeholder="e.g. 85" /></div>
+          </div>
+        </div>
+        <div class="flex justify-end mt-6">
+          <button onclick="goStep(2)"
+            class="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-lg">Next
+            →</button>
         </div>
       </div>
-      <div class="flex justify-between mt-6">
-        <button onclick="goStep(1)" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200">← Back</button>
-        <button onclick="goStep(3)" class="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-lg">Next →</button>
+
+      <!-- Step 2: Parent Details -->
+      <div class="step" id="step2">
+        <h3 class="text-lg font-bold text-gray-900 mb-5">Parent / Guardian Details</h3>
+        <div class="space-y-4">
+          <div class="bg-gray-50 rounded-xl p-4 space-y-3">
+            <h5 class="font-semibold text-gray-700">Father's Information</h5>
+            <div class="grid grid-cols-2 gap-4">
+              <div><label class="lbl">Name *</label><input id="p_fname" class="finput"
+                  placeholder="Father's full name" /></div>
+              <div><label class="lbl">Occupation</label><input id="p_focc" class="finput" placeholder="Occupation" />
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div><label class="lbl">Phone *</label><input id="p_fph" type="tel" class="finput"
+                  placeholder="Mobile number" /></div>
+              <div><label class="lbl">Email</label><input id="p_femail" type="email" class="finput"
+                  placeholder="Email" /></div>
+            </div>
+          </div>
+          <div class="bg-gray-50 rounded-xl p-4 space-y-3">
+            <h5 class="font-semibold text-gray-700">Mother's Information</h5>
+            <div class="grid grid-cols-2 gap-4">
+              <div><label class="lbl">Name</label><input id="p_mname" class="finput" placeholder="Mother's full name" />
+              </div>
+              <div><label class="lbl">Occupation</label><input id="p_mocc" class="finput" placeholder="Occupation" />
+              </div>
+            </div>
+            <div><label class="lbl">Phone</label><input id="p_mph" type="tel" class="finput"
+                placeholder="Mobile number" /></div>
+          </div>
+        </div>
+        <div class="flex justify-between mt-6">
+          <button onclick="goStep(1)"
+            class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200">← Back</button>
+          <button onclick="goStep(3)"
+            class="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-lg">Next
+            →</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Address & Submit -->
+      <div class="step" id="step3">
+        <h3 class="text-lg font-bold text-gray-900 mb-5">Address & Submission</h3>
+        <div class="space-y-4">
+          <div><label class="lbl">Residential Address *</label><textarea id="a_addr" rows="3" class="finput resize-none"
+              placeholder="House No., Street, Area"></textarea></div>
+          <div class="grid grid-cols-3 gap-4">
+            <div><label class="lbl">City *</label><input id="a_city" class="finput" placeholder="City" /></div>
+            <div><label class="lbl">State *</label><input id="a_state" class="finput" placeholder="State" /></div>
+            <div><label class="lbl">Pincode</label><input id="a_pin" class="finput" placeholder="Pincode"
+                maxlength="6" /></div>
+          </div>
+          <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <label class="flex items-start gap-3">
+              <input type="checkbox" id="a_agree" class="mt-1 w-4 h-4 accent-blue-600" />
+              <span class="text-sm text-gray-700">I confirm that all information provided is accurate and I agree to
+                submit this application. I understand the school's decision will be final.</span>
+            </label>
+          </div>
+        </div>
+        <div class="flex justify-between mt-6">
+          <button onclick="goStep(2)"
+            class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200">← Back</button>
+          <button onclick="submitApplication()"
+            class="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-lg">🎓 Submit
+            Application</button>
+        </div>
       </div>
     </div>
 
-    <!-- Step 3: Address & Submit -->
-    <div class="step" id="step3">
-      <h3 class="text-lg font-bold text-gray-900 mb-5">Address & Submission</h3>
-      <div class="space-y-4">
-        <div><label class="lbl">Residential Address *</label><textarea id="a_addr" rows="3" class="finput resize-none" placeholder="House No., Street, Area"></textarea></div>
-        <div class="grid grid-cols-3 gap-4">
-          <div><label class="lbl">City *</label><input id="a_city" class="finput" placeholder="City"/></div>
-          <div><label class="lbl">State *</label><input id="a_state" class="finput" placeholder="State"/></div>
-          <div><label class="lbl">Pincode</label><input id="a_pin" class="finput" placeholder="Pincode" maxlength="6"/></div>
-        </div>
-        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
-          <label class="flex items-start gap-3">
-            <input type="checkbox" id="a_agree" class="mt-1 w-4 h-4 accent-blue-600"/>
-            <span class="text-sm text-gray-700">I confirm that all information provided is accurate and I agree to submit this application. I understand the school's decision will be final.</span>
-          </label>
-        </div>
+    <!-- Success Screen -->
+    <div id="successScreen" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-10 text-center">
+      <div class="text-6xl mb-4">🎉</div>
+      <h2 class="text-2xl font-bold text-emerald-700 mb-2">Application Submitted!</h2>
+      <p class="text-gray-600 mb-4">Your application has been received successfully.</p>
+      <div class="bg-emerald-50 rounded-xl p-5 inline-block mb-6">
+        <p class="text-sm text-emerald-600 font-medium">Your Application Number</p>
+        <p id="appNo" class="text-3xl font-bold text-emerald-700 tracking-widest mt-1"></p>
       </div>
-      <div class="flex justify-between mt-6">
-        <button onclick="goStep(2)" class="px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200">← Back</button>
-        <button onclick="submitApplication()" class="px-8 py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-lg">🎓 Submit Application</button>
-      </div>
+      <p class="text-sm text-gray-500 mb-6">Please save this number for tracking your application status.</p>
+      <p id="successContact" class="text-sm text-gray-600"></p>
+      <button onclick="location.reload()"
+        class="mt-6 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">Submit Another
+        Application</button>
+    </div>
+
+    <!-- Footer -->
+    <div class="text-center mt-8 text-xs text-gray-400">
+      Powered by <strong>Zodex | Scholar Desk</strong> — School Management System
     </div>
   </div>
 
-  <!-- Success Screen -->
-  <div id="successScreen" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-10 text-center">
-    <div class="text-6xl mb-4">🎉</div>
-    <h2 class="text-2xl font-bold text-emerald-700 mb-2">Application Submitted!</h2>
-    <p class="text-gray-600 mb-4">Your application has been received successfully.</p>
-    <div class="bg-emerald-50 rounded-xl p-5 inline-block mb-6">
-      <p class="text-sm text-emerald-600 font-medium">Your Application Number</p>
-      <p id="appNo" class="text-3xl font-bold text-emerald-700 tracking-widest mt-1"></p>
-    </div>
-    <p class="text-sm text-gray-500 mb-6">Please save this number for tracking your application status.</p>
-    <p id="successContact" class="text-sm text-gray-600"></p>
-    <button onclick="location.reload()" class="mt-6 px-6 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">Submit Another Application</button>
-  </div>
+  <script>
+    const API_BASE = window.location.origin + '/api/v1';
+    const params = new URLSearchParams(location.search);
+    const schoolId = params.get('school') || params.get('school_id');
+    let currentStep = 1;
 
-  <!-- Footer -->
-  <div class="text-center mt-8 text-xs text-gray-400">
-    Powered by <strong>Zodex | Scholar Desk</strong> — School Management System
-  </div>
-</div>
+    async function loadSettings() {
+      if (!schoolId) {
+        document.getElementById('schoolName').textContent = 'School Admission Form';
+        document.getElementById('formContainer').classList.remove('hidden');
+        return;
+      }
+      try {
+        const r = await fetch(`${API_BASE}/admissions/settings/${schoolId}`);
+        const data = await r.json();
+        const s = data.data || {};
 
-<script>
-const API_BASE = window.location.origin + '/api/v1';
-const params = new URLSearchParams(location.search);
-const schoolId = params.get('school') || params.get('school_id');
-let currentStep = 1;
-
-async function loadSettings() {
-  if (!schoolId) {
-    document.getElementById('schoolName').textContent = 'School Admission Form';
-    document.getElementById('formContainer').classList.remove('hidden');
-    return;
-  }
-  try {
-    const r = await fetch(`${API_BASE}/admissions/settings/${schoolId}`);
-    const data = await r.json();
-    const s = data.data || {};
-
-    document.getElementById('schoolName').textContent = 'Online Admission Form';
-    if (s.academic_year) document.getElementById('ayInfo').textContent = 'Academic Year: ' + s.academic_year;
-    if (s.contact_phone || s.contact_email) {
-      document.getElementById('contactInfo').textContent = `Contact: ${s.contact_phone || ''} ${s.contact_email || ''}`;
+        document.getElementById('schoolName').textContent = 'Online Admission Form';
+        if (s.academic_year) document.getElementById('ayInfo').textContent = 'Academic Year: ' + s.academic_year;
+        if (s.contact_phone || s.contact_email) {
+          document.getElementById('contactInfo').textContent = `Contact: ${s.contact_phone || ''} ${s.contact_email || ''}`;
+        }
+        if (s.is_open === false) {
+          document.getElementById('closedNotice').classList.remove('hidden');
+          document.getElementById('contactInfo').textContent = `Phone: ${s.contact_phone || 'N/A'} | Email: ${s.contact_email || 'N/A'}`;
+          return;
+        }
+        if (s.welcome_message) {
+          document.getElementById('welcomeMsg').textContent = s.welcome_message;
+          document.getElementById('welcomeBox').classList.remove('hidden');
+        }
+        if (s.required_documents?.length) {
+          document.getElementById('docList').classList.remove('hidden');
+          document.getElementById('docItems').innerHTML = s.required_documents.map(d => `<li>${d}</li>`).join('');
+        }
+        if (s.classes_available?.length) {
+          document.getElementById('s_class').innerHTML = '<option value="">Select class</option>' + s.classes_available.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+        document.getElementById('formContainer').classList.remove('hidden');
+      } catch (e) {
+        document.getElementById('formContainer').classList.remove('hidden');
+      }
     }
-    if (s.is_open === false) {
-      document.getElementById('closedNotice').classList.remove('hidden');
-      document.getElementById('contactInfo').textContent = `Phone: ${s.contact_phone||'N/A'} | Email: ${s.contact_email||'N/A'}`;
-      return;
-    }
-    if (s.welcome_message) {
-      document.getElementById('welcomeMsg').textContent = s.welcome_message;
-      document.getElementById('welcomeBox').classList.remove('hidden');
-    }
-    if (s.required_documents?.length) {
-      document.getElementById('docList').classList.remove('hidden');
-      document.getElementById('docItems').innerHTML = s.required_documents.map(d => `<li>${d}</li>`).join('');
-    }
-    if (s.classes_available?.length) {
-      document.getElementById('s_class').innerHTML = '<option value="">Select class</option>' + s.classes_available.map(c => `<option value="${c}">${c}</option>`).join('');
-    }
-    document.getElementById('formContainer').classList.remove('hidden');
-  } catch (e) {
-    document.getElementById('formContainer').classList.remove('hidden');
-  }
-}
 
-function goStep(n) {
-  // Validate current step
-  if (n > currentStep) {
-    if (currentStep === 1) {
-      if (!document.getElementById('s_name').value.trim()) { alert('Enter student name'); return; }
-      if (!document.getElementById('s_class').value) { alert('Select class'); return; }
-      if (!document.getElementById('s_gender').value) { alert('Select gender'); return; }
-      if (!document.getElementById('s_dob').value) { alert('Enter date of birth'); return; }
+    function goStep(n) {
+      // Validate current step
+      if (n > currentStep) {
+        if (currentStep === 1) {
+          if (!document.getElementById('s_name').value.trim()) { alert('Enter student name'); return; }
+          if (!document.getElementById('s_class').value) { alert('Select class'); return; }
+          if (!document.getElementById('s_gender').value) { alert('Select gender'); return; }
+          if (!document.getElementById('s_dob').value) { alert('Enter date of birth'); return; }
+        }
+        if (currentStep === 2) {
+          if (!document.getElementById('p_fname').value.trim()) { alert('Enter father\'s name'); return; }
+          if (!document.getElementById('p_fph').value.trim()) { alert('Enter father\'s phone'); return; }
+        }
+      }
+      document.querySelector(`#step${currentStep}`).classList.remove('active');
+      document.querySelector(`#step${n}`).classList.add('active');
+      // Update dots
+      for (let i = 1; i <= 3; i++) {
+        const dot = document.getElementById('dot' + i);
+        dot.className = 'step-dot ' + (i <= n ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500');
+        document.getElementById(`step${i}label`) && (document.getElementById(`step${i}label`).className = 'text-sm font-medium ' + (i <= n ? 'text-blue-700 font-semibold' : 'text-gray-400'));
+      }
+      currentStep = n;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
-    if (currentStep === 2) {
-      if (!document.getElementById('p_fname').value.trim()) { alert('Enter father\'s name'); return; }
-      if (!document.getElementById('p_fph').value.trim()) { alert('Enter father\'s phone'); return; }
+
+    async function submitApplication() {
+      if (!document.getElementById('a_addr').value.trim()) { alert('Enter address'); return; }
+      if (!document.getElementById('a_city').value.trim()) { alert('Enter city'); return; }
+      if (!document.getElementById('a_agree').checked) { alert('Please agree to submit'); return; }
+
+      const btn = event.target;
+      btn.disabled = true; btn.textContent = 'Submitting...';
+
+      const payload = {
+        school_id: schoolId,
+        student_name: document.getElementById('s_name').value.trim(),
+        applied_class: document.getElementById('s_class').value,
+        gender: document.getElementById('s_gender').value,
+        dob: document.getElementById('s_dob').value,
+        category: document.getElementById('s_cat').value,
+        religion: document.getElementById('s_religion').value || null,
+        aadhar_number: document.getElementById('s_aadhar').value || null,
+        previous_school: document.getElementById('s_prev_school').value || null,
+        previous_class: document.getElementById('s_prev_class').value || null,
+        percentage: parseFloat(document.getElementById('s_pct').value) || null,
+        father_name: document.getElementById('p_fname').value.trim(),
+        father_occupation: document.getElementById('p_focc').value || null,
+        father_phone: document.getElementById('p_fph').value.trim(),
+        father_email: document.getElementById('p_femail').value || null,
+        mother_name: document.getElementById('p_mname').value || null,
+        mother_occupation: document.getElementById('p_mocc').value || null,
+        mother_phone: document.getElementById('p_mph').value || null,
+        address: document.getElementById('a_addr').value.trim(),
+        city: document.getElementById('a_city').value.trim(),
+        state: document.getElementById('a_state').value.trim(),
+        pincode: document.getElementById('a_pin').value || null
+      };
+
+      try {
+        const r = await fetch(`${API_BASE}/admissions/apply`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await r.json();
+        if (data.success) {
+          document.getElementById('appNo').textContent = data.data.application_no;
+          document.getElementById('formContainer').classList.add('hidden');
+          document.getElementById('welcomeBox').classList.add('hidden');
+          document.getElementById('successScreen').classList.remove('hidden');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+          alert('Error: ' + (data.message || 'Submission failed'));
+          btn.disabled = false; btn.textContent = '🎓 Submit Application';
+        }
+      } catch (e) {
+        alert('Network error. Please try again.');
+        btn.disabled = false; btn.textContent = '🎓 Submit Application';
+      }
     }
-  }
-  document.querySelector(`#step${currentStep}`).classList.remove('active');
-  document.querySelector(`#step${n}`).classList.add('active');
-  // Update dots
-  for (let i = 1; i <= 3; i++) {
-    const dot = document.getElementById('dot'+i);
-    dot.className = 'step-dot ' + (i <= n ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-500');
-    document.getElementById(`step${i}label`) && (document.getElementById(`step${i}label`).className = 'text-sm font-medium ' + (i <= n ? 'text-blue-700 font-semibold' : 'text-gray-400'));
-  }
-  currentStep = n;
-  window.scrollTo({top:0,behavior:'smooth'});
-}
 
-async function submitApplication() {
-  if (!document.getElementById('a_addr').value.trim()) { alert('Enter address'); return; }
-  if (!document.getElementById('a_city').value.trim()) { alert('Enter city'); return; }
-  if (!document.getElementById('a_agree').checked) { alert('Please agree to submit'); return; }
+    loadSettings();
+  </script>
+</body>
 
-  const btn = event.target;
-  btn.disabled = true; btn.textContent = 'Submitting...';
-
-  const payload = {
-    school_id: schoolId,
-    student_name: document.getElementById('s_name').value.trim(),
-    applied_class: document.getElementById('s_class').value,
-    gender: document.getElementById('s_gender').value,
-    dob: document.getElementById('s_dob').value,
-    category: document.getElementById('s_cat').value,
-    religion: document.getElementById('s_religion').value || null,
-    aadhar_number: document.getElementById('s_aadhar').value || null,
-    previous_school: document.getElementById('s_prev_school').value || null,
-    previous_class: document.getElementById('s_prev_class').value || null,
-    percentage: parseFloat(document.getElementById('s_pct').value) || null,
-    father_name: document.getElementById('p_fname').value.trim(),
-    father_occupation: document.getElementById('p_focc').value || null,
-    father_phone: document.getElementById('p_fph').value.trim(),
-    father_email: document.getElementById('p_femail').value || null,
-    mother_name: document.getElementById('p_mname').value || null,
-    mother_occupation: document.getElementById('p_mocc').value || null,
-    mother_phone: document.getElementById('p_mph').value || null,
-    address: document.getElementById('a_addr').value.trim(),
-    city: document.getElementById('a_city').value.trim(),
-    state: document.getElementById('a_state').value.trim(),
-    pincode: document.getElementById('a_pin').value || null
-  };
-
-  try {
-    const r = await fetch(`${API_BASE}/admissions/apply`, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(payload)
-    });
-    const data = await r.json();
-    if (data.success) {
-      document.getElementById('appNo').textContent = data.data.application_no;
-      document.getElementById('formContainer').classList.add('hidden');
-      document.getElementById('welcomeBox').classList.add('hidden');
-      document.getElementById('successScreen').classList.remove('hidden');
-      window.scrollTo({top:0,behavior:'smooth'});
-    } else {
-      alert('Error: ' + (data.message || 'Submission failed'));
-      btn.disabled = false; btn.textContent = '🎓 Submit Application';
-    }
-  } catch (e) {
-    alert('Network error. Please try again.');
-    btn.disabled = false; btn.textContent = '🎓 Submit Application';
-  }
-}
-
-loadSettings();
-</script>
-</body></html>
+</html>

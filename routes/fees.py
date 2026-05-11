@@ -871,7 +871,7 @@ async def list_invoices(
     branch_code: Optional[str] = None,
     classroom_id: Optional[str] = None,
     status: Optional[str] = None,
-    father_name: Optional[str] = None,
+    search: Optional[str] = None,
     include_items: bool = Query(True),
     page: int = Query(1, ge=1),
     per_page: int = Query(20, ge=1, le=100),
@@ -902,11 +902,18 @@ async def list_invoices(
             query = query.filter(status="Paid")
         else:
             query = query.filter(status=status)
-    if father_name:
+    if search:
         students = list(Student.objects(
-            school=school,
-            is_active=True,
-            __raw__={"parent_info.father_name": {"$regex": father_name, "$options": "i"}}
+        school=school,
+        is_active=True,
+        __raw__={
+            "$or": [
+                {"parent_info.father_name": {"$regex": search, "$options": "i"}},
+                {"full_name": {"$regex": search, "$options": "i"}},
+                {"first_name": {"$regex": search, "$options": "i"}},
+                {"last_name": {"$regex": search, "$options": "i"}},
+            ]
+        }
         ))
         query = query.filter(student__in=students)
     
