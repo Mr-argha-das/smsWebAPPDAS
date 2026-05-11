@@ -19,6 +19,30 @@ from models.transport import TransportRoute
 from utils.auth import get_current_user, resolve_school_access, resolve_branch_scope
 from utils.helpers import success_response, generate_transaction_no
 from config import settings
+from reportlab.platypus import (
+    SimpleDocTemplate,
+    Table,
+    TableStyle,
+    Paragraph,
+    Spacer,
+    Image,
+)
+from reportlab.lib import colors
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.units import mm
+from reportlab.platypus.flowables import HRFlowable
+from io import BytesIO
+import os
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
+from reportlab.lib.colors import HexColor
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, Image, HRFlowable
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER, TA_RIGHT
+
 
 router = APIRouter(prefix="/fees", tags=["Fees Management"])
 
@@ -537,148 +561,350 @@ def _get_invoice_recipient_email(invoice: FeeInvoice, recipient_type: str, fallb
     raise HTTPException(400, "Parent email not found")
 
 
-def _generate_invoice_pdf_bytes(invoice: FeeInvoice) -> bytes:
+# def _generate_invoice_pdf_bytes(invoice: FeeInvoice) -> bytes:
+#     buffer = BytesIO()
+#     pdf = canvas.Canvas(buffer, pagesize=A4)
+#     width, height = A4
+#     y = height - 48
+
+#     school = invoice.school
+#     student = invoice.student
+#     address_parts = []
+#     if school and school.address:
+#         address_parts = [
+#             school.address.line1,
+#             school.address.line2,
+#             school.address.city,
+#             school.address.state,
+#             school.address.pincode,
+#         ]
+#     school_address = ", ".join([part for part in address_parts if part])
+
+#     logo_path = None
+#     if school and school.logo:
+#         candidate = school.logo.strip()
+#         if candidate.startswith("/uploads/"):
+#             logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), candidate.lstrip("/"))
+#         elif candidate.startswith("uploads/"):
+#             logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), candidate)
+#         elif os.path.isabs(candidate):
+#             logo_path = candidate
+#         else:
+#             logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), candidate.lstrip("/"))
+#         if logo_path and not os.path.exists(logo_path):
+#             logo_path = None
+
+#     pdf.setFillColorRGB(0.97, 0.98, 1)
+#     pdf.roundRect(30, height - 145, width - 60, 105, 18, stroke=0, fill=1)
+
+#     if logo_path:
+#         try:
+#             pdf.drawImage(ImageReader(logo_path), 42, height - 122, width=54, height=54, preserveAspectRatio=True, mask='auto')
+#         except Exception:
+#             pass
+
+#     left_start_x = 108 if logo_path else 42
+
+#     pdf.setFont("Helvetica-Bold", 18)
+#     pdf.setFillColorRGB(0.06, 0.09, 0.16)
+#     pdf.drawString(left_start_x, height - 68, school.name if school else "School Invoice")
+#     pdf.setFont("Helvetica", 9)
+#     pdf.setFillColorRGB(0.39, 0.45, 0.55)
+#     if school_address:
+#         pdf.drawString(left_start_x, height - 84, school_address[:88])
+#     if school and school.phone:
+#         pdf.drawString(left_start_x, height - 98, f"Phone: {school.phone}")
+#     if school and school.email:
+#         pdf.drawString(left_start_x, height - 112, f"Email: {school.email}")
+
+#     pdf.setFont("Helvetica-Bold", 11)
+#     pdf.setFillColorRGB(0.17, 0.24, 0.39)
+#     pdf.drawRightString(width - 42, height - 68, f"Invoice No: {invoice.invoice_no}")
+#     pdf.setFont("Helvetica", 10)
+#     pdf.drawRightString(width - 42, height - 84, f"Invoice Date: {invoice.invoice_date.strftime('%d-%m-%Y') if invoice.invoice_date else '-'}")
+#     pdf.drawRightString(width - 42, height - 98, f"Due Date: {invoice.due_date.strftime('%d-%m-%Y') if invoice.due_date else '-'}")
+#     y = height - 165
+
+#     pdf.setFont("Helvetica-Bold", 12)
+#     pdf.drawString(40, y, "Student Details")
+#     y -= 16
+#     pdf.setFont("Helvetica", 10)
+#     pdf.drawString(40, y, f"Student: {student.full_name if student else '-'}")
+#     y -= 14
+#     pdf.drawString(40, y, f"Admission No: {student.admission_no if student else '-'}")
+#     y -= 14
+#     pdf.drawString(40, y, f"Class / Section: {(student.classroom.name if student and student.classroom else '-') } / {(student.section.name if student and student.section else '-')}")
+#     y -= 14
+#     pdf.drawString(40, y, f"Branch: {student.branch_name if student and student.branch_name else '-'}")
+#     y -= 18
+
+#     pdf.setFillColorRGB(0.96, 0.98, 1)
+#     pdf.roundRect(40, y - 58, width - 80, 52, 12, stroke=0, fill=1)
+#     pdf.setFillColorRGB(0.06, 0.09, 0.16)
+#     pdf.setFont("Helvetica-Bold", 10)
+#     pdf.drawString(52, y - 28, "Total Amount")
+#     pdf.drawCentredString(width / 2, y - 28, "Paid Amount")
+#     pdf.drawRightString(width - 52, y - 28, "Pending Amount")
+#     pdf.setFont("Helvetica-Bold", 13)
+#     pdf.drawString(52, y - 44, f"Rs. {invoice.net_amount:.2f}")
+#     pdf.drawCentredString(width / 2, y - 44, f"Rs. {invoice.paid_amount:.2f}")
+#     pdf.drawRightString(width - 52, y - 44, f"Rs. {invoice.balance_amount:.2f}")
+#     y -= 82
+
+#     pdf.setFont("Helvetica-Bold", 12)
+#     pdf.drawString(40, y, "Fee Breakdown")
+#     y -= 18
+#     pdf.setFont("Helvetica-Bold", 10)
+#     pdf.drawString(40, y, "Description")
+#     pdf.drawRightString(width - 40, y, "Amount")
+#     y -= 10
+#     pdf.line(40, y, width - 40, y)
+#     y -= 16
+#     pdf.setFont("Helvetica", 10)
+#     for item in invoice.items or []:
+#         if y < 120:
+#             pdf.showPage()
+#             y = height - 48
+#             pdf.setFont("Helvetica", 10)
+#         pdf.drawString(40, y, str(item.get("description") or item.get("category") or "Fee Item")[:80])
+#         pdf.drawRightString(width - 40, y, f"Rs. {float(item.get('amount', 0) or 0):.2f}")
+#         y -= 14
+
+#     y -= 8
+#     pdf.line(40, y, width - 40, y)
+#     y -= 18
+#     pdf.setFont("Helvetica", 10)
+#     if invoice.concession_name:
+#         pdf.drawString(40, y, f"Concession: {invoice.concession_name} ({invoice.concession_percent:.0f}%)")
+#         y -= 16
+#     pdf.drawString(40, y, "Gross Amount")
+#     pdf.drawRightString(width - 40, y, f"Rs. {invoice.gross_amount:.2f}")
+#     y -= 14
+#     pdf.drawString(40, y, "Manual Discount")
+#     pdf.drawRightString(width - 40, y, f"Rs. {invoice.discount_amount:.2f}")
+#     y -= 14
+#     pdf.setFont("Helvetica-Bold", 11)
+#     pdf.drawString(40, y, "Total Amount")
+#     pdf.drawRightString(width - 40, y, f"Rs. {invoice.net_amount:.2f}")
+#     y -= 14
+#     pdf.drawString(40, y, "Paid Amount")
+#     pdf.drawRightString(width - 40, y, f"Rs. {invoice.paid_amount:.2f}")
+#     y -= 14
+#     pdf.drawString(40, y, "Pending Amount")
+#     pdf.drawRightString(width - 40, y, f"Rs. {invoice.balance_amount:.2f}")
+#     y -= 22
+#     pdf.setFont("Helvetica", 9)
+#     pdf.drawString(40, y, f"Generated by: {invoice.generated_by or '-'}")
+#     if invoice.remarks:
+#         y -= 14
+#         pdf.drawString(40, y, f"Remarks: {invoice.remarks[:90]}")
+
+#     pdf.save()
+#     buffer.seek(0)
+#     return buffer.getvalue()
+
+
+def _generate_invoice_pdf_bytes(invoice) -> bytes:
     buffer = BytesIO()
-    pdf = canvas.Canvas(buffer, pagesize=A4)
-    width, height = A4
-    y = height - 48
+
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=A4,
+        rightMargin=12,
+        leftMargin=12,
+        topMargin=12,
+        bottomMargin=12,
+    )
+
+    elements = []
+    
+    # --- Custom Paragraph Styles ---
+    p_center = ParagraphStyle("p_center", fontName="Helvetica", fontSize=9, alignment=TA_CENTER, leading=12)
+    normal_10 = ParagraphStyle("normal_10", fontName="Helvetica", fontSize=9, leading=12)
+    bold_10 = ParagraphStyle("bold_10", fontName="Helvetica-Bold", fontSize=9, leading=12)
+    right_bold_10 = ParagraphStyle("right_bold_10", fontName="Helvetica-Bold", fontSize=9, alignment=TA_RIGHT, leading=12)
+    right_normal_10 = ParagraphStyle("right_normal_10", fontName="Helvetica", fontSize=9, alignment=TA_RIGHT, leading=12)
 
     school = invoice.school
     student = invoice.student
-    address_parts = []
-    if school and school.address:
-        address_parts = [
-            school.address.line1,
-            school.address.line2,
-            school.address.city,
-            school.address.state,
-            school.address.pincode,
+
+    # Logo URL setup
+    DEFAULT_LOGO_URL = "https://rsmemorialpublicschool.com/wp-content/uploads/2026/03/logo-school.png"
+    
+    def get_logo_source():
+        if school and hasattr(school, 'logo') and school.logo:
+            candidate = school.logo.strip()
+            # Agar URL hai toh seedha wahi return karo
+            if candidate.startswith(("http://", "https://")):
+                return candidate
+            
+            # Local path check
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            if candidate.startswith("/uploads/"):
+                path = os.path.join(base_dir, candidate.lstrip("/"))
+            elif candidate.startswith("uploads/"):
+                path = os.path.join(base_dir, candidate)
+            elif os.path.isabs(candidate):
+                path = candidate
+            else:
+                path = os.path.join(base_dir, candidate.lstrip("/"))
+            
+            if os.path.exists(path):
+                return path
+        
+        # Agar kuch na mile toh default URL return karo
+        return DEFAULT_LOGO_URL
+
+    logo_src = get_logo_source()
+
+    def money(val):
+        return f"Rs. {float(val or 0):.2f}"
+
+    school_name = school.name.upper() if school and school.name else 'R.S MEMORIAL PUBLIC SCHOOL'
+    school_address = school.address.city if school and hasattr(school, 'address') and school.address else 'Village Tatarpur, Teh. Tapukara, Distt. Khairthal Tijara(Raj.)'
+    school_phone = school.phone if school and school.phone else '9214014070'
+    
+    father_name = student.parent_info.father_name if student and hasattr(student, 'parent_info') and student.parent_info else "-"
+    father_phone = student.parent_info.father_phone if student and hasattr(student, 'parent_info') and student.parent_info else "-"
+    class_sec = f"{student.classroom.name if student and student.classroom else '-'} - {student.section.name if student and student.section else '-'}"
+
+    def build_copy(copy_name="STUDENT COPY"):
+        # 1. Logo Handling
+        logo = ""
+        if logo_src:
+            try:
+                logo = Image(logo_src, width=70, height=70)
+            except:
+                logo = ""
+
+        # HEADER & STUDENT DETAILS (Same as HTML)
+        student_data = [
+            [
+                logo,
+                Paragraph(
+                    f"<font size='14'><b>{school_name}</b></font><br/><br/>"
+                    f"<font size='10'>{school_address}</font><br/><br/>"
+                    f"<font size='10'>Phone No. : {school_phone}</font>",
+                    p_center
+                ),
+                "",
+                Paragraph(f"<h3>{copy_name}</h3>", right_bold_10)
+            ],
+            [
+                Paragraph("<b>Invoice No.</b>", bold_10),
+                Paragraph(str(invoice.invoice_no or "-"), normal_10),
+                Paragraph("<b>Invoice Date</b>", bold_10),
+                Paragraph(invoice.invoice_date.strftime("%d-%m-%Y") if invoice.invoice_date else "-", normal_10)
+            ],
+            [
+                Paragraph("<b>Name of the Student</b>", bold_10),
+                Paragraph(student.full_name if student else "-", normal_10),
+                Paragraph("<b>Class & Section</b>", bold_10),
+                Paragraph(class_sec, normal_10)
+            ],
+            [
+                Paragraph("<b>Admission No</b>", bold_10),
+                Paragraph(str(student.admission_no if student else "-"), normal_10),
+                Paragraph("<b>Mobile No.</b>", bold_10),
+                Paragraph(str(father_phone), normal_10)
+            ],
+            [
+                Paragraph("<b>Father's Name</b>", bold_10),
+                Paragraph(str(father_name), normal_10),
+                Paragraph("<b>Fee for</b>", bold_10),
+                Paragraph(", ".join(invoice.tuition_months or []) or "-", normal_10)
+            ],
         ]
-    school_address = ", ".join([part for part in address_parts if part])
 
-    logo_path = None
-    if school and school.logo:
-        candidate = school.logo.strip()
-        if candidate.startswith("/uploads/"):
-            logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), candidate.lstrip("/"))
-        elif candidate.startswith("uploads/"):
-            logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), candidate)
-        elif os.path.isabs(candidate):
-            logo_path = candidate
-        else:
-            logo_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), candidate.lstrip("/"))
-        if logo_path and not os.path.exists(logo_path):
-            logo_path = None
+        details_table = Table(student_data, colWidths=[130, 155, 130, 155])
+        details_table.setStyle(TableStyle([
+            ("SPAN", (1, 0), (2, 0)),
+            ("BOX", (0, 0), (-1, -1), 1, colors.black),
+            ("GRID", (0, 1), (-1, -1), 1, colors.black),
+            ("LINEBELOW", (0, 0), (-1, 0), 1, colors.black),
+            ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ("ALIGN", (1, 0), (2, 0), "CENTER"), 
+            ("ALIGN", (3, 0), (3, 0), "RIGHT"),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+            ("TOPPADDING", (0, 0), (-1, -1), 6),
+        ]))
+        elements.append(details_table)
+        elements.append(Spacer(1, 10))
 
-    pdf.setFillColorRGB(0.97, 0.98, 1)
-    pdf.roundRect(30, height - 145, width - 60, 105, 18, stroke=0, fill=1)
+        # AMOUNT SUMMARY (Grey Background)
+        amount_table = Table([
+            [
+                Paragraph(f"<font size='10'><b>Total Amount</b></font><br/><br/><font size='12'><b>{money(invoice.net_amount)}</b></font>", p_center),
+                Paragraph(f"<font size='10'><b>Paid Amount</b></font><br/><br/><font size='12'><b>{money(invoice.paid_amount)}</b></font>", p_center),
+                Paragraph(f"<font size='10'><b>Pending Amount</b></font><br/><br/><font size='12'><b>{money(invoice.balance_amount)}</b></font>", p_center),
+            ]
+        ], colWidths=[190, 190, 190])
 
-    if logo_path:
-        try:
-            pdf.drawImage(ImageReader(logo_path), 42, height - 122, width=54, height=54, preserveAspectRatio=True, mask='auto')
-        except Exception:
-            pass
+        amount_table.setStyle(TableStyle([
+            ("GRID", (0, 0), (-1, -1), 1, HexColor("#dddddd")),
+            ("BACKGROUND", (0, 0), (-1, -1), HexColor("#f1f3f5")),
+            ("ALIGN", (0, 0), (-1, -1), "CENTER"),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
+            ("TOPPADDING", (0, 0), (-1, -1), 12),
+        ]))
+        elements.append(amount_table)
+        elements.append(Spacer(1, 10))
 
-    left_start_x = 108 if logo_path else 42
+        # FEE BREAKDOWN
+        fee_rows = [
+            [Paragraph("<b>Fee Breakdown</b>", bold_10), ""],
+            [Paragraph("<b>Description</b>", bold_10), Paragraph("<b>Amount</b>", right_bold_10)]
+        ]
+        for item in invoice.items or []:
+            fee_rows.append([
+                Paragraph(str(item.get("description") or "-"), normal_10),
+                Paragraph(money(item.get("amount")), right_normal_10)
+            ])
+        
+        fee_rows.extend([
+            [Paragraph("<b>Total Amount</b>", bold_10), Paragraph(money(invoice.net_amount), right_bold_10)],
+            [Paragraph("<b>Paid Amount</b>", bold_10), Paragraph(money(invoice.paid_amount), right_bold_10)],
+            [Paragraph("<b>Pending Amount</b>", bold_10), Paragraph(money(invoice.balance_amount), right_bold_10)],
+        ])
 
-    pdf.setFont("Helvetica-Bold", 18)
-    pdf.setFillColorRGB(0.06, 0.09, 0.16)
-    pdf.drawString(left_start_x, height - 68, school.name if school else "School Invoice")
-    pdf.setFont("Helvetica", 9)
-    pdf.setFillColorRGB(0.39, 0.45, 0.55)
-    if school_address:
-        pdf.drawString(left_start_x, height - 84, school_address[:88])
-    if school and school.phone:
-        pdf.drawString(left_start_x, height - 98, f"Phone: {school.phone}")
-    if school and school.email:
-        pdf.drawString(left_start_x, height - 112, f"Email: {school.email}")
+        fee_table = Table(fee_rows, colWidths=[450, 120])
+        fee_table.setStyle(TableStyle([
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ("SPAN", (0, 0), (1, 0)),
+            ("BACKGROUND", (0, 0), (1, 0), HexColor("#f5f5f5")),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+            ("TOPPADDING", (0, 0), (-1, -1), 6),
+        ]))
+        elements.append(fee_table)
+        elements.append(Spacer(1, 10))
 
-    pdf.setFont("Helvetica-Bold", 11)
-    pdf.setFillColorRGB(0.17, 0.24, 0.39)
-    pdf.drawRightString(width - 42, height - 68, f"Invoice No: {invoice.invoice_no}")
-    pdf.setFont("Helvetica", 10)
-    pdf.drawRightString(width - 42, height - 84, f"Invoice Date: {invoice.invoice_date.strftime('%d-%m-%Y') if invoice.invoice_date else '-'}")
-    pdf.drawRightString(width - 42, height - 98, f"Due Date: {invoice.due_date.strftime('%d-%m-%Y') if invoice.due_date else '-'}")
-    y = height - 165
+        # FOOTER
+        footer_table = Table([
+            [
+                Paragraph("<b>NOTE :</b><br/><br/>1. Fee once paid is not refundable.<br/>2. Keep this receipt safely.", normal_10),
+                Paragraph("<br/><br/><br/><b>(Signature)</b>", p_center)
+            ]
+        ], colWidths=[430, 140])
+        footer_table.setStyle(TableStyle([
+            ("GRID", (0, 0), (-1, -1), 1, colors.black),
+            ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ]))
+        elements.append(footer_table)
 
-    pdf.setFont("Helvetica-Bold", 12)
-    pdf.drawString(40, y, "Student Details")
-    y -= 16
-    pdf.setFont("Helvetica", 10)
-    pdf.drawString(40, y, f"Student: {student.full_name if student else '-'}")
-    y -= 14
-    pdf.drawString(40, y, f"Admission No: {student.admission_no if student else '-'}")
-    y -= 14
-    pdf.drawString(40, y, f"Class / Section: {(student.classroom.name if student and student.classroom else '-') } / {(student.section.name if student and student.section else '-')}")
-    y -= 14
-    pdf.drawString(40, y, f"Branch: {student.branch_name if student and student.branch_name else '-'}")
-    y -= 18
+    # Build Student Copy
+    build_copy("STUDENT COPY")
+    
+    elements.append(Spacer(1, 20))
+    elements.append(HRFlowable(width="100%", thickness=1, color=colors.grey, dash=(3, 3)))
+    elements.append(Spacer(1, 20))
 
-    pdf.setFillColorRGB(0.96, 0.98, 1)
-    pdf.roundRect(40, y - 58, width - 80, 52, 12, stroke=0, fill=1)
-    pdf.setFillColorRGB(0.06, 0.09, 0.16)
-    pdf.setFont("Helvetica-Bold", 10)
-    pdf.drawString(52, y - 28, "Total Amount")
-    pdf.drawCentredString(width / 2, y - 28, "Paid Amount")
-    pdf.drawRightString(width - 52, y - 28, "Pending Amount")
-    pdf.setFont("Helvetica-Bold", 13)
-    pdf.drawString(52, y - 44, f"Rs. {invoice.net_amount:.2f}")
-    pdf.drawCentredString(width / 2, y - 44, f"Rs. {invoice.paid_amount:.2f}")
-    pdf.drawRightString(width - 52, y - 44, f"Rs. {invoice.balance_amount:.2f}")
-    y -= 82
+    # Build Office Copy
+    build_copy("OFFICE COPY")
 
-    pdf.setFont("Helvetica-Bold", 12)
-    pdf.drawString(40, y, "Fee Breakdown")
-    y -= 18
-    pdf.setFont("Helvetica-Bold", 10)
-    pdf.drawString(40, y, "Description")
-    pdf.drawRightString(width - 40, y, "Amount")
-    y -= 10
-    pdf.line(40, y, width - 40, y)
-    y -= 16
-    pdf.setFont("Helvetica", 10)
-    for item in invoice.items or []:
-        if y < 120:
-            pdf.showPage()
-            y = height - 48
-            pdf.setFont("Helvetica", 10)
-        pdf.drawString(40, y, str(item.get("description") or item.get("category") or "Fee Item")[:80])
-        pdf.drawRightString(width - 40, y, f"Rs. {float(item.get('amount', 0) or 0):.2f}")
-        y -= 14
-
-    y -= 8
-    pdf.line(40, y, width - 40, y)
-    y -= 18
-    pdf.setFont("Helvetica", 10)
-    if invoice.concession_name:
-        pdf.drawString(40, y, f"Concession: {invoice.concession_name} ({invoice.concession_percent:.0f}%)")
-        y -= 16
-    pdf.drawString(40, y, "Gross Amount")
-    pdf.drawRightString(width - 40, y, f"Rs. {invoice.gross_amount:.2f}")
-    y -= 14
-    pdf.drawString(40, y, "Manual Discount")
-    pdf.drawRightString(width - 40, y, f"Rs. {invoice.discount_amount:.2f}")
-    y -= 14
-    pdf.setFont("Helvetica-Bold", 11)
-    pdf.drawString(40, y, "Total Amount")
-    pdf.drawRightString(width - 40, y, f"Rs. {invoice.net_amount:.2f}")
-    y -= 14
-    pdf.drawString(40, y, "Paid Amount")
-    pdf.drawRightString(width - 40, y, f"Rs. {invoice.paid_amount:.2f}")
-    y -= 14
-    pdf.drawString(40, y, "Pending Amount")
-    pdf.drawRightString(width - 40, y, f"Rs. {invoice.balance_amount:.2f}")
-    y -= 22
-    pdf.setFont("Helvetica", 9)
-    pdf.drawString(40, y, f"Generated by: {invoice.generated_by or '-'}")
-    if invoice.remarks:
-        y -= 14
-        pdf.drawString(40, y, f"Remarks: {invoice.remarks[:90]}")
-
-    pdf.save()
-    buffer.seek(0)
-    return buffer.getvalue()
-
+    doc.build(elements)
+    pdf = buffer.getvalue()
+    buffer.close()
+    return pdf
 
 def _send_invoice_email(invoice: FeeInvoice, recipient_email: str):
     if not settings.SMTP_HOST or not settings.SMTP_USER or not settings.SMTP_PASSWORD:
