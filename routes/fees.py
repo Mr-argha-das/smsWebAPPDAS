@@ -783,7 +783,7 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
                 logo,
                 Paragraph(
                     f"<font size='14'><b>{school_name}</b></font><br/><br/>"
-                    f"<font size='10'>{school_address}</font><br/><br/>"
+                    f"<font size='10'>Village Tatarpur, Teh. Tapukara, Distt. Khairthal Tijara(Raj.)</font><br/><br/>"
                     f"<font size='10'>Phone No. : {school_phone}</font>",
                     p_center
                 ),
