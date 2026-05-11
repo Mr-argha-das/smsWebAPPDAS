@@ -3,7 +3,7 @@
 
 <head>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-      <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+  <link rel="icon" type="image/png" href="/public/circlelogo.png" />
 
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <script src="https://unpkg.com/lucide@latest"></script>
@@ -140,8 +140,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body >
-   <div class="min-h-screen">
+<body>
+  <div class="min-h-screen">
     <div id="sidebarContainer"></div>
     <main class="min-h-screen lg:ml-[260px]">
       <div id="topbarContainer"></div>
@@ -153,35 +153,49 @@
           <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
             <div>
               <h3 class="text-lg font-bold text-gray-900">Bulk Student Upload</h3>
-              <p class="text-sm text-gray-500 mt-1">Download the CSV template according to the backend structure and upload the data in the same format. If the class or section is not already created in the ERP, it will be created automatically during import. Any fields left blank can be updated later.</p>
+              <p class="text-sm text-gray-500 mt-1">Download the CSV template according to the backend structure and
+                upload the data in the same format. If the class or section is not already created in the ERP, it will
+                be created automatically during import. Any fields left blank can be updated later.</p>
             </div>
-            <button onclick="downloadStudentImportTemplate()" class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 whitespace-nowrap">Download CSV Template</button>
+            <button onclick="downloadStudentImportTemplate()"
+              class="inline-flex items-center justify-center px-4 py-2.5 rounded-xl bg-slate-100 text-slate-700 text-sm font-medium hover:bg-slate-200 whitespace-nowrap">Download
+              CSV Template</button>
           </div>
           <div class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_280px] gap-4 mt-5">
             <div class="rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-4">
               <label class="lbl">Upload Student CSV</label>
               <input id="studentImportFile" type="file" accept=".csv" class="finput" />
               <div class="grid sm:grid-cols-3 gap-3 mt-3 text-sm text-slate-500">
-                <div class="rounded-xl bg-white border border-slate-200 px-3 py-2">School: <span id="studentImportSchool" class="font-medium text-slate-700">-</span></div>
-                <div class="rounded-xl bg-white border border-slate-200 px-3 py-2">Academic Year: <span id="studentImportYear" class="font-medium text-slate-700">-</span></div>
-                <div class="rounded-xl bg-white border border-slate-200 px-3 py-2">Branch: <span id="studentImportBranch" class="font-medium text-slate-700">Main School</span></div>
+                <div class="rounded-xl bg-white border border-slate-200 px-3 py-2">School: <span
+                    id="studentImportSchool" class="font-medium text-slate-700">-</span></div>
+                <div class="rounded-xl bg-white border border-slate-200 px-3 py-2">Academic Year: <span
+                    id="studentImportYear" class="font-medium text-slate-700">-</span></div>
+                <div class="rounded-xl bg-white border border-slate-200 px-3 py-2">Branch: <span
+                    id="studentImportBranch" class="font-medium text-slate-700">Main School</span></div>
               </div>
             </div>
             <div class="flex flex-col gap-3">
-              <button id="studentImportBtn" onclick="uploadStudentCsv()" class="px-5 py-3 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg disabled:opacity-60 disabled:cursor-not-allowed">Upload Data</button>
+              <button id="studentImportBtn" onclick="uploadStudentCsv()"
+                class="px-5 py-3 bg-blue-600 text-white rounded-xl font-semibold text-sm hover:bg-blue-700 shadow-lg disabled:opacity-60 disabled:cursor-not-allowed">Upload
+                Data</button>
               <div class="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
                 <strong>Smart duplicate check is enabled</strong><br>
-                <span class="text-emerald-700">The sheet Adm No is ignored. New students get a fresh admission number; matching existing students are updated instead of duplicated.</span>
+                <span class="text-emerald-700">The sheet Adm No is ignored. New students get a fresh admission number;
+                  matching existing students are updated instead of duplicated.</span>
               </div>
             </div>
           </div>
-          <div id="studentImportResult" class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-500 min-h-[92px]">Download the CSV template, fill the data, save the file, and then upload it from here.</div>
+          <div id="studentImportResult"
+            class="mt-4 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm text-slate-500 min-h-[92px]">
+            Download the CSV template, fill the data, save the file, and then upload it from here.</div>
         </div>
 
         <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
           <div class="tab-bar !px-0 mb-5">
-            <button id="studentTabActive" type="button" onclick="switchStudentTab('active')" class="tab-btn active">Students</button>
-            <button id="studentTabTransferred" type="button" onclick="switchStudentTab('transferred')" class="tab-btn">Transferred Students</button>
+            <button id="studentTabActive" type="button" onclick="switchStudentTab('active')"
+              class="tab-btn active">Students</button>
+            <button id="studentTabTransferred" type="button" onclick="switchStudentTab('transferred')"
+              class="tab-btn">Transferred Students</button>
           </div>
           <div class="flex flex-col sm:flex-row gap-3 justify-between mb-5">
             <div class="flex gap-2 flex-wrap">
@@ -205,7 +219,8 @@
             <div class="flex gap-2 flex-wrap">
               <button id="studentExportBtn" onclick="exportStudentList()"
                 class="px-5 py-2.5 bg-slate-100 text-slate-700 rounded-xl font-semibold text-sm hover:bg-slate-200 whitespace-nowrap inline-flex items-center justify-center gap-2 min-w-[132px]">
-                <span id="studentExportSpinner" class="hidden w-4 h-4 rounded-full border-2 border-slate-300 border-t-blue-600 animate-spin"></span>
+                <span id="studentExportSpinner"
+                  class="hidden w-4 h-4 rounded-full border-2 border-slate-300 border-t-blue-600 animate-spin"></span>
                 <span id="studentExportText">Export List</span>
               </button>
               <button onclick="openAdmModal()"
@@ -242,7 +257,8 @@
           <div>
             <h4 class="font-semibold text-gray-900 mb-3">Basic Details</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div><label class="lbl">Profile Pic</label><input id="m_photo" type="file" accept="image/*" class="finput" /></div>
+              <div><label class="lbl">Profile Pic</label><input id="m_photo" type="file" accept="image/*"
+                  class="finput" /></div>
               <div><label class="lbl">Registration Type</label>
                 <select id="m_reg_type" class="finput">
                   <option value="Manual">Manual</option>
@@ -261,9 +277,12 @@
                   <option value="Re-Admission">Re-Admission</option>
                 </select>
               </div>
-              <div><label class="lbl">First Name</label><input id="m_fn" type="text" class="finput" placeholder="First name" /></div>
-              <div><label class="lbl">Middle Name</label><input id="m_mn" type="text" class="finput" placeholder="Middle name" /></div>
-              <div><label class="lbl">Last Name</label><input id="m_ln" type="text" class="finput" placeholder="Last name" /></div>
+              <div><label class="lbl">First Name</label><input id="m_fn" type="text" class="finput"
+                  placeholder="First name" /></div>
+              <div><label class="lbl">Middle Name</label><input id="m_mn" type="text" class="finput"
+                  placeholder="Middle name" /></div>
+              <div><label class="lbl">Last Name</label><input id="m_ln" type="text" class="finput"
+                  placeholder="Last name" /></div>
               <div><label class="lbl">Gender</label>
                 <select id="m_gnd" class="finput">
                   <option value="">Select</option>
@@ -273,10 +292,14 @@
                 </select>
               </div>
               <div><label class="lbl">Date of Birth</label><input id="m_dob" type="date" class="finput" /></div>
-              <div><label class="lbl">Phone</label><input id="m_ph" type="tel" class="finput" placeholder="Phone" /></div>
-              <div><label class="lbl">Email</label><input id="m_em" type="email" class="finput" placeholder="Email" /></div>
-              <div><label class="lbl">Aadhar Number</label><input id="m_aad" type="text" class="finput" placeholder="12-digit Aadhar" maxlength="12" /></div>
-              <div><label class="lbl">SRN No</label><input id="m_srn" type="text" class="finput" placeholder="Student SRN" /></div>
+              <div><label class="lbl">Phone</label><input id="m_ph" type="tel" class="finput" placeholder="Phone" />
+              </div>
+              <div><label class="lbl">Email</label><input id="m_em" type="email" class="finput" placeholder="Email" />
+              </div>
+              <div><label class="lbl">Aadhar Number</label><input id="m_aad" type="text" class="finput"
+                  placeholder="12-digit Aadhar" maxlength="12" /></div>
+              <div><label class="lbl">SRN No</label><input id="m_srn" type="text" class="finput"
+                  placeholder="Student SRN" /></div>
               <div><label class="lbl">Religion</label>
                 <select id="m_rel" class="finput">
                   <option value="">Select</option>
@@ -299,7 +322,8 @@
                   <option value="ST">ST</option>
                 </select>
               </div>
-              <div><label class="lbl">Nationality</label><input id="m_nat" type="text" class="finput" value="Indian" /></div>
+              <div><label class="lbl">Nationality</label><input id="m_nat" type="text" class="finput" value="Indian" />
+              </div>
               <div><label class="lbl">Blood Group</label>
                 <select id="m_bg" class="finput">
                   <option value="">Select</option>
@@ -334,11 +358,16 @@
                   <option value="">Select route</option>
                 </select>
               </div>
-              <div><label class="lbl">Bus Stop</label><input id="m_bus_stop" type="text" class="finput" placeholder="Bus stop" /></div>
-              <div><label class="lbl">Bus No</label><input id="m_bus_no" type="text" class="finput" placeholder="Bus no" /></div>
-              <div><label class="lbl">Vehicle charges</label><input id="m_charge" type="number" class="finput" placeholder="0" readonly /></div>
-              <div><label class="lbl">Tution fee per month</label><input id="m_class_fee" type="number" class="finput" placeholder="0" readonly /></div>
-              <div><label class="lbl">Total Fee</label><input id="m_total_fee" type="number" class="finput" placeholder="0" readonly /></div>
+              <div><label class="lbl">Bus Stop</label><input id="m_bus_stop" type="text" class="finput"
+                  placeholder="Bus stop" /></div>
+              <div><label class="lbl">Bus No</label><input id="m_bus_no" type="text" class="finput"
+                  placeholder="Bus no" /></div>
+              <div><label class="lbl">Vehicle charges</label><input id="m_charge" type="number" class="finput"
+                  placeholder="0" readonly /></div>
+              <div><label class="lbl">Tution fee per month</label><input id="m_class_fee" type="number" class="finput"
+                  placeholder="0" readonly /></div>
+              <div><label class="lbl">Total Fee</label><input id="m_total_fee" type="number" class="finput"
+                  placeholder="0" readonly /></div>
               <div><label class="lbl">Referral Type</label>
                 <select id="m_ref_type" class="finput" onchange="toggleReferralFields()">
                   <option value="">Select</option>
@@ -349,28 +378,44 @@
               </div>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-              <div id="ref_num_wrap" class="hidden"><label class="lbl">Referral Number</label><input id="m_ref_num" type="text" class="finput" placeholder="Referral number" /></div>
-              <div id="ref_email_wrap" class="hidden"><label class="lbl">Referral Email</label><input id="m_ref_email" type="email" class="finput" placeholder="Referral email" /></div>
+              <div id="ref_num_wrap" class="hidden"><label class="lbl">Referral Number</label><input id="m_ref_num"
+                  type="text" class="finput" placeholder="Referral number" /></div>
+              <div id="ref_email_wrap" class="hidden"><label class="lbl">Referral Email</label><input id="m_ref_email"
+                  type="email" class="finput" placeholder="Referral email" /></div>
             </div>
             <div class="flex flex-wrap gap-4 mt-4 text-sm text-gray-700">
-              <label class="flex items-center gap-2"><input id="m_migration" type="checkbox" class="w-4 h-4 accent-blue-600" />Migration</label>
-              <label class="flex items-center gap-2"><input id="m_lateral" type="checkbox" class="w-4 h-4 accent-blue-600" />Lateral Entry</label>
+              <label class="flex items-center gap-2"><input id="m_migration" type="checkbox"
+                  class="w-4 h-4 accent-blue-600" />Migration</label>
+              <label class="flex items-center gap-2"><input id="m_lateral" type="checkbox"
+                  class="w-4 h-4 accent-blue-600" />Lateral Entry</label>
             </div>
             <div class="mt-4">
               <label class="lbl">For Months</label>
               <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 text-sm text-gray-700">
-                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Apr" />Apr</label>
-                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="May" />May</label>
-                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Jun" />Jun</label>
-                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Jul" />Jul</label>
-                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Aug" />Aug</label>
-                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Sep" />Sep</label>
-                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Oct" />Oct</label>
-                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Nov" />Nov</label>
-                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Dec" />Dec</label>
-                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Jan" />Jan</label>
-                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Feb" />Feb</label>
-                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600" value="Mar" />Mar</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600"
+                    value="Apr" />Apr</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600"
+                    value="May" />May</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600"
+                    value="Jun" />Jun</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600"
+                    value="Jul" />Jul</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600"
+                    value="Aug" />Aug</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600"
+                    value="Sep" />Sep</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600"
+                    value="Oct" />Oct</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600"
+                    value="Nov" />Nov</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600"
+                    value="Dec" />Dec</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600"
+                    value="Jan" />Jan</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600"
+                    value="Feb" />Feb</label>
+                <label class="flex items-center gap-2"><input type="checkbox" class="m_month w-4 h-4 accent-blue-600"
+                    value="Mar" />Mar</label>
               </div>
             </div>
           </div>
@@ -378,34 +423,55 @@
           <div>
             <h4 class="font-semibold text-gray-900 mb-3">Parent / Guardian</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div><label class="lbl">Father Name</label><input id="m_fa" type="text" class="finput" placeholder="Father name" /></div>
-              <div><label class="lbl">Father Phone</label><input id="m_fp" type="tel" class="finput" placeholder="Father phone" /></div>
-              <div><label class="lbl">Father Email</label><input id="m_fe" type="email" class="finput" placeholder="Father email" /></div>
-              <div><label class="lbl">Father Occupation</label><input id="m_fo" type="text" class="finput" placeholder="Occupation" /></div>
-              <div><label class="lbl">Mother Name</label><input id="m_ma" type="text" class="finput" placeholder="Mother name" /></div>
-              <div><label class="lbl">Mother Phone</label><input id="m_mp" type="tel" class="finput" placeholder="Mother phone" /></div>
-              <div><label class="lbl">Guardian Name</label><input id="m_guard" type="text" class="finput" placeholder="Guardian name" /></div>
-              <div><label class="lbl">Guardian Phone</label><input id="m_guard_ph" type="tel" class="finput" placeholder="Guardian phone" /></div>
+              <div><label class="lbl">Father Name</label><input id="m_fa" type="text" class="finput"
+                  placeholder="Father name" /></div>
+              <div><label class="lbl">Father Phone</label><input id="m_fp" type="tel" class="finput"
+                  placeholder="Father phone" /></div>
+              <div><label class="lbl">Father Email</label><input id="m_fe" type="email" class="finput"
+                  placeholder="Father email" /></div>
+              <div><label class="lbl">Father Occupation</label><input id="m_fo" type="text" class="finput"
+                  placeholder="Occupation" /></div>
+              <div><label class="lbl">Mother Name</label><input id="m_ma" type="text" class="finput"
+                  placeholder="Mother name" /></div>
+              <div><label class="lbl">Mother Phone</label><input id="m_mp" type="tel" class="finput"
+                  placeholder="Mother phone" /></div>
+              <div><label class="lbl">Guardian Name</label><input id="m_guard" type="text" class="finput"
+                  placeholder="Guardian name" /></div>
+              <div><label class="lbl">Guardian Phone</label><input id="m_guard_ph" type="tel" class="finput"
+                  placeholder="Guardian phone" /></div>
             </div>
           </div>
 
           <div>
             <div class="flex items-center justify-between mb-3">
               <h4 class="font-semibold text-gray-900">Sibling Detail</h4>
-              <button type="button" onclick="toggleSiblingPanel()" class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-medium hover:bg-emerald-100">Add Sibling Detail</button>
+              <button type="button" onclick="toggleSiblingPanel()"
+                class="px-3 py-1.5 bg-emerald-50 text-emerald-700 rounded-xl text-sm font-medium hover:bg-emerald-100">Add
+                Sibling Detail</button>
             </div>
             <div id="siblingPanel" class="hidden rounded-2xl border border-gray-200 bg-gray-50 p-4 space-y-4">
               <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
-                <div><label class="lbl">Class</label><select id="sib_cls" class="finput" onchange="loadSiblingSections()"><option value="">Select class</option></select></div>
-                <div><label class="lbl">Section</label><select id="sib_sec" class="finput"><option value="">Select section</option></select></div>
-                <div class="md:col-span-2"><label class="lbl">Search Student</label><input id="sib_search" class="finput" placeholder="Admission no, student name, father name, phone" /></div>
+                <div><label class="lbl">Class</label><select id="sib_cls" class="finput"
+                    onchange="loadSiblingSections()">
+                    <option value="">Select class</option>
+                  </select></div>
+                <div><label class="lbl">Section</label><select id="sib_sec" class="finput">
+                    <option value="">Select section</option>
+                  </select></div>
+                <div class="md:col-span-2"><label class="lbl">Search Student</label><input id="sib_search"
+                    class="finput" placeholder="Admission no, student name, father name, phone" /></div>
               </div>
               <div class="flex justify-end">
-                <button type="button" onclick="searchSiblingStudents()" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">Search</button>
+                <button type="button" onclick="searchSiblingStudents()"
+                  class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">Search</button>
               </div>
-              <div id="siblingSearchResults" class="rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-400 text-center">Search siblings by class, section or name.</div>
+              <div id="siblingSearchResults"
+                class="rounded-2xl border border-dashed border-slate-300 bg-white p-4 text-sm text-slate-400 text-center">
+                Search siblings by class, section or name.</div>
             </div>
-            <div id="selectedSiblingsBox" class="mt-3 rounded-2xl border border-gray-200 bg-white p-4 text-sm text-gray-500">No sibling selected</div>
+            <div id="selectedSiblingsBox"
+              class="mt-3 rounded-2xl border border-gray-200 bg-white p-4 text-sm text-gray-500">No sibling selected
+            </div>
           </div>
 
           <div>
@@ -413,27 +479,40 @@
               <h4 class="font-semibold text-gray-900">Present Address</h4>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div class="lg:col-span-2"><label class="lbl">Address</label><input id="pres_address" type="text" class="finput" placeholder="Address" /></div>
-              <div><label class="lbl">State</label><input id="pres_state" type="text" class="finput" placeholder="State" /></div>
-              <div><label class="lbl">Post Office</label><input id="pres_post" type="text" class="finput" placeholder="Post office" /></div>
-              <div><label class="lbl">Pin Code</label><input id="pres_pin" type="text" class="finput" placeholder="Pin code" /></div>
-              <div><label class="lbl">City</label><input id="pres_city" type="text" class="finput" placeholder="City" /></div>
-              <div><label class="lbl">Phone No</label><input id="pres_phone" type="text" class="finput" placeholder="Phone no" /></div>
+              <div class="lg:col-span-2"><label class="lbl">Address</label><input id="pres_address" type="text"
+                  class="finput" placeholder="Address" /></div>
+              <div><label class="lbl">State</label><input id="pres_state" type="text" class="finput"
+                  placeholder="State" /></div>
+              <div><label class="lbl">Post Office</label><input id="pres_post" type="text" class="finput"
+                  placeholder="Post office" /></div>
+              <div><label class="lbl">Pin Code</label><input id="pres_pin" type="text" class="finput"
+                  placeholder="Pin code" /></div>
+              <div><label class="lbl">City</label><input id="pres_city" type="text" class="finput" placeholder="City" />
+              </div>
+              <div><label class="lbl">Phone No</label><input id="pres_phone" type="text" class="finput"
+                  placeholder="Phone no" /></div>
             </div>
           </div>
 
           <div>
             <div class="flex items-center justify-between mb-3">
               <h4 class="font-semibold text-gray-900">Permanent Address</h4>
-              <label class="flex items-center gap-2 text-sm text-gray-700"><input id="same_addr" type="checkbox" class="w-4 h-4 accent-blue-600" onchange="copyPresentAddress()" />Same as Present Address</label>
+              <label class="flex items-center gap-2 text-sm text-gray-700"><input id="same_addr" type="checkbox"
+                  class="w-4 h-4 accent-blue-600" onchange="copyPresentAddress()" />Same as Present Address</label>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div class="lg:col-span-2"><label class="lbl">Address</label><input id="perm_address" type="text" class="finput" placeholder="Address" /></div>
-              <div><label class="lbl">State</label><input id="perm_state" type="text" class="finput" placeholder="State" /></div>
-              <div><label class="lbl">Post Office</label><input id="perm_post" type="text" class="finput" placeholder="Post office" /></div>
-              <div><label class="lbl">Pin Code</label><input id="perm_pin" type="text" class="finput" placeholder="Pin code" /></div>
-              <div><label class="lbl">City</label><input id="perm_city" type="text" class="finput" placeholder="City" /></div>
-              <div><label class="lbl">Phone No</label><input id="perm_phone" type="text" class="finput" placeholder="Phone no" /></div>
+              <div class="lg:col-span-2"><label class="lbl">Address</label><input id="perm_address" type="text"
+                  class="finput" placeholder="Address" /></div>
+              <div><label class="lbl">State</label><input id="perm_state" type="text" class="finput"
+                  placeholder="State" /></div>
+              <div><label class="lbl">Post Office</label><input id="perm_post" type="text" class="finput"
+                  placeholder="Post office" /></div>
+              <div><label class="lbl">Pin Code</label><input id="perm_pin" type="text" class="finput"
+                  placeholder="Pin code" /></div>
+              <div><label class="lbl">City</label><input id="perm_city" type="text" class="finput" placeholder="City" />
+              </div>
+              <div><label class="lbl">Phone No</label><input id="perm_phone" type="text" class="finput"
+                  placeholder="Phone no" /></div>
             </div>
           </div>
 
@@ -445,7 +524,9 @@
           <div>
             <div class="flex items-center justify-between mb-3">
               <h4 class="font-semibold text-gray-900">Student Documents</h4>
-              <button type="button" onclick="addDocumentRow()" class="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-xl text-sm font-medium hover:bg-blue-100">+ Add Document</button>
+              <button type="button" onclick="addDocumentRow()"
+                class="px-3 py-1.5 bg-blue-50 text-blue-700 rounded-xl text-sm font-medium hover:bg-blue-100">+ Add
+                Document</button>
             </div>
             <div id="documentRows" class="space-y-3">
               <div class="grid grid-cols-1 md:grid-cols-[1.2fr_1fr_1.2fr_auto] gap-3 items-end doc-row">
@@ -461,7 +542,8 @@
                   <label class="lbl">Upload File</label>
                   <input type="file" class="finput doc-file" />
                 </div>
-                <button type="button" onclick="removeDocumentRow(this)" class="px-3 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-medium hover:bg-red-100">Remove</button>
+                <button type="button" onclick="removeDocumentRow(this)"
+                  class="px-3 py-2 bg-red-50 text-red-600 rounded-xl text-sm font-medium hover:bg-red-100">Remove</button>
               </div>
             </div>
           </div>
@@ -490,29 +572,45 @@
     </div>
   </div>
 
-  <div id="promoteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+  <div id="promoteModal"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
     <div class="modal-box w-full max-w-2xl">
       <div class="flex items-center justify-between px-6 py-4 border-b">
         <div>
           <h3 class="text-lg font-bold text-gray-900">Promote Student</h3>
-          <p id="promoteHint" class="text-sm text-gray-500 mt-1">Select the next academic year and class to move the student.</p>
+          <p id="promoteHint" class="text-sm text-gray-500 mt-1">Select the next academic year and class to move the
+            student.</p>
         </div>
-        <button onclick="document.getElementById('promoteModal').style.display='none'" class="p-2 text-gray-400 hover:text-gray-600 rounded-xl">X</button>
+        <button onclick="document.getElementById('promoteModal').style.display='none'"
+          class="p-2 text-gray-400 hover:text-gray-600 rounded-xl">X</button>
       </div>
       <div class="px-6 py-5 space-y-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label class="lbl">Target Academic Year</label><select id="promote_ay" class="finput" onchange="loadPromotionClasses()"><option value="">Select year</option></select></div>
-          <div><label class="lbl">Target Class</label><select id="promote_class" class="finput" onchange="loadPromotionSections()"><option value="">Select class</option></select></div>
+          <div><label class="lbl">Target Academic Year</label><select id="promote_ay" class="finput"
+              onchange="loadPromotionClasses()">
+              <option value="">Select year</option>
+            </select></div>
+          <div><label class="lbl">Target Class</label><select id="promote_class" class="finput"
+              onchange="loadPromotionSections()">
+              <option value="">Select class</option>
+            </select></div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label class="lbl">Target Section</label><select id="promote_section" class="finput"><option value="">Select section</option></select></div>
-          <div><label class="lbl">Branch</label><select id="promote_branch" class="finput"><option value="">School Branch</option></select></div>
+          <div><label class="lbl">Target Section</label><select id="promote_section" class="finput">
+              <option value="">Select section</option>
+            </select></div>
+          <div><label class="lbl">Branch</label><select id="promote_branch" class="finput">
+              <option value="">School Branch</option>
+            </select></div>
         </div>
-        <div><label class="lbl">Promotion Remark</label><textarea id="promote_remark" rows="3" class="finput resize-none" placeholder="Optional note for promotion history"></textarea></div>
+        <div><label class="lbl">Promotion Remark</label><textarea id="promote_remark" rows="3"
+            class="finput resize-none" placeholder="Optional note for promotion history"></textarea></div>
       </div>
       <div class="flex gap-3 px-6 py-4 border-t justify-end">
-        <button onclick="document.getElementById('promoteModal').style.display='none'" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
-        <button onclick="submitPromotion()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Promote Student</button>
+        <button onclick="document.getElementById('promoteModal').style.display='none'"
+          class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="submitPromotion()"
+          class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Promote Student</button>
       </div>
     </div>
   </div>
@@ -568,54 +666,54 @@
     let selectedSiblingStudents = [];
     let siblingSearchCache = {};
 
-function renderStudentStatusOptions() {
-  const statusFilter = document.getElementById('filterStatus');
-  if (!statusFilter) return;
-  const previousValue = statusFilter.value || '';
-  if (currentStudentTab === 'transferred') {
-    statusFilter.innerHTML = '<option value="Transferred">Transferred</option>';
-    statusFilter.value = 'Transferred';
-    statusFilter.disabled = true;
-    return;
-  }
-  statusFilter.disabled = false;
-  statusFilter.innerHTML = `
+    function renderStudentStatusOptions() {
+      const statusFilter = document.getElementById('filterStatus');
+      if (!statusFilter) return;
+      const previousValue = statusFilter.value || '';
+      if (currentStudentTab === 'transferred') {
+        statusFilter.innerHTML = '<option value="Transferred">Transferred</option>';
+        statusFilter.value = 'Transferred';
+        statusFilter.disabled = true;
+        return;
+      }
+      statusFilter.disabled = false;
+      statusFilter.innerHTML = `
     <option value="">All Status</option>
     <option value="Active">Active</option>
     <option value="Alumni">Alumni</option>
   `;
-  statusFilter.value = ['Active', 'Alumni'].includes(previousValue) ? previousValue : '';
-}
-
-function switchStudentTab(tab) {
-  currentStudentTab = tab === 'transferred' ? 'transferred' : 'active';
-  document.getElementById('studentTabActive').classList.toggle('active', currentStudentTab === 'active');
-  document.getElementById('studentTabTransferred').classList.toggle('active', currentStudentTab === 'transferred');
-  renderStudentStatusOptions();
-  loadStudents(1);
-}
-
-async function loadStats() {
-  if (!currentSchoolId) return;
-
-  try {
-    const r = await StudentAPI.stats(currentSchoolId, ayId, selectedBranchCode);
-
-    if (r?.data) {
-      const d = r.data;
-
-      document.getElementById('statsRow').innerHTML =
-        statCard('Total', d.total || 0, 'users', 'blue') +
-        statCard('Male', d.by_gender?.male || 0, 'user', 'indigo') +
-        statCard('Female', d.by_gender?.female || 0, 'user-round', 'purple') +
-        statCard('Transferred', d.by_status?.transferred || 0, 'send', 'orange');
-
-      // 🔥 IMPORTANT
-      lucide.createIcons();
+      statusFilter.value = ['Active', 'Alumni'].includes(previousValue) ? previousValue : '';
     }
 
-  } catch (e) {}
-}
+    function switchStudentTab(tab) {
+      currentStudentTab = tab === 'transferred' ? 'transferred' : 'active';
+      document.getElementById('studentTabActive').classList.toggle('active', currentStudentTab === 'active');
+      document.getElementById('studentTabTransferred').classList.toggle('active', currentStudentTab === 'transferred');
+      renderStudentStatusOptions();
+      loadStudents(1);
+    }
+
+    async function loadStats() {
+      if (!currentSchoolId) return;
+
+      try {
+        const r = await StudentAPI.stats(currentSchoolId, ayId, selectedBranchCode);
+
+        if (r?.data) {
+          const d = r.data;
+
+          document.getElementById('statsRow').innerHTML =
+            statCard('Total', d.total || 0, 'users', 'blue') +
+            statCard('Male', d.by_gender?.male || 0, 'user', 'indigo') +
+            statCard('Female', d.by_gender?.female || 0, 'user-round', 'purple') +
+            statCard('Transferred', d.by_status?.transferred || 0, 'send', 'orange');
+
+          // 🔥 IMPORTANT
+          lucide.createIcons();
+        }
+
+      } catch (e) { }
+    }
 
     async function loadClasses() {
       if (!currentSchoolId) return;
@@ -777,7 +875,7 @@ async function loadStats() {
           try {
             const err = await res.json();
             message = err.detail || err.message || message;
-          } catch (_) {}
+          } catch (_) { }
           throw new Error(message);
         }
         const blob = await res.blob();
@@ -918,14 +1016,14 @@ async function loadStats() {
     }
 
     function collectDocumentRows() {
-  return Array.from(document.querySelectorAll('#documentRows .doc-row'))
-    .map(row => ({
-      docType: row.querySelector('.doc-type')?.value?.trim(),
-      docNumber: row.querySelector('.doc-number')?.value?.trim(),
-      file: row.querySelector('.doc-file')?.files?.[0]
-    }))
-    .filter(item => item.docType && item.file); // 🔥 FIX
-}
+      return Array.from(document.querySelectorAll('#documentRows .doc-row'))
+        .map(row => ({
+          docType: row.querySelector('.doc-type')?.value?.trim(),
+          docNumber: row.querySelector('.doc-number')?.value?.trim(),
+          file: row.querySelector('.doc-file')?.files?.[0]
+        }))
+        .filter(item => item.docType && item.file); // 🔥 FIX
+    }
 
     async function uploadStudentDocuments(studentId) {
       const docs = collectDocumentRows();
@@ -1029,7 +1127,7 @@ async function loadStats() {
         }
         const hdrs = ['Admission No', 'Student Name', 'DOB', 'Father Name', 'Mother Name', 'Class', 'Mobile', 'Address', ''];
         document.getElementById('siblingSearchResults').innerHTML = buildTable(hdrs, data.map(s => `
-          <td class="px-4 py-3 font-mono text-xs text-gray-500">${s.admission_no || '-'}</td>
+          <td class="px-4 py-3 font-mono text-xs text-gray-500">${s.admission_no ? s.admission_no.slice(-4) : '-'}</td>
           <td class="px-4 py-3 text-sm font-medium text-gray-900">${s.full_name || '-'}</td>
           <td class="px-4 py-3 text-sm text-gray-600">${s.date_of_birth ? formatDate(s.date_of_birth) : '-'}</td>
           <td class="px-4 py-3 text-sm text-gray-600">${s.father_name || '-'}</td>
@@ -1067,7 +1165,7 @@ async function loadStats() {
         const hdrs = ['Adm No', 'Name', 'DOB', 'Class/Sec', 'Gender', 'Father', 'Phone', 'Address', 'Status', 'Actions'];
         const rows = students.map(s => `
       <td class="px-4 py-3 font-mono text-xs text-gray-500">
-  ${s.admission_no || '-'}
+  ${s.admission_no ? s.admission_no.slice(-4) : '-'}
 </td>
       <td class="px-4 py-3"><div class="flex items-center gap-2">
         <div class="w-8 h-8 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 font-bold text-xs flex-shrink-0">${s.first_name.charAt(0).toUpperCase()}</div>
@@ -1210,7 +1308,7 @@ async function loadStats() {
           <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
             <div class="flex items-center gap-4">
               ${s.photo ? `<img src="${s.photo}" alt="${s.full_name}" class="w-20 h-20 rounded-3xl object-cover border-4 border-white/20" />`
-                : `<div class="w-20 h-20 rounded-3xl bg-white/15 border border-white/20 flex items-center justify-center text-3xl font-bold">${(s.first_name || s.full_name || 'S').charAt(0).toUpperCase()}</div>`}
+            : `<div class="w-20 h-20 rounded-3xl bg-white/15 border border-white/20 flex items-center justify-center text-3xl font-bold">${(s.first_name || s.full_name || 'S').charAt(0).toUpperCase()}</div>`}
               <div>
                 <h4 class="text-2xl font-bold">${s.full_name || '-'}</h4>
                 <p class="text-sm text-white/80 mt-1">${s.admission_no || '-'} · ${s.branch_name || 'Main School'} · ${s.classroom_name || '-'} ${s.section_name ? '/ ' + s.section_name : ''}</p>
@@ -1678,7 +1776,7 @@ async function loadStats() {
     })();
 
     function statCard(title, value, icon, color) {
-  return `
+      return `
     <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
       
       <div>
@@ -1692,9 +1790,9 @@ async function loadStats() {
 
     </div>
   `;
-}
+    }
 
-lucide.createIcons();
+    lucide.createIcons();
   </script>
 </body>
 
