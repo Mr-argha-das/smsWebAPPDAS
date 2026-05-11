@@ -48,7 +48,7 @@ async def list_routes(school_id: str, branch_code: Optional[str] = None, current
     for r in routes:
         student_query = StudentTransport.objects(route=r, is_active=True)
         if branch_code:
-            branch_students = list(Student.objects(school=school, branch_code=branch_code, is_active=True))
+            branch_students = list(Student.objects(school=school, branch_code=branch_code, is_active=True, admission_status="Active"))
             student_query = student_query.filter(student__in=branch_students)
         student_count = student_query.count()
         result.append({

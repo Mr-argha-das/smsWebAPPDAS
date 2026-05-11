@@ -703,7 +703,6 @@ def _get_invoice_recipient_email(invoice: FeeInvoice, recipient_type: str, fallb
 #     buffer.seek(0)
 #     return buffer.getvalue()
 
-
 def _generate_invoice_pdf_bytes(invoice) -> bytes:
     buffer = BytesIO()
 
@@ -717,42 +716,77 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
     )
 
     elements = []
-    
+
     # --- Custom Paragraph Styles ---
-    p_center = ParagraphStyle("p_center", fontName="Helvetica", fontSize=9, alignment=TA_CENTER, leading=12)
-    normal_10 = ParagraphStyle("normal_10", fontName="Helvetica", fontSize=9, leading=12)
-    bold_10 = ParagraphStyle("bold_10", fontName="Helvetica-Bold", fontSize=9, leading=12)
-    right_bold_10 = ParagraphStyle("right_bold_10", fontName="Helvetica-Bold", fontSize=9, alignment=TA_RIGHT, leading=12)
-    right_normal_10 = ParagraphStyle("right_normal_10", fontName="Helvetica", fontSize=9, alignment=TA_RIGHT, leading=12)
+    p_center = ParagraphStyle(
+        "p_center",
+        fontName="Helvetica",
+        fontSize=9,
+        alignment=TA_CENTER,
+        leading=12
+    )
+
+    normal_10 = ParagraphStyle(
+        "normal_10",
+        fontName="Helvetica",
+        fontSize=9,
+        leading=12
+    )
+
+    bold_10 = ParagraphStyle(
+        "bold_10",
+        fontName="Helvetica-Bold",
+        fontSize=9,
+        leading=12
+    )
+
+    right_bold_10 = ParagraphStyle(
+        "right_bold_10",
+        fontName="Helvetica-Bold",
+        fontSize=9,
+        alignment=TA_RIGHT,
+        leading=12
+    )
+
+    right_normal_10 = ParagraphStyle(
+        "right_normal_10",
+        fontName="Helvetica",
+        fontSize=9,
+        alignment=TA_RIGHT,
+        leading=12
+    )
 
     school = invoice.school
     student = invoice.student
 
-    # Logo URL setup
     DEFAULT_LOGO_URL = "https://rsmemorialpublicschool.com/wp-content/uploads/2026/03/logo-school.png"
-    
+
     def get_logo_source():
         if school and hasattr(school, 'logo') and school.logo:
             candidate = school.logo.strip()
-            # Agar URL hai toh seedha wahi return karo
+
             if candidate.startswith(("http://", "https://")):
                 return candidate
-            
-            # Local path check
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+            base_dir = os.path.dirname(
+                os.path.dirname(os.path.abspath(__file__))
+            )
+
             if candidate.startswith("/uploads/"):
                 path = os.path.join(base_dir, candidate.lstrip("/"))
+
             elif candidate.startswith("uploads/"):
                 path = os.path.join(base_dir, candidate)
+
             elif os.path.isabs(candidate):
                 path = candidate
+
             else:
                 path = os.path.join(base_dir, candidate.lstrip("/"))
-            
+
             if os.path.exists(path):
                 return path
-        
-        # Agar kuch na mile toh default URL return karo
+
         return DEFAULT_LOGO_URL
 
     logo_src = get_logo_source()
@@ -760,83 +794,169 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
     def money(val):
         return f"Rs. {float(val or 0):.2f}"
 
-    school_name = school.name.upper() if school and school.name else 'R.S MEMORIAL PUBLIC SCHOOL'
-    school_address = school.address.city if school and hasattr(school, 'address') and school.address else 'Village Tatarpur, Teh. Tapukara, Distt. Khairthal Tijara(Raj.)'
-    school_phone = school.phone if school and school.phone else '9214014070'
-    
-    father_name = student.parent_info.father_name if student and hasattr(student, 'parent_info') and student.parent_info else "-"
-    father_phone = student.parent_info.father_phone if student and hasattr(student, 'parent_info') and student.parent_info else "-"
-    class_sec = f"{student.classroom.name if student and student.classroom else '-'} - {student.section.name if student and student.section else '-'}"
+    school_name = (
+        school.name.upper()
+        if school and school.name
+        else 'R.S MEMORIAL PUBLIC SCHOOL'
+    )
+
+    school_phone = (
+        school.phone
+        if school and school.phone
+        else '9214014070'
+    )
+
+    father_name = (
+        student.parent_info.father_name
+        if student and hasattr(student, 'parent_info') and student.parent_info
+        else "-"
+    )
+
+    father_phone = (
+        student.parent_info.father_phone
+        if student and hasattr(student, 'parent_info') and student.parent_info
+        else "-"
+    )
+
+    class_sec = (
+        f"{student.classroom.name if student and student.classroom else '-'} "
+        f"- "
+        f"{student.section.name if student and student.section else '-'}"
+    )
 
     def build_copy(copy_name="STUDENT COPY"):
-        # 1. Logo Handling
+
         logo = ""
+
         if logo_src:
             try:
-                logo = Image(logo_src, width=70, height=70)
+                logo = Image(
+                    logo_src,
+                    width=70,
+                    height=70
+                )
             except:
                 logo = ""
 
-        # HEADER & STUDENT DETAILS (Same as HTML)
+        # =========================
+        # HEADER TABLE
+        # =========================
+
         student_data = [
             [
                 logo,
+
                 Paragraph(
                     f"<font size='14'><b>{school_name}</b></font><br/><br/>"
                     f"<font size='10'>Village Tatarpur, Teh. Tapukara, Distt. Khairthal Tijara(Raj.)</font><br/><br/>"
                     f"<font size='10'>Phone No. : {school_phone}</font>",
                     p_center
                 ),
+
                 "",
-                Paragraph(f"<h3>{copy_name}</h3>", right_bold_10)
+
+                Paragraph(
+                    f"<h3>{copy_name}</h3>",
+                    right_bold_10
+                )
             ],
+
             [
                 Paragraph("<b>Invoice No.</b>", bold_10),
                 Paragraph(str(invoice.invoice_no or "-"), normal_10),
+
                 Paragraph("<b>Invoice Date</b>", bold_10),
-                Paragraph(invoice.invoice_date.strftime("%d-%m-%Y") if invoice.invoice_date else "-", normal_10)
+
+                Paragraph(
+                    invoice.invoice_date.strftime("%d-%m-%Y")
+                    if invoice.invoice_date else "-",
+                    normal_10
+                )
             ],
+
             [
                 Paragraph("<b>Name of the Student</b>", bold_10),
-                Paragraph(student.full_name if student else "-", normal_10),
+
+                Paragraph(
+                    student.full_name if student else "-",
+                    normal_10
+                ),
+
                 Paragraph("<b>Class & Section</b>", bold_10),
+
                 Paragraph(class_sec, normal_10)
             ],
+
             [
                 Paragraph("<b>Admission No</b>", bold_10),
-                Paragraph(str(student.admission_no if student else "-"), normal_10),
+
+                Paragraph(
+                    str(student.admission_no if student else "-"),
+                    normal_10
+                ),
+
                 Paragraph("<b>Mobile No.</b>", bold_10),
+
                 Paragraph(str(father_phone), normal_10)
             ],
+
             [
                 Paragraph("<b>Father's Name</b>", bold_10),
+
                 Paragraph(str(father_name), normal_10),
+
                 Paragraph("<b>Fee for</b>", bold_10),
-                Paragraph(", ".join(invoice.tuition_months or []) or "-", normal_10)
+
+                Paragraph(
+                    ", ".join(invoice.tuition_months or []) or "-",
+                    normal_10
+                )
             ],
         ]
 
-        details_table = Table(student_data, colWidths=[130, 155, 130, 155])
+        details_table = Table(
+            student_data,
+            colWidths=[130, 155, 130, 155]
+        )
+
         details_table.setStyle(TableStyle([
             ("SPAN", (1, 0), (2, 0)),
             ("BOX", (0, 0), (-1, -1), 1, colors.black),
             ("GRID", (0, 1), (-1, -1), 1, colors.black),
             ("LINEBELOW", (0, 0), (-1, 0), 1, colors.black),
             ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-            ("ALIGN", (1, 0), (2, 0), "CENTER"), 
+            ("ALIGN", (1, 0), (2, 0), "CENTER"),
             ("ALIGN", (3, 0), (3, 0), "RIGHT"),
             ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
             ("TOPPADDING", (0, 0), (-1, -1), 6),
         ]))
+
         elements.append(details_table)
         elements.append(Spacer(1, 10))
 
-        # AMOUNT SUMMARY (Grey Background)
+        # =========================
+        # AMOUNT SUMMARY
+        # =========================
+
         amount_table = Table([
             [
-                Paragraph(f"<font size='10'><b>Total Amount</b></font><br/><br/><font size='12'><b>{money(invoice.net_amount)}</b></font>", p_center),
-                Paragraph(f"<font size='10'><b>Paid Amount</b></font><br/><br/><font size='12'><b>{money(invoice.paid_amount)}</b></font>", p_center),
-                Paragraph(f"<font size='10'><b>Pending Amount</b></font><br/><br/><font size='12'><b>{money(invoice.balance_amount)}</b></font>", p_center),
+                Paragraph(
+                    f"<font size='10'><b>Total Amount</b></font><br/><br/>"
+                    f"<font size='12'><b>{money(invoice.net_amount)}</b></font>",
+                    p_center
+                ),
+
+                Paragraph(
+                    f"<font size='10'><b>Paid Amount</b></font><br/><br/>"
+                    f"<font size='12'><b>{money(invoice.paid_amount)}</b></font>",
+                    p_center
+                ),
+
+                Paragraph(
+                    f"<font size='10'><b>Pending Amount</b></font><br/><br/>"
+                    f"<font size='12'><b>{money(invoice.balance_amount)}</b></font>",
+                    p_center
+                ),
             ]
         ], colWidths=[190, 190, 190])
 
@@ -847,27 +967,61 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
             ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
             ("TOPPADDING", (0, 0), (-1, -1), 12),
         ]))
+
         elements.append(amount_table)
         elements.append(Spacer(1, 10))
 
+        # =========================
         # FEE BREAKDOWN
+        # =========================
+
         fee_rows = [
-            [Paragraph("<b>Fee Breakdown</b>", bold_10), ""],
-            [Paragraph("<b>Description</b>", bold_10), Paragraph("<b>Amount</b>", right_bold_10)]
+            [
+                Paragraph("<b>Fee Breakdown</b>", bold_10),
+                ""
+            ],
+
+            [
+                Paragraph("<b>Description</b>", bold_10),
+                Paragraph("<b>Amount</b>", right_bold_10)
+            ]
         ]
+
         for item in invoice.items or []:
             fee_rows.append([
-                Paragraph(str(item.get("description") or "-"), normal_10),
-                Paragraph(money(item.get("amount")), right_normal_10)
+                Paragraph(
+                    str(item.get("description") or "-"),
+                    normal_10
+                ),
+
+                Paragraph(
+                    money(item.get("amount")),
+                    right_normal_10
+                )
             ])
-        
+
         fee_rows.extend([
-            [Paragraph("<b>Total Amount</b>", bold_10), Paragraph(money(invoice.net_amount), right_bold_10)],
-            [Paragraph("<b>Paid Amount</b>", bold_10), Paragraph(money(invoice.paid_amount), right_bold_10)],
-            [Paragraph("<b>Pending Amount</b>", bold_10), Paragraph(money(invoice.balance_amount), right_bold_10)],
+            [
+                Paragraph("<b>Total Amount</b>", bold_10),
+                Paragraph(money(invoice.net_amount), right_bold_10)
+            ],
+
+            [
+                Paragraph("<b>Paid Amount</b>", bold_10),
+                Paragraph(money(invoice.paid_amount), right_bold_10)
+            ],
+
+            [
+                Paragraph("<b>Pending Amount</b>", bold_10),
+                Paragraph(money(invoice.balance_amount), right_bold_10)
+            ],
         ])
 
-        fee_table = Table(fee_rows, colWidths=[450, 120])
+        fee_table = Table(
+            fee_rows,
+            colWidths=[450, 120]
+        )
+
         fee_table.setStyle(TableStyle([
             ("GRID", (0, 0), (-1, -1), 1, colors.black),
             ("SPAN", (0, 0), (1, 0)),
@@ -875,37 +1029,174 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
             ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
             ("TOPPADDING", (0, 0), (-1, -1), 6),
         ]))
+
         elements.append(fee_table)
         elements.append(Spacer(1, 10))
 
+        # =========================
+        # PAYMENT HISTORY
+        # =========================
+
+        transactions = list(
+            PaymentTransaction.objects(
+                invoice=invoice
+            ).order_by("-payment_date")
+        )
+
+        print("TRANSACTIONS =>", transactions)
+
+        if len(transactions) > 0:
+
+            elements.append(
+                Paragraph(
+                    "<b>Payment History</b>",
+                    bold_10
+                )
+            )
+
+            elements.append(Spacer(1, 6))
+
+            payment_rows = [
+                [
+                    Paragraph("<b>Date</b>", bold_10),
+                    Paragraph("<b>Amount</b>", bold_10),
+                    Paragraph("<b>Mode</b>", bold_10),
+                    Paragraph("<b>Receipt No</b>", bold_10),
+                    Paragraph("<b>Collected By</b>", bold_10),
+                ]
+            ]
+
+            total_paid_history = 0
+
+            for txn in transactions:
+
+                total_paid_history += float(txn.amount or 0)
+
+                payment_rows.append([
+                    Paragraph(
+                        txn.payment_date.strftime("%d-%m-%Y")
+                        if txn.payment_date else "-",
+                        normal_10
+                    ),
+
+                    Paragraph(
+                        money(txn.amount),
+                        right_normal_10
+                    ),
+
+                    Paragraph(
+                        str(txn.payment_mode or "-"),
+                        normal_10
+                    ),
+
+                    Paragraph(
+                        str(txn.receipt_no or "-"),
+                        normal_10
+                    ),
+
+                    Paragraph(
+                        str(txn.collected_by or "-"),
+                        normal_10
+                    ),
+                ])
+
+            payment_rows.append([
+                Paragraph("<b>Total Paid</b>", bold_10),
+
+                Paragraph(
+                    f"<b>{money(total_paid_history)}</b>",
+                    right_bold_10
+                ),
+
+                "",
+                "",
+                "",
+            ])
+
+            payment_table = Table(
+                payment_rows,
+                colWidths=[90, 100, 110, 120, 150]
+            )
+
+            payment_table.setStyle(TableStyle([
+                ("GRID", (0, 0), (-1, -1), 1, colors.black),
+                ("BACKGROUND", (0, 0), (-1, 0), HexColor("#f5f5f5")),
+                ("BACKGROUND", (0, -1), (-1, -1), HexColor("#eeeeee")),
+                ("ALIGN", (1, 1), (1, -1), "RIGHT"),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+                ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONTNAME", (0, -1), (-1, -1), "Helvetica-Bold"),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ]))
+
+            elements.append(payment_table)
+            elements.append(Spacer(1, 10))
+
+        else:
+
+            elements.append(
+                Paragraph(
+                    "<b>No Payment History Available</b>",
+                    normal_10
+                )
+            )
+
+            elements.append(Spacer(1, 10))
+
+        # =========================
         # FOOTER
+        # =========================
+
         footer_table = Table([
             [
-                Paragraph("<b>NOTE :</b><br/><br/>1. Fee once paid is not refundable.<br/>2. Keep this receipt safely.", normal_10),
-                Paragraph("<br/><br/><br/><b>(Signature)</b>", p_center)
+                Paragraph(
+                    "<b>NOTE :</b><br/><br/>"
+                    "1. Fee once paid is not refundable.<br/>"
+                    "2. Keep this receipt safely.",
+                    normal_10
+                ),
+
+                Paragraph(
+                    "<br/><br/><br/><b>(Signature)</b>",
+                    p_center
+                )
             ]
         ], colWidths=[430, 140])
+
         footer_table.setStyle(TableStyle([
             ("GRID", (0, 0), (-1, -1), 1, colors.black),
             ("VALIGN", (0, 0), (-1, -1), "TOP"),
         ]))
+
         elements.append(footer_table)
 
-    # Build Student Copy
+    # STUDENT COPY
     build_copy("STUDENT COPY")
-    
-    elements.append(Spacer(1, 20))
-    elements.append(HRFlowable(width="100%", thickness=1, color=colors.grey, dash=(3, 3)))
+
     elements.append(Spacer(1, 20))
 
-    # Build Office Copy
+    elements.append(
+        HRFlowable(
+            width="100%",
+            thickness=1,
+            color=colors.grey,
+            dash=(3, 3)
+        )
+    )
+
+    elements.append(Spacer(1, 20))
+
+    # OFFICE COPY
     build_copy("OFFICE COPY")
 
     doc.build(elements)
-    pdf = buffer.getvalue()
-    buffer.close()
-    return pdf
 
+    pdf = buffer.getvalue()
+
+    buffer.close()
+
+    return pdf
 def _send_invoice_email(invoice: FeeInvoice, recipient_email: str):
     if not settings.SMTP_HOST or not settings.SMTP_USER or not settings.SMTP_PASSWORD:
         raise HTTPException(400, "SMTP is not configured. Add SMTP_HOST, SMTP_PORT, SMTP_USER and SMTP_PASSWORD in .env")

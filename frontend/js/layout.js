@@ -55,7 +55,7 @@ var NAV_GROUPS = [
 ];
 
 var ROLE_MODULE_PRESETS = {
-  teacher: ['dashboard', 'students', 'staff', 'academics', 'exams', 'attendance', 'communication'],
+  teacher: ['dashboard',  'staff', 'academics', 'exams', 'attendance', 'communication'],
   parent: ['dashboard'],
   student: ['dashboard', 'academics', 'exams', 'attendance', 'fees', 'communication'],
   accountant: ['dashboard', 'students', 'fees', 'reports'],
