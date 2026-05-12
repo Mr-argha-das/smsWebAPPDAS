@@ -327,20 +327,53 @@ async def child_attendance(student_id: str, school_id: str, month: int = None, y
 @router.get("/child/{student_id}/fees")
 async def child_fees(student_id: str, school_id: str, token: str = Query(...)):
     parent = get_parent_from_token(token)
+
     if not any(str(c.id) == student_id for c in parent.children):
         raise HTTPException(403, "Student not linked to your account")
+
     student = Student.objects.get(id=student_id)
-    invoices = list(FeeInvoice.objects(student=student).order_by('-created_at')[:24])
+
+    invoices = list(
+        FeeInvoice.objects(student=student)
+        .order_by('-created_at')[:24]
+    )
+
     result = [{
+        "invoice_id": str(i.id),
+
         "invoice_no": i.invoice_no,
+
+        "student_name": student.full_name,
+        "admission_no": student.admission_no,
+
+        "classroom": student.classroom.name if student.classroom else "-",
+
         "fee_type": "Tuition Fee",
-        "amount": i.net_amount, "paid": i.paid_amount, "balance": i.balance_amount,
-        "due_date": i.due_date.isoformat() if i.due_date else None, "status": i.status
+
+        "amount": float(i.net_amount or 0),
+
+        "paid": float(i.paid_amount or 0),
+
+        "balance": float(i.balance_amount or 0),
+
+        "due_date": i.due_date.isoformat() if i.due_date else None,
+
+        "status": i.status,
+
+        "pdf_url": f"/api/v1/fees/invoice/{str(i.id)}/public-pdf"
+
     } for i in invoices]
-    total_due = sum(i.balance_amount for i in invoices if i.balance_amount > 0)
-    return success_response(result, meta={"total_due": total_due})
 
+    total_due = sum(
+        i.balance_amount
+        for i in invoices
+        if i.balance_amount > 0
+    )
 
+    return success_response(
+        result,
+        meta={"total_due": total_due}
+    )
 # ── Child: Results ────────────────────────────────────────────────────────────
 @router.get("/child/{student_id}/results")
 async def child_results(student_id: str, school_id: str, token: str = Query(...)):

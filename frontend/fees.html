@@ -1072,6 +1072,7 @@
     async function loadInvoiceStudentMeta(studentOverride = null, options = {}) {
       const studId = document.getElementById('inv_student').value;
       invoiceStudentMeta = null;
+
       document.querySelectorAll('.inv_tuition_month, .inv_transport_month').forEach(cb => cb.checked = false);
       renderInvoiceMonthAvailability();
       document.getElementById('inv_transport_toggle').checked = false;
@@ -1082,6 +1083,16 @@
         const s = studentOverride || r?.data;
         if (!s) return;
         invoiceStudentMeta = s;
+        // Auto fill saved concession
+        if (s.admission_concession) {
+
+          document.getElementById('inv_concession').value =
+            s.admission_concession;
+
+          document.getElementById('inv_concession_percent').value =
+            s.admission_concession_percent || 0;
+
+        }
         if (!options.keepConcession) applyStudentConcessionToInvoice(s);
         invoiceBilledAnnualHeads = new Set();
         const billedHeadsPromise = loadBilledAnnualHeadsForInvoiceStudent();

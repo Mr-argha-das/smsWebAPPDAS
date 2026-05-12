@@ -1269,6 +1269,14 @@ async def create_invoice(data: InvoiceCreate, current_user: User = Depends(get_c
     invoice = None
     for _ in range(5):
         invoice_no = _generate_invoice_no()
+        if data.concession_name:
+            student.admission_concession = data.concession_name
+
+            student.admission_concession_percent = (
+              data.concession_percent or 0
+            )
+
+            student.save()
         invoice = FeeInvoice(
             school=school, student=student, academic_year=ay,
             invoice_no=invoice_no,
@@ -1346,7 +1354,16 @@ async def update_invoice(invoice_id: str, data: InvoiceCreate, current_user: Use
     already_paid = invoice.paid_amount or 0
     balance_amount = max(0, net - already_paid)
     status = "Paid" if balance_amount <= 0 else ("Partial" if already_paid > 0 else "Pending")
+    # Update saved student concession
+    if data.concession_name:
 
+       student.admission_concession = data.concession_name
+
+       student.admission_concession_percent = (
+        data.concession_percent or 0
+       )
+
+       student.save()
     invoice.update(
         student=student,
         academic_year=ay,

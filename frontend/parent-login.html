@@ -1,368 +1,678 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-      <link rel="icon" type="image/png" href="/public/circlelogo.png" />
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
-<style>
-*{box-sizing:border-box}
-body{font-family:"DM Sans",sans-serif;background:#f8fafc;color:#1e293b}
-h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
-.finput{width:100%;padding:.625rem .875rem;border-radius:.75rem;border:1.5px solid #e2e8f0;background:#f8fafc;font-size:.875rem;outline:none;transition:all .15s;color:#1e293b}
-.finput:focus{background:#fff;border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.12)}
-.lbl{display:block;font-size:.8125rem;font-weight:600;color:#475569;margin-bottom:.375rem}
-.modal-overlay{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:1rem;background:rgba(15,23,42,.55);backdrop-filter:blur(4px)}
-.modal-box{background:#fff;border-radius:1.5rem;box-shadow:0 25px 50px rgba(0,0,0,.22);width:100%;overflow:hidden;animation:modalIn .2s ease}
-@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.tab-bar{display:flex;border-bottom:2px solid #f1f5f9;overflow-x:auto;gap:.25rem;padding:0 1rem}
-.tab-bar::-webkit-scrollbar{display:none}
-.tab-btn{padding:.875rem 1.125rem;font-size:.8125rem;font-weight:600;background:none;border:none;cursor:pointer;white-space:nowrap;color:#94a3b8;border-bottom:2.5px solid transparent;margin-bottom:-2px;transition:all .15s;font-family:"DM Sans",sans-serif}
-.tab-btn.active{color:#6366f1;border-bottom-color:#6366f1}
-.tab-btn:not(.active):hover{color:#475569}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:999px}
-</style>
-<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>Parent Portal — Scholar Desk</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-.finput{width:100%;padding:.75rem 1rem;border-radius:.875rem;border:1.5px solid #e5e7eb;background:#fff;font-size:.875rem;outline:none;transition:border-color .2s}
-.finput:focus{border-color:#3b82f6;box-shadow:0 0 0 3px rgba(59,130,246,.1)}
-.lbl{display:block;font-size:.875rem;font-weight:600;color:#374151;margin-bottom:.375rem}
-.tab-btn.active{background:#3b82f6;color:#fff}
-</style>
+<head>
+  <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      font-family: "DM Sans", sans-serif;
+      background: #f8fafc;
+      color: #1e293b
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    .font-outfit {
+      font-family: "Outfit", sans-serif
+    }
+
+    .finput {
+      width: 100%;
+      padding: .625rem .875rem;
+      border-radius: .75rem;
+      border: 1.5px solid #e2e8f0;
+      background: #f8fafc;
+      font-size: .875rem;
+      outline: none;
+      transition: all .15s;
+      color: #1e293b
+    }
+
+    .finput:focus {
+      background: #fff;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, .12)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .8125rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: .375rem
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      background: rgba(15, 23, 42, .55);
+      backdrop-filter: blur(4px)
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, .22);
+      width: 100%;
+      overflow: hidden;
+      animation: modalIn .2s ease
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.96) translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0)
+      }
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 2px solid #f1f5f9;
+      overflow-x: auto;
+      gap: .25rem;
+      padding: 0 1rem
+    }
+
+    .tab-bar::-webkit-scrollbar {
+      display: none
+    }
+
+    .tab-btn {
+      padding: .875rem 1.125rem;
+      font-size: .8125rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      color: #94a3b8;
+      border-bottom: 2.5px solid transparent;
+      margin-bottom: -2px;
+      transition: all .15s;
+      font-family: "DM Sans", sans-serif
+    }
+
+    .tab-btn.active {
+      color: #6366f1;
+      border-bottom-color: #6366f1
+    }
+
+    .tab-btn:not(.active):hover {
+      color: #475569
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 999px
+    }
+  </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Parent Portal — Scholar Desk</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .finput {
+      width: 100%;
+      padding: .75rem 1rem;
+      border-radius: .875rem;
+      border: 1.5px solid #e5e7eb;
+      background: #fff;
+      font-size: .875rem;
+      outline: none;
+      transition: border-color .2s
+    }
+
+    .finput:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, .1)
+    }
+
+    .lbl {
+      display: block;
+      font-size: .875rem;
+      font-weight: 600;
+      color: #374151;
+      margin-bottom: .375rem
+    }
+
+    .tab-btn.active {
+      background: #3b82f6;
+      color: #fff
+    }
+  </style>
 </head>
+
 <body class="bg-gradient-to-br from-blue-50 to-indigo-50 min-h-screen">
 
-<!-- Auth Screens -->
-<div id="authScreen" class="min-h-screen flex items-center justify-center p-4">
-  <div class="w-full max-w-sm">
-    <div class="text-center mb-8">
-      <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl text-3xl mb-4 shadow-xl">👨‍👩‍👧</div>
-      <h1 class="text-2xl font-bold text-gray-900">Parent Portal</h1>
-      <p class="text-gray-500 text-sm mt-1">Track your child's progress</p>
-    </div>
-
-    <!-- Tabs -->
-    <div class="flex bg-gray-100 rounded-2xl p-1 mb-6">
-      <button onclick="showAuthTab('login')" id="loginTabBtn" class="tab-btn active flex-1 py-2 rounded-xl text-sm font-semibold transition-all">Login</button>
-      <button onclick="showAuthTab('register')" id="regTabBtn" class="tab-btn flex-1 py-2 rounded-xl text-sm font-semibold text-gray-500 transition-all">Register</button>
-    </div>
-
-    <!-- Login Form -->
-    <div id="loginForm" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-      <div><label class="lbl">Email or Phone</label><input id="l_identifier" class="finput" placeholder="Email address or mobile number"/></div>
-      <div><label class="lbl">Password</label><input id="l_pwd" type="password" class="finput" placeholder="Password"/></div>
-      <div id="l_error" class="hidden text-red-500 text-sm bg-red-50 rounded-xl px-4 py-3"></div>
-      <button onclick="loginParent()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-lg">Login →</button>
-    </div>
-
-    <!-- Register Form -->
-    <div id="registerForm" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
-      <div><label class="lbl">Full Name *</label><input id="r_name" class="finput" placeholder="Your full name"/></div>
-      <div class="grid grid-cols-2 gap-3">
-        <div><label class="lbl">Phone *</label><input id="r_ph" type="tel" class="finput" placeholder="Mobile"/></div>
-        <div><label class="lbl">Relation *</label><select id="r_rel" class="finput"><option value="Father">Father</option><option value="Mother">Mother</option><option value="Guardian">Guardian</option></select></div>
+  <!-- Auth Screens -->
+  <div id="authScreen" class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-sm">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl text-3xl mb-4 shadow-xl">
+          👨‍👩‍👧</div>
+        <h1 class="text-2xl font-bold text-gray-900">Parent Portal</h1>
+        <p class="text-gray-500 text-sm mt-1">Track your child's progress</p>
       </div>
-      <div><label class="lbl">Email *</label><input id="r_email" type="email" class="finput" placeholder="Email address"/></div>
-      <div><label class="lbl">Password *</label><input id="r_pwd" type="password" class="finput" placeholder="Create password"/></div>
-      <div>
-        <label class="lbl">Child's Admission Number(s) *</label>
-        <input id="r_adm" class="finput" placeholder="e.g. ADM2024001 (comma for multiple)"/>
-        <p class="text-xs text-gray-400 mt-1">Enter the full admission number exactly as shown on the ID card or in the student record. Do not use only the last 4 digits.</p>
+
+      <!-- Tabs -->
+      <div class="flex bg-gray-100 rounded-2xl p-1 mb-6">
+        <button onclick="showAuthTab('login')" id="loginTabBtn"
+          class="tab-btn active flex-1 py-2 rounded-xl text-sm font-semibold transition-all">Login</button>
+        <button onclick="showAuthTab('register')" id="regTabBtn"
+          class="tab-btn flex-1 py-2 rounded-xl text-sm font-semibold text-gray-500 transition-all">Register</button>
       </div>
-      <div id="r_error" class="hidden text-red-500 text-sm bg-red-50 rounded-xl px-4 py-3"></div>
-      <button onclick="registerParent()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-lg">Create Account →</button>
-    </div>
-  </div>
-</div>
 
-<!-- Dashboard -->
-<div id="dashboard" class="hidden">
-  <!-- Top Bar -->
-  <div class="bg-blue-600 text-white px-5 pt-8 pb-12">
-    <div class="flex justify-between items-start">
-      <div>
-        <p class="text-blue-200 text-sm">Welcome back,</p>
-        <h2 id="d_name" class="text-2xl font-bold mt-0.5"></h2>
+      <!-- Login Form -->
+      <div id="loginForm" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+        <div><label class="lbl">Email or Phone</label><input id="l_identifier" class="finput"
+            placeholder="Email address or mobile number" /></div>
+        <div><label class="lbl">Password</label><input id="l_pwd" type="password" class="finput"
+            placeholder="Password" /></div>
+        <div id="l_error" class="hidden text-red-500 text-sm bg-red-50 rounded-xl px-4 py-3"></div>
+        <button onclick="loginParent()"
+          class="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-lg">Login
+          →</button>
       </div>
-      <button onclick="logout()" class="text-blue-200 text-sm hover:text-white">Logout</button>
-    </div>
-    <!-- Child Selector -->
-    <div id="childSelector" class="flex gap-2 mt-5 overflow-x-auto pb-2"></div>
-  </div>
 
-  <!-- Stats Cards (overlapping top bar) -->
-  <div class="px-4 -mt-6 mb-4">
-    <div id="childStats" class="bg-white rounded-2xl shadow-lg p-4 grid grid-cols-3 gap-3"></div>
-  </div>
-
-  <!-- Main Content -->
-  <div class="px-4 pb-8 space-y-4">
-    <!-- Quick Nav -->
-    <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-      <button onclick="showSection('attendance')" class="bg-white rounded-2xl p-4 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-        <div class="text-2xl">📅</div><div class="text-xs font-medium text-gray-600 mt-1">Attendance</div>
-      </button>
-      <button onclick="showSection('fees')" class="bg-white rounded-2xl p-4 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-        <div class="text-2xl">💰</div><div class="text-xs font-medium text-gray-600 mt-1">Fees</div>
-      </button>
-      <button onclick="showSection('results')" class="bg-white rounded-2xl p-4 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-        <div class="text-2xl">📊</div><div class="text-xs font-medium text-gray-600 mt-1">Results</div>
-      </button>
-      <button onclick="showSection('homework')" class="bg-white rounded-2xl p-4 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-        <div class="text-2xl">📚</div><div class="text-xs font-medium text-gray-600 mt-1">Homework</div>
-      </button>
-      <button onclick="showSection('datesheet')" class="bg-white rounded-2xl p-4 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
-        <div class="text-2xl">🗓</div><div class="text-xs font-medium text-gray-600 mt-1">Date Sheet</div>
-      </button>
-    </div>
-
-    <!-- Notices -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-      <h4 class="font-bold text-gray-900 mb-3">📢 School Notices</h4>
-      <div id="noticeList" class="space-y-2"></div>
-    </div>
-
-    <!-- Events -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-      <h4 class="font-bold text-gray-900 mb-3">🗓 Upcoming Events</h4>
-      <div id="eventList" class="space-y-2"></div>
-    </div>
-
-    <!-- Message School -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-      <h4 class="font-bold text-gray-900 mb-3">✉️ Message School</h4>
-      <div class="space-y-3">
-        <input id="msg_subj" class="finput" placeholder="Subject"/>
-        <textarea id="msg_body" rows="3" class="finput resize-none" placeholder="Write your message to the teacher/admin..."></textarea>
-        <button onclick="sendMsg()" class="w-full py-2.5 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700">Send Message</button>
+      <!-- Register Form -->
+      <div id="registerForm" class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-4">
+        <div><label class="lbl">Full Name *</label><input id="r_name" class="finput" placeholder="Your full name" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div><label class="lbl">Phone *</label><input id="r_ph" type="tel" class="finput" placeholder="Mobile" />
+          </div>
+          <div><label class="lbl">Relation *</label><select id="r_rel" class="finput">
+              <option value="Father">Father</option>
+              <option value="Mother">Mother</option>
+              <option value="Guardian">Guardian</option>
+            </select></div>
+        </div>
+        <div><label class="lbl">Email *</label><input id="r_email" type="email" class="finput"
+            placeholder="Email address" /></div>
+        <div><label class="lbl">Password *</label><input id="r_pwd" type="password" class="finput"
+            placeholder="Create password" /></div>
+        <div>
+          <label class="lbl">Child's Admission Number(s) *</label>
+          <input id="r_adm" class="finput" placeholder="e.g. ADM2024001 (comma for multiple)" />
+          <p class="text-xs text-gray-400 mt-1">Enter the full admission number exactly as shown on the ID card or in
+            the student record. Do not use only the last 4 digits.</p>
+        </div>
+        <div id="r_error" class="hidden text-red-500 text-sm bg-red-50 rounded-xl px-4 py-3"></div>
+        <button onclick="registerParent()"
+          class="w-full py-3 bg-blue-600 text-white rounded-xl font-semibold hover:bg-blue-700 shadow-lg">Create Account
+          →</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- Section Detail (Attendance/Fees/Results/Homework) -->
-<div id="sectionDetail" class="hidden min-h-screen bg-gray-50">
-  <div class="bg-white shadow-sm px-5 py-4 flex items-center gap-3">
-    <button onclick="document.getElementById('sectionDetail').classList.add('hidden');document.getElementById('dashboard').classList.remove('hidden')" class="text-blue-600 text-lg">←</button>
-    <h3 id="sectionTitle" class="font-bold text-gray-900"></h3>
+  <!-- Dashboard -->
+  <div id="dashboard" class="hidden">
+    <!-- Top Bar -->
+    <div class="bg-blue-600 text-white px-5 pt-8 pb-12">
+      <div class="flex justify-between items-start">
+        <div>
+          <p class="text-blue-200 text-sm">Welcome back,</p>
+          <h2 id="d_name" class="text-2xl font-bold mt-0.5"></h2>
+        </div>
+        <button onclick="logout()" class="text-blue-200 text-sm hover:text-white">Logout</button>
+      </div>
+      <!-- Child Selector -->
+      <div id="childSelector" class="flex gap-2 mt-5 overflow-x-auto pb-2"></div>
+    </div>
+
+    <!-- Stats Cards (overlapping top bar) -->
+    <div class="px-4 -mt-6 mb-4">
+      <div id="childStats" class="bg-white rounded-2xl shadow-lg p-4 grid grid-cols-3 gap-3"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="px-4 pb-8 space-y-4">
+      <!-- Quick Nav -->
+      <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+        <button onclick="showSection('attendance')"
+          class="bg-white rounded-2xl p-4 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+          <div class="text-2xl">📅</div>
+          <div class="text-xs font-medium text-gray-600 mt-1">Attendance</div>
+        </button>
+        <button onclick="showSection('fees')"
+          class="bg-white rounded-2xl p-4 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+          <div class="text-2xl">💰</div>
+          <div class="text-xs font-medium text-gray-600 mt-1">Fees</div>
+        </button>
+        <!-- <button onclick="showSection('invoices')"
+          class="bg-white rounded-2xl p-4 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+          <div class="text-2xl">📄</div>
+          <div class="text-xs font-medium text-gray-600 mt-1">Invoices</div>
+        </button> -->
+        <button onclick="showSection('results')"
+          class="bg-white rounded-2xl p-4 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+          <div class="text-2xl">📊</div>
+          <div class="text-xs font-medium text-gray-600 mt-1">Results</div>
+        </button>
+        <button onclick="showSection('homework')"
+          class="bg-white rounded-2xl p-4 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+          <div class="text-2xl">📚</div>
+          <div class="text-xs font-medium text-gray-600 mt-1">Homework</div>
+        </button>
+        <button onclick="showSection('datesheet')"
+          class="bg-white rounded-2xl p-4 text-center shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+          <div class="text-2xl">🗓</div>
+          <div class="text-xs font-medium text-gray-600 mt-1">Date Sheet</div>
+        </button>
+      </div>
+
+      <!-- Notices -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+        <h4 class="font-bold text-gray-900 mb-3">📢 School Notices</h4>
+        <div id="noticeList" class="space-y-2"></div>
+      </div>
+
+      <!-- Events -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+        <h4 class="font-bold text-gray-900 mb-3">🗓 Upcoming Events</h4>
+        <div id="eventList" class="space-y-2"></div>
+      </div>
+
+      <!-- Message School -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+        <h4 class="font-bold text-gray-900 mb-3">✉️ Message School</h4>
+        <div class="space-y-3">
+          <input id="msg_subj" class="finput" placeholder="Subject" />
+          <textarea id="msg_body" rows="3" class="finput resize-none"
+            placeholder="Write your message to the teacher/admin..."></textarea>
+          <button onclick="sendMsg()"
+            class="w-full py-2.5 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700">Send
+            Message</button>
+        </div>
+      </div>
+    </div>
   </div>
-  <div id="sectionContent" class="p-4 space-y-3"></div>
-</div>
 
-<script>
-const API_BASE = window.location.origin + '/api/v1';
-const params = new URLSearchParams(location.search);
-const schoolId = params.get('school') || params.get('school_id') || localStorage.getItem('school_id') || '';
-let parentData = null, currentChildId = null;
+  <!-- Section Detail (Attendance/Fees/Results/Homework) -->
+  <div id="sectionDetail" class="hidden min-h-screen bg-gray-50">
+    <div class="bg-white shadow-sm px-5 py-4 flex items-center gap-3">
+      <button
+        onclick="document.getElementById('sectionDetail').classList.add('hidden');document.getElementById('dashboard').classList.remove('hidden')"
+        class="text-blue-600 text-lg">←</button>
+      <h3 id="sectionTitle" class="font-bold text-gray-900"></h3>
+    </div>
+    <div id="sectionContent" class="p-4 space-y-3"></div>
+  </div>
 
-function getApiErrorMessage(data, fallback) {
-  return data?.message || data?.detail || fallback;
-}
+  <script>
+    const API_BASE = window.location.origin + '/api/v1';
+    const params = new URLSearchParams(location.search);
+    const schoolId = params.get('school') || params.get('school_id') || localStorage.getItem('school_id') || '';
+    let parentData = null, currentChildId = null;
 
-function showAuthTab(tab) {
-  const isLogin = tab === 'login';
-  document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
-  document.getElementById('registerForm').classList.toggle('hidden', isLogin);
-  document.getElementById('loginTabBtn').classList.toggle('active', isLogin);
-  document.getElementById('regTabBtn').classList.toggle('active', !isLogin);
-}
-
-async function loginParent() {
-  const btn = event.target; btn.disabled = true; btn.textContent = 'Logging in...';
-  const errEl = document.getElementById('l_error');
-  errEl.classList.add('hidden');
-  try {
-    const r = await fetch(`${API_BASE}/parent/login`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({school_id: schoolId, identifier: document.getElementById('l_identifier').value.trim(), password: document.getElementById('l_pwd').value})
-    });
-    const data = await r.json();
-    if (data.success) {
-      localStorage.setItem('parent_token', data.data.token);
-      localStorage.setItem('parent_data', JSON.stringify(data.data));
-      parentData = data.data;
-      showDashboard();
-    } else {
-      errEl.textContent = getApiErrorMessage(data, 'Invalid credentials');
-      errEl.classList.remove('hidden');
+    function getApiErrorMessage(data, fallback) {
+      return data?.message || data?.detail || fallback;
     }
-  } catch(e) {
-    errEl.textContent = 'Connection error. Please try again.';
-    errEl.classList.remove('hidden');
-  }
-  btn.disabled = false; btn.textContent = 'Login →';
-}
 
-async function registerParent() {
-  const btn = event.target; btn.disabled = true; btn.textContent = 'Creating account...';
-  const errEl = document.getElementById('r_error');
-  errEl.classList.add('hidden');
-  const admNos = document.getElementById('r_adm').value.split(',').map(s=>s.trim()).filter(Boolean);
-  try {
-    const r = await fetch(`${API_BASE}/parent/register`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        school_id: schoolId,
-        name: document.getElementById('r_name').value.trim(),
-        phone: document.getElementById('r_ph').value.trim(),
-        relation: document.getElementById('r_rel').value,
-        email: document.getElementById('r_email').value.trim(),
-        password: document.getElementById('r_pwd').value,
-        admission_numbers: admNos
-      })
-    });
-    const data = await r.json();
-    if (data.success) {
-      localStorage.setItem('parent_token', data.data.token);
-      alert(`Registration successful! ${data.data.children_linked} child(ren) linked. Please login.`);
-      showAuthTab('login');
-    } else {
-      errEl.textContent = getApiErrorMessage(data, 'Registration failed');
-      errEl.classList.remove('hidden');
+    function showAuthTab(tab) {
+      const isLogin = tab === 'login';
+      document.getElementById('loginForm').classList.toggle('hidden', !isLogin);
+      document.getElementById('registerForm').classList.toggle('hidden', isLogin);
+      document.getElementById('loginTabBtn').classList.toggle('active', isLogin);
+      document.getElementById('regTabBtn').classList.toggle('active', !isLogin);
     }
-  } catch(e) {
-    errEl.textContent = 'Connection error.';
-    errEl.classList.remove('hidden');
-  }
-  btn.disabled = false; btn.textContent = 'Create Account →';
-}
 
-function showDashboard() {
-  document.getElementById('authScreen').classList.add('hidden');
-  document.getElementById('dashboard').classList.remove('hidden');
-  document.getElementById('d_name').textContent = parentData.name;
-  const children = parentData.children || [];
-  document.getElementById('childSelector').innerHTML = children.map((c,i) => `
-    <button onclick="selectChild('${c.id}')" id="child_${c.id}" class="px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${i===0?'bg-white text-blue-700':'bg-blue-500/50 text-white'}">
+    async function loginParent() {
+      const btn = event.target; btn.disabled = true; btn.textContent = 'Logging in...';
+      const errEl = document.getElementById('l_error');
+      errEl.classList.add('hidden');
+      try {
+        const r = await fetch(`${API_BASE}/parent/login`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ school_id: schoolId, identifier: document.getElementById('l_identifier').value.trim(), password: document.getElementById('l_pwd').value })
+        });
+        const data = await r.json();
+        if (data.success) {
+          localStorage.setItem('parent_token', data.data.token);
+          localStorage.setItem('parent_data', JSON.stringify(data.data));
+          parentData = data.data;
+          showDashboard();
+        } else {
+          errEl.textContent = getApiErrorMessage(data, 'Invalid credentials');
+          errEl.classList.remove('hidden');
+        }
+      } catch (e) {
+        errEl.textContent = 'Connection error. Please try again.';
+        errEl.classList.remove('hidden');
+      }
+      btn.disabled = false; btn.textContent = 'Login →';
+    }
+
+    async function registerParent() {
+      const btn = event.target; btn.disabled = true; btn.textContent = 'Creating account...';
+      const errEl = document.getElementById('r_error');
+      errEl.classList.add('hidden');
+      const admNos = document.getElementById('r_adm').value.split(',').map(s => s.trim()).filter(Boolean);
+      try {
+        const r = await fetch(`${API_BASE}/parent/register`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            school_id: schoolId,
+            name: document.getElementById('r_name').value.trim(),
+            phone: document.getElementById('r_ph').value.trim(),
+            relation: document.getElementById('r_rel').value,
+            email: document.getElementById('r_email').value.trim(),
+            password: document.getElementById('r_pwd').value,
+            admission_numbers: admNos
+          })
+        });
+        const data = await r.json();
+        if (data.success) {
+          localStorage.setItem('parent_token', data.data.token);
+          alert(`Registration successful! ${data.data.children_linked} child(ren) linked. Please login.`);
+          showAuthTab('login');
+        } else {
+          errEl.textContent = getApiErrorMessage(data, 'Registration failed');
+          errEl.classList.remove('hidden');
+        }
+      } catch (e) {
+        errEl.textContent = 'Connection error.';
+        errEl.classList.remove('hidden');
+      }
+      btn.disabled = false; btn.textContent = 'Create Account →';
+    }
+
+    function showDashboard() {
+      document.getElementById('authScreen').classList.add('hidden');
+      document.getElementById('dashboard').classList.remove('hidden');
+      document.getElementById('d_name').textContent = parentData.name;
+      const children = parentData.children || [];
+      document.getElementById('childSelector').innerHTML = children.map((c, i) => `
+    <button onclick="selectChild('${c.id}')" id="child_${c.id}" class="px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all ${i === 0 ? 'bg-white text-blue-700' : 'bg-blue-500/50 text-white'}">
       ${c.name}
     </button>
   `).join('');
-  if (children.length > 0) selectChild(children[0].id);
-}
+      if (children.length > 0) selectChild(children[0].id);
+    }
 
-async function selectChild(childId) {
-  currentChildId = childId;
-  document.querySelectorAll('[id^="child_"]').forEach(b => {
-    b.className = b.id === `child_${childId}`
-      ? 'px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-white text-blue-700'
-      : 'px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-blue-500/50 text-white';
-  });
-  await loadDashboardData(childId);
-}
+    async function selectChild(childId) {
+      currentChildId = childId;
+      document.querySelectorAll('[id^="child_"]').forEach(b => {
+        b.className = b.id === `child_${childId}`
+          ? 'px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-white text-blue-700'
+          : 'px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap bg-blue-500/50 text-white';
+      });
+      await loadDashboardData(childId);
+    }
 
-async function loadDashboardData(childId) {
-  const token = localStorage.getItem('parent_token');
-  try {
-    const r = await fetch(`${API_BASE}/parent/dashboard/${parentData.parent_id}?school_id=${schoolId}&token=${token}`);
-    const data = await r.json();
-    const child = (data.data?.children || []).find(c => c.id === childId);
-    if (child) {
-      const attColor = child.today_attendance === 'Present' ? 'text-emerald-600' : child.today_attendance === 'Absent' ? 'text-red-500' : 'text-orange-500';
-      document.getElementById('childStats').innerHTML = `
+    async function loadDashboardData(childId) {
+      const token = localStorage.getItem('parent_token');
+      try {
+        const r = await fetch(`${API_BASE}/parent/dashboard/${parentData.parent_id}?school_id=${schoolId}&token=${token}`);
+        const data = await r.json();
+        const child = (data.data?.children || []).find(c => c.id === childId);
+        if (child) {
+          const attColor = child.today_attendance === 'Present' ? 'text-emerald-600' : child.today_attendance === 'Absent' ? 'text-red-500' : 'text-orange-500';
+          document.getElementById('childStats').innerHTML = `
         <div class="text-center">
           <div class="text-xl font-bold ${attColor}">${child.today_attendance === 'Present' ? '✅' : child.today_attendance === 'Absent' ? '❌' : '⏱'}</div>
           <div class="text-xs text-gray-500 mt-0.5">Today</div>
         </div>
         <div class="text-center border-x border-gray-100">
-          <div class="text-xl font-bold text-red-500">₹${(child.fee_dues||0).toLocaleString()}</div>
+          <div class="text-xl font-bold text-red-500">₹${(child.fee_dues || 0).toLocaleString()}</div>
           <div class="text-xs text-gray-500 mt-0.5">Fee Due</div>
         </div>
         <div class="text-center">
-          <div class="text-xl font-bold text-blue-600">${child.pending_homework||0}</div>
+          <div class="text-xl font-bold text-blue-600">${child.pending_homework || 0}</div>
           <div class="text-xs text-gray-500 mt-0.5">Homework</div>
         </div>
       `;
+        }
+        // Notices
+        const notices = data.data?.notices || [];
+        document.getElementById('noticeList').innerHTML = notices.length
+          ? notices.map(n => `<div class="flex gap-3 py-2 border-b last:border-0"><span class="text-blue-600 text-sm font-medium flex-shrink-0">${n.type}</span><span class="text-sm text-gray-700">${n.title}</span></div>`).join('')
+          : '<p class="text-sm text-gray-400">No notices</p>';
+        // Events
+        const events = data.data?.events || [];
+        document.getElementById('eventList').innerHTML = events.length
+          ? events.map(e => `<div class="flex gap-3 items-start py-2 border-b last:border-0"><span class="text-2xl">📅</span><div><div class="text-sm font-medium text-gray-900">${e.title}</div><div class="text-xs text-gray-500">${new Date(e.date).toLocaleDateString('en-IN')} ${e.venue ? '• ' + e.venue : ''}</div></div></div>`).join('')
+          : '<p class="text-sm text-gray-400">No upcoming events</p>';
+      } catch (e) { }
     }
-    // Notices
-    const notices = data.data?.notices || [];
-    document.getElementById('noticeList').innerHTML = notices.length
-      ? notices.map(n=>`<div class="flex gap-3 py-2 border-b last:border-0"><span class="text-blue-600 text-sm font-medium flex-shrink-0">${n.type}</span><span class="text-sm text-gray-700">${n.title}</span></div>`).join('')
-      : '<p class="text-sm text-gray-400">No notices</p>';
-    // Events
-    const events = data.data?.events || [];
-    document.getElementById('eventList').innerHTML = events.length
-      ? events.map(e=>`<div class="flex gap-3 items-start py-2 border-b last:border-0"><span class="text-2xl">📅</span><div><div class="text-sm font-medium text-gray-900">${e.title}</div><div class="text-xs text-gray-500">${new Date(e.date).toLocaleDateString('en-IN')} ${e.venue?'• '+e.venue:''}</div></div></div>`).join('')
-      : '<p class="text-sm text-gray-400">No upcoming events</p>';
-  } catch(e) {}
-}
 
-async function showSection(section) {
-  document.getElementById('dashboard').classList.add('hidden');
-  document.getElementById('sectionDetail').classList.remove('hidden');
-  const token = localStorage.getItem('parent_token');
-  const titles = {attendance:'📅 Attendance', fees:'💰 Fee Details', results:'📊 Results', homework:'📚 Homework', datesheet:'🗓 Date Sheet'};
-  document.getElementById('sectionTitle').textContent = titles[section];
-  const content = document.getElementById('sectionContent');
-  content.innerHTML = '<div class="text-center py-8 text-gray-400">Loading...</div>';
-  try {
-    if (section === 'attendance') {
-      const now = new Date();
-      const r = await fetch(`${API_BASE}/parent/child/${currentChildId}/attendance?school_id=${schoolId}&token=${token}&month=${now.getMonth()+1}&year=${now.getFullYear()}`);
-      const data = await r.json();
-      const s = data.data?.summary || {};
-      content.innerHTML = `
+    async function showSection(section) {
+      document.getElementById('dashboard').classList.add('hidden');
+      document.getElementById('sectionDetail').classList.remove('hidden');
+      const token = localStorage.getItem('parent_token');
+      const titles = { attendance: '📅 Attendance', fees: '💰 Fee Details', results: '📊 Results', homework: '📚 Homework', datesheet: '🗓 Date Sheet' };
+      document.getElementById('sectionTitle').textContent = titles[section];
+      const content = document.getElementById('sectionContent');
+      content.innerHTML = '<div class="text-center py-8 text-gray-400">Loading...</div>';
+      try {
+        if (section === 'attendance') {
+          const now = new Date();
+          const r = await fetch(`${API_BASE}/parent/child/${currentChildId}/attendance?school_id=${schoolId}&token=${token}&month=${now.getMonth() + 1}&year=${now.getFullYear()}`);
+          const data = await r.json();
+          const s = data.data?.summary || {};
+          content.innerHTML = `
         <div class="grid grid-cols-4 gap-3 mb-4">
-          <div class="bg-emerald-50 rounded-xl p-3 text-center"><div class="font-bold text-emerald-700 text-xl">${s.present||0}</div><div class="text-xs text-emerald-600">Present</div></div>
-          <div class="bg-red-50 rounded-xl p-3 text-center"><div class="font-bold text-red-600 text-xl">${s.absent||0}</div><div class="text-xs text-red-500">Absent</div></div>
-          <div class="bg-orange-50 rounded-xl p-3 text-center"><div class="font-bold text-orange-600 text-xl">${s.late||0}</div><div class="text-xs text-orange-500">Late</div></div>
-          <div class="bg-blue-50 rounded-xl p-3 text-center"><div class="font-bold text-blue-700 text-xl">${s.percentage||0}%</div><div class="text-xs text-blue-600">Rate</div></div>
+          <div class="bg-emerald-50 rounded-xl p-3 text-center"><div class="font-bold text-emerald-700 text-xl">${s.present || 0}</div><div class="text-xs text-emerald-600">Present</div></div>
+          <div class="bg-red-50 rounded-xl p-3 text-center"><div class="font-bold text-red-600 text-xl">${s.absent || 0}</div><div class="text-xs text-red-500">Absent</div></div>
+          <div class="bg-orange-50 rounded-xl p-3 text-center"><div class="font-bold text-orange-600 text-xl">${s.late || 0}</div><div class="text-xs text-orange-500">Late</div></div>
+          <div class="bg-blue-50 rounded-xl p-3 text-center"><div class="font-bold text-blue-700 text-xl">${s.percentage || 0}%</div><div class="text-xs text-blue-600">Rate</div></div>
         </div>
         <div class="space-y-2">
-          ${(data.data?.records||[]).map(r=>`
+          ${(data.data?.records || []).map(r => `
             <div class="bg-white rounded-xl px-4 py-3 flex justify-between items-center shadow-sm border border-gray-100">
               <span class="text-sm font-medium text-gray-700">${r.date}</span>
-              <span class="px-3 py-1 rounded-full text-xs font-semibold ${r.status==='Present'?'bg-emerald-100 text-emerald-700':r.status==='Absent'?'bg-red-100 text-red-700':'bg-orange-100 text-orange-700'}">${r.status}</span>
+              <span class="px-3 py-1 rounded-full text-xs font-semibold ${r.status === 'Present' ? 'bg-emerald-100 text-emerald-700' : r.status === 'Absent' ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700'}">${r.status}</span>
             </div>`).join('') || '<p class="text-center text-gray-400 py-6">No records this month</p>'}
         </div>`;
-    } else if (section === 'fees') {
-      const r = await fetch(`${API_BASE}/parent/child/${currentChildId}/fees?school_id=${schoolId}&token=${token}`);
-      const data = await r.json();
-      const meta = data.meta || {};
-      content.innerHTML = `
-        ${meta.total_due > 0 ? `<div class="bg-red-50 border border-red-200 rounded-xl p-4 mb-4 text-center"><p class="text-red-600 font-semibold">Total Due: ₹${meta.total_due.toLocaleString()}</p><p class="text-xs text-red-400 mt-1">Please pay at the school office</p></div>` : '<div class="bg-emerald-50 rounded-xl p-4 mb-4 text-center text-emerald-700 font-semibold">✅ All fees paid!</div>'}
-        <div class="space-y-2">
-          ${(data.data||[]).map(i=>`
-            <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-              <div class="flex justify-between items-start"><span class="font-medium text-gray-900 text-sm">${i.fee_type||'Fee'}</span><span class="px-2 py-0.5 rounded-full text-xs font-medium ${i.status==='Paid'?'bg-emerald-100 text-emerald-700':i.status==='Overdue'?'bg-red-100 text-red-700':'bg-orange-100 text-orange-700'}">${i.status}</span></div>
-              <div class="flex justify-between mt-2 text-sm">
-                <span class="text-gray-500">Amount: ₹${i.amount.toLocaleString()}</span>
-                <span class="text-red-500 font-medium">Due: ₹${i.balance.toLocaleString()}</span>
-              </div>
-              ${i.due_date?`<div class="text-xs text-gray-400 mt-1">Due date: ${new Date(i.due_date).toLocaleDateString('en-IN')}</div>`:''}
-            </div>`).join('') || '<p class="text-center text-gray-400 py-6">No fee records</p>'}
-        </div>`;
-    } else if (section === 'results') {
-      const r = await fetch(`${API_BASE}/parent/child/${currentChildId}/results?school_id=${schoolId}&token=${token}`);
-      const data = await r.json();
-      content.innerHTML = `<div class="space-y-3">${(data.data||[]).map(res=>`
-        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
-          <div class="flex justify-between items-start"><h4 class="font-bold text-gray-900">${res.exam_name}</h4><span class="text-2xl font-bold ${res.percentage>=75?'text-emerald-600':res.percentage>=50?'text-orange-500':'text-red-600'}">${res.grade||'-'}</span></div>
-          <div class="flex gap-4 mt-2 text-sm">
-            <span class="text-gray-600">Score: <strong>${res.percentage||0}%</strong></span>
-            ${res.rank?`<span class="text-gray-600">Rank: <strong>#${res.rank}</strong></span>`:''}
-            <span class="${res.is_pass?'text-emerald-600':'text-red-600'} font-semibold">${res.is_pass?'PASS':'FAIL'}</span>
+        } else if (section === 'fees') {
+          const r = await fetch(`${API_BASE}/parent/child/${currentChildId}/fees?school_id=${schoolId}&token=${token}`);
+          const data = await r.json();
+          const meta = data.meta || {};
+          content.innerHTML = `
+
+<div class="space-y-4">
+
+  ${meta.total_due > 0
+              ? `
+      <div class="bg-red-50 border border-red-200 rounded-2xl p-5">
+        <div class="flex justify-between items-center">
+
+          <div>
+            <div class="text-sm text-red-500 font-medium">
+              Total Pending Amount
+            </div>
+
+            <div class="text-2xl font-bold text-red-700 mt-1">
+              ₹${Number(meta.total_due || 0).toLocaleString()}
+            </div>
           </div>
-        </div>`).join('')||'<p class="text-center text-gray-400 py-6">No results available</p>'}</div>`;
-    } else if (section === 'homework') {
-      const r = await fetch(`${API_BASE}/parent/child/${currentChildId}/homework?school_id=${schoolId}&token=${token}`);
-      const data = await r.json();
-      content.innerHTML = `<div class="space-y-3">${(data.data||[]).map(hw=>`
-        <div class="bg-white rounded-xl p-4 shadow-sm border ${hw.is_overdue?'border-red-200':'border-gray-100'}">
-          <div class="flex justify-between items-start"><span class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">${hw.subject}</span>${hw.is_overdue?'<span class="text-xs text-red-500 font-medium">Overdue</span>':''}</div>
+
+          <div class="text-4xl">
+            💰
+          </div>
+
+        </div>
+      </div>
+    `
+              : `
+      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-center">
+        <div class="text-3xl mb-2">✅</div>
+
+        <div class="font-bold text-emerald-700">
+          All Fees Paid
+        </div>
+      </div>
+    `
+            }
+
+  ${(data.data || []).map(inv => `
+
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+
+      <div class="px-5 py-4 border-b border-gray-100 bg-gray-50">
+
+        <div class="flex justify-between items-start gap-3">
+
+          <div>
+
+            <div class="flex items-center gap-2 flex-wrap">
+
+              <h4 class="font-bold text-gray-900">
+                ${inv.invoice_no}
+              </h4>
+
+              <span class="px-2 py-1 rounded-full text-xs font-semibold
+
+                ${inv.status === 'Paid'
+                ? 'bg-emerald-100 text-emerald-700'
+
+                : inv.status === 'Partial'
+                  ? 'bg-orange-100 text-orange-700'
+                  : 'bg-red-100 text-red-700'
+              }">
+
+                ${inv.status}
+
+              </span>
+
+            </div>
+
+            <div class="text-sm text-gray-500 mt-1">
+              ${inv.student_name}
+            </div>
+
+            <div class="text-xs text-gray-400 mt-1">
+              ${inv.classroom}
+            </div>
+
+          </div>
+
+         
+
+        </div>
+
+      </div>
+
+      <div class="p-5">
+
+        <div class="grid grid-cols-3 gap-4">
+
+          <div>
+
+            <div class="text-xs text-gray-400">
+              Total
+            </div>
+
+            <div class="font-bold text-gray-900 text-lg">
+              ₹${Number(inv.amount).toLocaleString()}
+            </div>
+
+          </div>
+
+          <div>
+
+            <div class="text-xs text-gray-400">
+              Paid
+            </div>
+
+            <div class="font-bold text-emerald-600 text-lg">
+              ₹${Number(inv.paid).toLocaleString()}
+            </div>
+
+          </div>
+
+          <div>
+
+            <div class="text-xs text-gray-400">
+              Balance
+            </div>
+
+            <div class="font-bold text-red-600 text-lg">
+              ₹${Number(inv.balance).toLocaleString()}
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+
+          <div class="text-xs text-gray-500">
+            Due Date:
+            ${inv.due_date
+                ? new Date(inv.due_date).toLocaleDateString('en-IN')
+                : '-'}
+          </div>
+
+          <div class="text-xs text-gray-400">
+            ${inv.admission_no}
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `).join('')}
+
+</div>
+`;
+        } else if (section === 'results') {
+          const r = await fetch(`${API_BASE}/parent/child/${currentChildId}/results?school_id=${schoolId}&token=${token}`);
+          const data = await r.json();
+          content.innerHTML = `<div class="space-y-3">${(data.data || []).map(res => `
+        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100">
+          <div class="flex justify-between items-start"><h4 class="font-bold text-gray-900">${res.exam_name}</h4><span class="text-2xl font-bold ${res.percentage >= 75 ? 'text-emerald-600' : res.percentage >= 50 ? 'text-orange-500' : 'text-red-600'}">${res.grade || '-'}</span></div>
+          <div class="flex gap-4 mt-2 text-sm">
+            <span class="text-gray-600">Score: <strong>${res.percentage || 0}%</strong></span>
+            ${res.rank ? `<span class="text-gray-600">Rank: <strong>#${res.rank}</strong></span>` : ''}
+            <span class="${res.is_pass ? 'text-emerald-600' : 'text-red-600'} font-semibold">${res.is_pass ? 'PASS' : 'FAIL'}</span>
+          </div>
+        </div>`).join('') || '<p class="text-center text-gray-400 py-6">No results available</p>'}</div>`;
+        } else if (section === 'homework') {
+          const r = await fetch(`${API_BASE}/parent/child/${currentChildId}/homework?school_id=${schoolId}&token=${token}`);
+          const data = await r.json();
+          content.innerHTML = `<div class="space-y-3">${(data.data || []).map(hw => `
+        <div class="bg-white rounded-xl p-4 shadow-sm border ${hw.is_overdue ? 'border-red-200' : 'border-gray-100'}">
+          <div class="flex justify-between items-start"><span class="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full">${hw.subject}</span>${hw.is_overdue ? '<span class="text-xs text-red-500 font-medium">Overdue</span>' : ''}</div>
           <p class="font-medium text-gray-900 text-sm mt-2">${hw.title}</p>
-          ${hw.description?`<p class="text-xs text-gray-500 mt-1">${hw.description}</p>`:''}
-          ${(hw.attachments||[]).length ? `<div class="mt-3"><a href="${hw.attachments[0]}" target="_blank" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100">View Attachment</a></div>` : ''}
-          <p class="text-xs text-gray-400 mt-2">Due: ${hw.due_date?new Date(hw.due_date).toLocaleDateString('en-IN'):'N/A'}</p>
-        </div>`).join('')||'<p class="text-center text-gray-400 py-6">No pending homework! 🎉</p>'}</div>`;
-    } else if (section === 'datesheet') {
-      const r = await fetch(`${API_BASE}/parent/child/${currentChildId}/date-sheet?school_id=${schoolId}&token=${token}`);
-      const data = await r.json();
-      const sheets = data.data || [];
-      content.innerHTML = sheets.length ? `<div class="space-y-4">${sheets.map(sheet => `
+          ${hw.description ? `<p class="text-xs text-gray-500 mt-1">${hw.description}</p>` : ''}
+          ${(hw.attachments || []).length ? `<div class="mt-3"><a href="${hw.attachments[0]}" target="_blank" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-medium hover:bg-blue-100">View Attachment</a></div>` : ''}
+          <p class="text-xs text-gray-400 mt-2">Due: ${hw.due_date ? new Date(hw.due_date).toLocaleDateString('en-IN') : 'N/A'}</p>
+        </div>`).join('') || '<p class="text-center text-gray-400 py-6">No pending homework! 🎉</p>'}</div>`;
+        } else if (section === 'datesheet') {
+          const r = await fetch(`${API_BASE}/parent/child/${currentChildId}/date-sheet?school_id=${schoolId}&token=${token}`);
+          const data = await r.json();
+          const sheets = data.data || [];
+          content.innerHTML = sheets.length ? `<div class="space-y-4">${sheets.map(sheet => `
         <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
           <div class="px-4 py-3 bg-blue-50 border-b border-blue-100">
             <div class="font-bold text-gray-900">${sheet.exam_name || 'Exam'} Date Sheet</div>
@@ -389,39 +699,41 @@ async function showSection(section) {
             </table>
           </div>
         </div>`).join('')}</div>` : '<p class="text-center text-gray-400 py-6">No date sheet published for this class yet</p>';
+        }
+      } catch (e) { content.innerHTML = '<p class="text-center text-red-400 py-6">Failed to load data</p>'; }
     }
-  } catch(e) { content.innerHTML = '<p class="text-center text-red-400 py-6">Failed to load data</p>'; }
-}
 
-async function sendMsg() {
-  const subj = document.getElementById('msg_subj').value.trim();
-  const body = document.getElementById('msg_body').value.trim();
-  if (!subj || !body) { alert('Enter subject and message'); return; }
-  const token = localStorage.getItem('parent_token');
-  try {
-    await fetch(`${API_BASE}/parent/message?token=${token}`, {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({school_id: schoolId, student_id: currentChildId, subject: subj, content: body})
-    });
-    alert('Message sent to school!');
-    document.getElementById('msg_subj').value = '';
-    document.getElementById('msg_body').value = '';
-  } catch(e) { alert('Failed to send'); }
-}
+    async function sendMsg() {
+      const subj = document.getElementById('msg_subj').value.trim();
+      const body = document.getElementById('msg_body').value.trim();
+      if (!subj || !body) { alert('Enter subject and message'); return; }
+      const token = localStorage.getItem('parent_token');
+      try {
+        await fetch(`${API_BASE}/parent/message?token=${token}`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ school_id: schoolId, student_id: currentChildId, subject: subj, content: body })
+        });
+        alert('Message sent to school!');
+        document.getElementById('msg_subj').value = '';
+        document.getElementById('msg_body').value = '';
+      } catch (e) { alert('Failed to send'); }
+    }
 
-function logout() {
-  if (!confirm('Do you want to Logout')) return;
-  localStorage.removeItem('parent_token');
-  localStorage.removeItem('parent_data');
-  location.reload();
-}
+    function logout() {
+      if (!confirm('Do you want to Logout')) return;
+      localStorage.removeItem('parent_token');
+      localStorage.removeItem('parent_data');
+      location.reload();
+    }
 
-// Auto-login
-const savedToken = localStorage.getItem('parent_token');
-const savedData = localStorage.getItem('parent_data');
-if (savedToken && savedData) {
-  parentData = JSON.parse(savedData);
-  showDashboard();
-}
-</script>
-</body></html>
+    // Auto-login
+    const savedToken = localStorage.getItem('parent_token');
+    const savedData = localStorage.getItem('parent_data');
+    if (savedToken && savedData) {
+      parentData = JSON.parse(savedData);
+      showDashboard();
+    }
+  </script>
+</body>
+
+</html>

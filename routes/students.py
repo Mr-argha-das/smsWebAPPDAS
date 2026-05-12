@@ -729,7 +729,7 @@ async def student_stats(school_id: str, academic_year_id: Optional[str] = None,
         school_id = resolve_school_access(current_user, school_id)
         branch_code = resolve_branch_scope(current_user, branch_code)
         school = School.objects.get(id=school_id)
-        query = Student.objects(school=school, is_active=True)
+        query = Student.objects(school=school, is_active=True, admission_status="Active")
         if academic_year_id:
             ay = AcademicYear.objects.get(id=academic_year_id)
             query = query.filter(academic_year=ay)
