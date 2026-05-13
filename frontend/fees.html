@@ -1108,6 +1108,7 @@
         await billedHeadsPromise;
         renderInvoiceMonthAvailability();
         renderAnnualFeeHeadOptions();
+        if (!options.keepConcession) applyStudentConcessionToInvoice(s);
         if (s.transport_route_name) {
           document.getElementById('inv_transport_toggle').checked = true;
           document.getElementById('inv_transport_meta').classList.remove('hidden');
@@ -1385,6 +1386,7 @@
       const match = options.find(option => option.value && option.value === concessionName) ||
         options.find(option => concessionPercent > 0 && (parseFloat(option.dataset.percent || '0') || 0) === concessionPercent);
       select.value = match?.value || '';
+      renderInvoiceEstimate();  // ← yeh nayi line add hui
     }
 
     function buildInvoiceEstimate() {

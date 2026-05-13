@@ -497,153 +497,257 @@
           const meta = data.meta || {};
           content.innerHTML = `
 
-<div class="space-y-4">
+<div class="space-y-5">
 
-  ${meta.total_due > 0
-              ? `
-      <div class="bg-red-50 border border-red-200 rounded-2xl p-5">
-        <div class="flex justify-between items-center">
-
+  ${
+    meta.total_due > 0
+      ? `
+      <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-3xl p-5 text-white shadow-lg">
+        <div class="flex items-center justify-between">
           <div>
-            <div class="text-sm text-red-500 font-medium">
+            <div class="text-sm font-medium text-red-100">
               Total Pending Amount
             </div>
 
-            <div class="text-2xl font-bold text-red-700 mt-1">
+            <div class="text-3xl font-extrabold mt-1">
               ₹${Number(meta.total_due || 0).toLocaleString()}
             </div>
           </div>
 
-          <div class="text-4xl">
+          <div class="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center text-3xl">
             💰
           </div>
-
         </div>
       </div>
-    `
-              : `
-      <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 text-center">
-        <div class="text-3xl mb-2">✅</div>
-
-        <div class="font-bold text-emerald-700">
+      `
+      : `
+      <div class="bg-gradient-to-r from-emerald-500 to-green-500 rounded-3xl p-5 text-white shadow-lg text-center">
+        <div class="text-4xl mb-2">✅</div>
+        <div class="text-xl font-bold">
           All Fees Paid
         </div>
       </div>
-    `
-            }
+      `
+  }
 
-  ${(data.data || []).map(inv => `
+  <!-- Desktop Table -->
+  <div class="hidden lg:block bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm">
 
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="overflow-x-auto">
 
-      <div class="px-5 py-4 border-b border-gray-100 bg-gray-50">
+      <table class="w-full min-w-[1000px]">
 
-        <div class="flex justify-between items-start gap-3">
+        <thead class="bg-gray-50 border-b border-gray-200">
 
-          <div>
+          <tr>
 
-            <div class="flex items-center gap-2 flex-wrap">
+            <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">
+              Invoice No
+            </th>
 
-              <h4 class="font-bold text-gray-900">
-                ${inv.invoice_no}
-              </h4>
+            <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">
+              Student
+            </th>
 
-              <span class="px-2 py-1 rounded-full text-xs font-semibold
+            <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">
+              Class
+            </th>
 
-                ${inv.status === 'Paid'
-                ? 'bg-emerald-100 text-emerald-700'
+            <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">
+              Net Amount
+            </th>
 
-                : inv.status === 'Partial'
-                  ? 'bg-orange-100 text-orange-700'
-                  : 'bg-red-100 text-red-700'
-              }">
-
-                ${inv.status}
-
-              </span>
-
-            </div>
-
-            <div class="text-sm text-gray-500 mt-1">
-              ${inv.student_name}
-            </div>
-
-            <div class="text-xs text-gray-400 mt-1">
-              ${inv.classroom}
-            </div>
-
-          </div>
-
-         
-
-        </div>
-
-      </div>
-
-      <div class="p-5">
-
-        <div class="grid grid-cols-3 gap-4">
-
-          <div>
-
-            <div class="text-xs text-gray-400">
-              Total
-            </div>
-
-            <div class="font-bold text-gray-900 text-lg">
-              ₹${Number(inv.amount).toLocaleString()}
-            </div>
-
-          </div>
-
-          <div>
-
-            <div class="text-xs text-gray-400">
-              Paid
-            </div>
-
-            <div class="font-bold text-emerald-600 text-lg">
-              ₹${Number(inv.paid).toLocaleString()}
-            </div>
-
-          </div>
-
-          <div>
-
-            <div class="text-xs text-gray-400">
+            <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">
               Balance
-            </div>
+            </th>
 
-            <div class="font-bold text-red-600 text-lg">
-              ₹${Number(inv.balance).toLocaleString()}
-            </div>
+            <th class="px-6 py-4 text-left text-xs font-bold tracking-wider text-gray-500 uppercase">
+              Status
+            </th>
 
-          </div>
+          
+          </tr>
 
-        </div>
+        </thead>
 
-        <div class="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center">
+        <tbody class="divide-y divide-gray-100">
 
-          <div class="text-xs text-gray-500">
-            Due Date:
-            ${inv.due_date
-                ? new Date(inv.due_date).toLocaleDateString('en-IN')
-                : '-'}
-          </div>
+          ${(data.data || []).map(inv => `
 
-          <div class="text-xs text-gray-400">
-            ${inv.admission_no}
-          </div>
+            <tr class="hover:bg-gray-50 transition">
 
-        </div>
+              <td class="px-6 py-5 whitespace-nowrap">
+                <div class="font-semibold text-gray-700">
+                  ${inv.invoice_no}
+                </div>
+              </td>
 
-      </div>
+              <td class="px-6 py-5">
+
+                <div class="font-bold text-gray-900">
+                  ${inv.student_name}
+                </div>
+
+                <div class="text-sm text-gray-400 mt-1">
+                  ${inv.admission_no || '-'}
+                </div>
+
+              </td>
+
+              <td class="px-6 py-5 text-gray-700 font-medium">
+                ${inv.classroom || '-'}
+              </td>
+
+              <td class="px-6 py-5">
+
+                <div class="font-bold text-gray-900 text-lg">
+                  ₹${Number(inv.amount || 0).toLocaleString()}
+                </div>
+
+              </td>
+
+              <td class="px-6 py-5">
+
+                <div class="font-bold text-lg ${
+                  inv.balance > 0
+                    ? 'text-red-500'
+                    : 'text-emerald-600'
+                }">
+
+                  ₹${Number(inv.balance || 0).toLocaleString()}
+
+                </div>
+
+              </td>
+
+              <td class="px-6 py-5">
+
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold
+
+                  ${
+                    inv.status === 'Paid'
+                      ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                      : inv.status === 'Partial'
+                      ? 'bg-yellow-100 text-yellow-700 border border-yellow-200'
+                      : 'bg-orange-100 text-orange-700 border border-orange-200'
+                  }">
+
+                  ${inv.status}
+
+                </span>
+
+              </td>
+
+              
+
+            </tr>
+
+          `).join('')}
+
+        </tbody>
+
+      </table>
 
     </div>
 
-  `).join('')}
+  </div>
+
+  <!-- Mobile Cards -->
+  <div class="lg:hidden space-y-4">
+
+    ${(data.data || []).map(inv => `
+
+      <div class="bg-white rounded-3xl border border-gray-100 shadow-sm overflow-hidden">
+
+        <div class="p-5">
+
+          <div class="flex justify-between items-start gap-3">
+
+            <div>
+
+              <div class="text-xs text-gray-400 font-semibold uppercase">
+                ${inv.invoice_no}
+              </div>
+
+              <div class="text-lg font-bold text-gray-900 mt-1">
+                ${inv.student_name}
+              </div>
+
+              <div class="text-sm text-gray-500 mt-1">
+                ${inv.classroom || '-'}
+              </div>
+
+            </div>
+
+            <span class="px-3 py-1 rounded-full text-xs font-bold
+
+              ${
+                inv.status === 'Paid'
+                  ? 'bg-emerald-100 text-emerald-700'
+                  : inv.status === 'Partial'
+                  ? 'bg-yellow-100 text-yellow-700'
+                  : 'bg-orange-100 text-orange-700'
+              }">
+
+              ${inv.status}
+
+            </span>
+
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 mt-5">
+
+            <div class="bg-gray-50 rounded-2xl p-4">
+
+              <div class="text-xs text-gray-400 uppercase font-semibold">
+                Net Amount
+              </div>
+
+              <div class="text-lg font-bold text-gray-900 mt-1">
+                ₹${Number(inv.amount || 0).toLocaleString()}
+              </div>
+
+            </div>
+
+            <div class="bg-red-50 rounded-2xl p-4">
+
+              <div class="text-xs text-red-400 uppercase font-semibold">
+                Balance
+              </div>
+
+              <div class="text-lg font-bold text-red-600 mt-1">
+                ₹${Number(inv.balance || 0).toLocaleString()}
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="flex items-center justify-between mt-5 pt-4 border-t border-gray-100">
+
+            <div class="text-xs text-gray-400">
+              Due:
+              ${
+                inv.due_date
+                  ? new Date(inv.due_date).toLocaleDateString('en-IN')
+                  : '-'
+              }
+            </div>
+
+            
+
+          </div>
+
+        </div>
+
+      </div>
+
+    `).join('')}
+
+  </div>
 
 </div>
+
 `;
         } else if (section === 'results') {
           const r = await fetch(`${API_BASE}/parent/child/${currentChildId}/results?school_id=${schoolId}&token=${token}`);
