@@ -277,6 +277,8 @@
                   <option value="Re-Admission">Re-Admission</option>
                 </select>
               </div>
+              <div><label class="lbl">Admission No</label><input id="m_adm_no" type="text" class="finput"
+                  placeholder="Leave blank for auto number" /></div>
               <div><label class="lbl">First Name</label><input id="m_fn" type="text" class="finput"
                   placeholder="First name" /></div>
               <div><label class="lbl">Middle Name</label><input id="m_mn" type="text" class="finput"
@@ -1548,6 +1550,7 @@
         document.getElementById('admModalTitle').textContent = 'Edit Student';
         document.getElementById('admModalHint').textContent = 'Update biodata, branch, transport and optional new documents.';
         document.getElementById('admSubmitBtn').textContent = 'Update Student';
+        setFormValue('m_adm_no', s.admission_no);
         setFormValue('m_fn', s.first_name);
         setFormValue('m_mn', s.middle_name);
         setFormValue('m_ln', s.last_name);
@@ -1617,6 +1620,7 @@
       const months = Array.from(document.querySelectorAll('.m_month:checked')).map(el => el.value);
       return {
         first_name: document.getElementById('m_fn').value.trim(),
+        admission_no: document.getElementById('m_adm_no').value.trim() || null,
         middle_name: document.getElementById('m_mn').value || null,
         last_name: document.getElementById('m_ln').value.trim(),
         gender: document.getElementById('m_gnd').value,
@@ -1679,7 +1683,7 @@
           await StudentAPI.uploadPhoto(studentId, fd);
         }
         if (studentId) await uploadStudentDocuments(studentId);
-        showToast(editingStudentId ? 'Student updated successfully' : 'Admitted! No: ' + r.data.admission_no);
+        showToast(editingStudentId ? 'Student updated successfully' : 'Student admitted successfully. Admission No: ' + r.data.admission_no);
         document.getElementById('admModal').style.display = 'none';
         loadStudents(1); loadStats();
       } catch (e) { showToast('Error: ' + e.message, 'error'); }

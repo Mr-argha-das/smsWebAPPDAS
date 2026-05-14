@@ -1109,6 +1109,14 @@ async def update_student(student_id: str, data: dict, current_user: User = Depen
         medical_info = data.pop('medical_info', None)
         data.pop('id', None)
         data.pop('school_id', None)
+        if 'admission_no' in data:
+            admission_no = (data.get('admission_no') or '').strip()
+            if not admission_no:
+                data.pop('admission_no', None)
+            elif Student.objects(admission_no=admission_no, id__ne=student.id).first():
+                raise HTTPException(400, f"Student with admission number {admission_no} already exists")
+            else:
+                data['admission_no'] = admission_no
         data['updated_at'] = datetime.utcnow()
         if 'academic_year_id' in data:
             try:

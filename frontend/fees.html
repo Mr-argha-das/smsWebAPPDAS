@@ -492,6 +492,10 @@
                   balance.</p>
               </div>
               <div class="flex flex-col sm:flex-row gap-3">
+                <div class="min-w-[260px]">
+                  <label class="lbl">Search Student / Father</label>
+                  <input id="pay_history_search" class="finput" placeholder="Student or father name" oninput="debounceLoadPaymentHistory()" />
+                </div>
                 <div class="min-w-[220px]">
                   <label class="lbl">Class Filter</label>
                   <select id="pay_history_class_filter" class="finput" onchange="loadPaymentHistory()">
@@ -2199,11 +2203,13 @@
       try {
         const academicYearId = await resolveFeeAcademicYearId();
         const classroomId = document.getElementById('pay_history_class_filter')?.value || '';
+        const search = document.getElementById('pay_history_search')?.value?.trim() || '';
         const params = { school_id: schoolId, academic_year_id: academicYearId || '', branch_code: selectedBranchCode, per_page: 100 };
         if (classroomId) params.classroom_id = classroomId;
+        if (search) params.search = search;
         const r = await FeesAPI.paymentHistory(params);
         const rows = r?.data || [];
-        const hdrs = ['Student Name', 'Father Name', 'Invoice No', 'Payment Credit', 'Date & Time', 'Balance', 'Collected By'];
+        const hdrs = ['Student Name', 'Father Name', 'Invoice No', 'Payment Credit', 'Date & Time', 'Balance', 'Collected By', 'View'];
         document.getElementById('paymentHistoryTable').innerHTML = buildTable(hdrs, rows.map(row => `
           <td class="px-4 py-3 text-sm font-medium text-gray-900">${row.student_name || '-'}</td>
           <td class="px-4 py-3 text-sm text-gray-600">${row.father_name || '-'}</td>
@@ -2224,9 +2230,108 @@
 </td>
           <td class="px-4 py-3 text-sm font-semibold text-red-500">${formatCurrency(row.balance_amount || 0)}</td>
           <td class="px-4 py-3 text-sm text-gray-600">${row.collected_by || '-'}</td>
+          <td class="px-4 py-3"><button onclick="printStudentYearStatement('${row.student_id}')" class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100">View</button></td>
         `), 'No payment history found');
       } catch (e) {
         document.getElementById('paymentHistoryTable').innerHTML = `<div class="text-center py-8 text-red-400">Error: ${e.message}</div>`;
+      }
+    }
+
+    const debounceLoadPaymentHistory = debounce(() => loadPaymentHistory());
+
+    async function printStudentYearStatement(studentId) {
+      if (!studentId) { showToast('Student not found for this payment', 'error'); return; }
+      try {
+        const academicYearId = await resolveFeeAcademicYearId();
+        const [invoiceRes, paymentRes] = await Promise.all([
+          FeesAPI.getInvoices({ school_id: schoolId, student_id: studentId, academic_year_id: academicYearId || '', per_page: 100, include_items: true }),
+          FeesAPI.paymentHistory({ school_id: schoolId, student_id: studentId, academic_year_id: academicYearId || '', per_page: 200 })
+        ]);
+        const invoices = invoiceRes?.data || [];
+        const payments = paymentRes?.data || [];
+        const student = invoices[0]?.student || {};
+        const studentName = student.full_name || payments[0]?.student_name || '-';
+        const fatherName = student.father_name || payments[0]?.father_name || '-';
+        const className = student.classroom_name || invoices[0]?.classroom_name || '-';
+        const sectionName = student.section_name || invoices[0]?.section_name || '';
+        const totalBilled = invoices.reduce((sum, inv) => sum + (parseFloat(inv.net_amount) || 0), 0);
+        const totalPaid = invoices.reduce((sum, inv) => sum + (parseFloat(inv.paid_amount) || 0), 0);
+        const totalBalance = invoices.reduce((sum, inv) => sum + (parseFloat(inv.balance_amount) || 0), 0);
+        const invoiceRows = invoices.map(inv => `
+          <tr>
+            <td>${escapePrintHtml(inv.invoice_no || '-')}</td>
+            <td>${escapePrintHtml(formatDate(inv.invoice_date))}</td>
+            <td>${escapePrintHtml((inv.items || []).map(item => item.description || item.category).filter(Boolean).join(', ') || '-')}</td>
+            <td class="right">${escapePrintHtml(formatCurrency(inv.net_amount || 0))}</td>
+            <td class="right">${escapePrintHtml(formatCurrency(inv.paid_amount || 0))}</td>
+            <td class="right">${escapePrintHtml(formatCurrency(inv.balance_amount || 0))}</td>
+            <td>${escapePrintHtml(inv.status || '-')}</td>
+          </tr>
+        `).join('');
+        const paymentRows = payments.map(pay => `
+          <tr>
+            <td>${escapePrintHtml(pay.invoice_no || '-')}</td>
+            <td>${escapePrintHtml(pay.payment_date ? new Date(pay.payment_date).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }) : '-')}</td>
+            <td class="right">${escapePrintHtml(formatCurrency(pay.amount || 0))}</td>
+            <td>${escapePrintHtml(pay.payment_mode || '-')}</td>
+            <td>${escapePrintHtml(pay.receipt_no || '-')}</td>
+            <td>${escapePrintHtml(pay.collected_by || '-')}</td>
+          </tr>
+        `).join('');
+        const printWindow = window.open('', '_blank', 'width=1100,height=900');
+        if (!printWindow) { showToast('Popup blocked. Allow popups to print statement.', 'error'); return; }
+        printWindow.document.write(`
+          <html>
+            <head>
+              <title>Student Fee Statement</title>
+              <style>
+                body{font-family:Arial,sans-serif;color:#0f172a;margin:0;padding:26px;background:#fff}
+                h1{font-size:24px;margin:0 0 4px}
+                .muted{color:#64748b;font-size:12px}
+                .header{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #0f172a;padding-bottom:14px;margin-bottom:16px}
+                .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:16px 0}
+                .box{border:1px solid #cbd5e1;padding:9px}
+                .label{display:block;color:#64748b;font-size:11px;text-transform:uppercase;margin-bottom:3px}
+                .value{font-size:14px;font-weight:700}
+                table{width:100%;border-collapse:collapse;margin-top:12px}
+                th,td{border:1px solid #cbd5e1;padding:8px;text-align:left;font-size:11px;vertical-align:top}
+                th{background:#f8fafc;text-transform:uppercase}
+                .right{text-align:right}
+                .totals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0}
+                .section-title{font-size:15px;font-weight:800;margin-top:18px}
+                @media print{body{padding:16px}.no-print{display:none}}
+              </style>
+            </head>
+            <body>
+              <div class="header">
+                <div>
+                  <h1>Student Fee Statement</h1>
+                  <div class="muted">Academic Year Statement for Parent Copy</div>
+                </div>
+                <button class="no-print" onclick="window.print()">Print</button>
+              </div>
+              <div class="grid">
+                <div class="box"><span class="label">Student</span><span class="value">${escapePrintHtml(studentName)}</span></div>
+                <div class="box"><span class="label">Father Name</span><span class="value">${escapePrintHtml(fatherName)}</span></div>
+                <div class="box"><span class="label">Admission No</span><span class="value">${escapePrintHtml(student.admission_no || '-')}</span></div>
+                <div class="box"><span class="label">Class</span><span class="value">${escapePrintHtml(`${className}${sectionName ? ' / ' + sectionName : ''}`)}</span></div>
+              </div>
+              <div class="totals">
+                <div class="box"><span class="label">Total Billed</span><span class="value">${escapePrintHtml(formatCurrency(totalBilled))}</span></div>
+                <div class="box"><span class="label">Total Paid</span><span class="value">${escapePrintHtml(formatCurrency(totalPaid))}</span></div>
+                <div class="box"><span class="label">Balance</span><span class="value">${escapePrintHtml(formatCurrency(totalBalance))}</span></div>
+              </div>
+              <div class="section-title">Invoices</div>
+              <table><thead><tr><th>Invoice No</th><th>Date</th><th>Fee Details</th><th class="right">Net</th><th class="right">Paid</th><th class="right">Balance</th><th>Status</th></tr></thead><tbody>${invoiceRows || '<tr><td colspan="7">No invoices found</td></tr>'}</tbody></table>
+              <div class="section-title">Payments</div>
+              <table><thead><tr><th>Invoice No</th><th>Date & Time</th><th class="right">Amount</th><th>Mode</th><th>Receipt</th><th>Collected By</th></tr></thead><tbody>${paymentRows || '<tr><td colspan="6">No payments found</td></tr>'}</tbody></table>
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+      } catch (e) {
+        showToast('Statement error: ' + e.message, 'error');
       }
     }
 

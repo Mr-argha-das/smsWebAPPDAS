@@ -1656,6 +1656,7 @@ async def payment_history(
     branch_code: Optional[str] = None,
     classroom_id: Optional[str] = None,
     student_id: Optional[str] = None,
+    search: Optional[str] = None,
     page: int = Query(1, ge=1),
     per_page: int = Query(50, ge=1, le=200),
     current_user: User = Depends(get_current_user)
@@ -1679,6 +1680,18 @@ async def payment_history(
     if student_id:
         student = Student.objects.get(id=student_id)
         query = query.filter(student=student)
+    if search:
+        students = list(Student.objects(
+            school=school,
+            is_active=True,
+            __raw__={"$or": [
+                {"first_name": {"$regex": search, "$options": "i"}},
+                {"last_name": {"$regex": search, "$options": "i"}},
+                {"admission_no": {"$regex": search, "$options": "i"}},
+                {"parent_info.father_name": {"$regex": search, "$options": "i"}},
+            ]}
+        ))
+        query = query.filter(student__in=students)
 
     total = query.count()
     transactions = query.order_by("-payment_date").skip((page - 1) * per_page).limit(per_page).select_related(max_depth=2)
@@ -1688,6 +1701,7 @@ async def payment_history(
         invoice = txn.invoice
         result.append({
             "id": str(txn.id),
+            "student_id": str(student.id) if student else None,
             "student_name": student.full_name if student else None,
             "father_name": student.parent_info.father_name if student and student.parent_info else None,
             "invoice_no": invoice.invoice_no if invoice else None,
