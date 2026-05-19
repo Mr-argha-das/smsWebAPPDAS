@@ -1281,7 +1281,8 @@
     }
 
     function isTuitionHead(category) {
-      return String(category || '').toLowerCase().includes('tuition');
+      const label = String(category || '').toLowerCase();
+      return label.includes('tuition') || label.includes('class fee');
     }
 
     function isTransportHead(category) {
@@ -1299,14 +1300,18 @@
     function renderInvoiceMonthAvailability(preselectedTuitionMonths = [], preselectedTransportMonths = []) {
       document.querySelectorAll('.inv_tuition_month').forEach(cb => {
         const isLocked = invoiceBilledTuitionMonths.has(cb.value);
+        const shouldHide = isLocked && !preselectedTuitionMonths.includes(cb.value);
         cb.disabled = isLocked;
-        if (isLocked && !preselectedTuitionMonths.includes(cb.value)) cb.checked = false;
+        if (shouldHide) cb.checked = false;
+        cb.closest('label')?.classList.toggle('hidden', shouldHide);
         cb.closest('label')?.classList.toggle('opacity-50', isLocked);
       });
       document.querySelectorAll('.inv_transport_month').forEach(cb => {
         const isLocked = invoiceBilledTransportMonths.has(cb.value);
+        const shouldHide = isLocked && !preselectedTransportMonths.includes(cb.value);
         cb.disabled = isLocked;
-        if (isLocked && !preselectedTransportMonths.includes(cb.value)) cb.checked = false;
+        if (shouldHide) cb.checked = false;
+        cb.closest('label')?.classList.toggle('hidden', shouldHide);
         cb.closest('label')?.classList.toggle('opacity-50', isLocked);
       });
     }
@@ -1357,12 +1362,19 @@
           school_id: schoolId,
           student_id: studId,
           academic_year_id: academicYearId || '',
-          per_page: 100
+          per_page: 100,
+          include_items: true
         });
         (res?.data || []).forEach(inv => {
           if (editingInvoiceId && inv.id === editingInvoiceId) return;
-          (inv.tuition_months || []).forEach(month => invoiceBilledTuitionMonths.add(month));
-          (inv.transport_months || []).forEach(month => invoiceBilledTransportMonths.add(month));
+          const tuitionMonths = Array.isArray(inv.tuition_months) && inv.tuition_months.length
+            ? inv.tuition_months
+            : (inv.items || []).filter(item => isTuitionHead(item.category) || isTuitionHead(item.description)).flatMap(item => extractMonthsFromInvoiceItem(item));
+          const transportMonths = Array.isArray(inv.transport_months) && inv.transport_months.length
+            ? inv.transport_months
+            : (inv.items || []).filter(item => isTransportHead(item.category) || isTransportHead(item.description)).flatMap(item => extractMonthsFromInvoiceItem(item));
+          tuitionMonths.forEach(month => invoiceBilledTuitionMonths.add(month));
+          transportMonths.forEach(month => invoiceBilledTransportMonths.add(month));
           (inv.items || []).forEach(item => {
             const category = item.category || item.description || '';
             if (category && !isTuitionHead(category) && !isTransportHead(category)) {

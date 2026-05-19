@@ -500,8 +500,8 @@ def _ensure_months_not_already_invoiced(
     billed_tuition = set()
     billed_transport = set()
     for invoice in query:
-        billed_tuition.update(invoice.tuition_months or [])
-        billed_transport.update(invoice.transport_months or [])
+        billed_tuition.update(_invoice_tuition_months(invoice))
+        billed_transport.update(_invoice_transport_months(invoice))
 
     duplicate_tuition = sorted(requested_tuition & billed_tuition)
     duplicate_transport = sorted(requested_transport & billed_transport)
@@ -512,6 +512,54 @@ def _ensure_months_not_already_invoiced(
         if duplicate_transport:
             parts.append(f"Transport already invoiced for: {', '.join(duplicate_transport)}")
         raise HTTPException(400, " | ".join(parts))
+
+
+MONTH_NAMES = ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Jan", "Feb", "Mar"]
+
+
+def _is_tuition_invoice_item(item: dict) -> bool:
+    label = f"{item.get('category') or ''} {item.get('description') or ''}".lower()
+    return "tuition" in label or "class fee" in label
+
+
+def _is_transport_invoice_item(item: dict) -> bool:
+    label = f"{item.get('category') or ''} {item.get('description') or ''}".lower()
+    return "transport" in label
+
+
+def _extract_months_from_invoice_item(item: dict) -> List[str]:
+    existing_months = item.get("months") if isinstance(item, dict) else []
+    if isinstance(existing_months, list) and existing_months:
+        return [month for month in MONTH_NAMES if month in existing_months]
+    text = f"{item.get('description') or ''} {item.get('category') or ''}" if isinstance(item, dict) else ""
+    return [month for month in MONTH_NAMES if re.search(rf"\b{re.escape(month)}\b", text, re.IGNORECASE)]
+
+
+def _invoice_tuition_months(invoice: FeeInvoice) -> List[str]:
+    months = list(invoice.tuition_months or [])
+    if not months:
+        for item in invoice.items or []:
+            if _is_tuition_invoice_item(item):
+                months.extend(_extract_months_from_invoice_item(item))
+    return [month for month in MONTH_NAMES if month in set(months)]
+
+
+def _invoice_transport_months(invoice: FeeInvoice) -> List[str]:
+    months = list(invoice.transport_months or [])
+    if not months:
+        for item in invoice.items or []:
+            if _is_transport_invoice_item(item):
+                months.extend(_extract_months_from_invoice_item(item))
+    return [month for month in MONTH_NAMES if month in set(months)]
+
+
+def _successful_invoice_paid_amount(invoice: FeeInvoice) -> float:
+    transaction_paid = sum(
+        float(txn.amount or 0)
+        for txn in PaymentTransaction.objects(invoice=invoice, status="Success").only("amount")
+    )
+    saved_paid = float(invoice.paid_amount or 0)
+    return max(saved_paid, transaction_paid)
 
 
 def _student_invoice_payload(student: Optional[Student]) -> dict:
@@ -1351,7 +1399,7 @@ async def update_invoice(invoice_id: str, data: InvoiceCreate, current_user: Use
 
     gross = sum(item['amount'] for item in items)
     net = gross - data.discount_amount
-    already_paid = invoice.paid_amount or 0
+    already_paid = _successful_invoice_paid_amount(invoice)
     balance_amount = max(0, net - already_paid)
     status = "Paid" if balance_amount <= 0 else ("Partial" if already_paid > 0 else "Pending")
     # Update saved student concession
@@ -1377,6 +1425,7 @@ async def update_invoice(invoice_id: str, data: InvoiceCreate, current_user: Use
         gross_amount=gross,
         discount_amount=data.discount_amount,
         net_amount=net,
+        paid_amount=already_paid,
         balance_amount=balance_amount,
         remarks=data.remarks,
         status=status
@@ -1479,8 +1528,8 @@ async def list_invoices(
             "balance_amount": inv.balance_amount,
             "status": inv.status
         }
-        row["tuition_months"] = inv.tuition_months or []
-        row["transport_months"] = inv.transport_months or []
+        row["tuition_months"] = _invoice_tuition_months(inv)
+        row["transport_months"] = _invoice_transport_months(inv)
         if include_items:
             row["items"] = inv.items
         result.append(row)
@@ -1512,8 +1561,8 @@ async def get_invoice(invoice_id: str, current_user: User = Depends(get_current_
             "invoice_date": inv.invoice_date.isoformat() if inv.invoice_date else None,
             "due_date": inv.due_date.isoformat() if inv.due_date else None,
             "items": inv.items,
-            "tuition_months": inv.tuition_months or [],
-            "transport_months": inv.transport_months or [],
+            "tuition_months": _invoice_tuition_months(inv),
+            "transport_months": _invoice_transport_months(inv),
             "concession_name": inv.concession_name,
             "concession_percent": inv.concession_percent,
             "gross_amount": inv.gross_amount,
