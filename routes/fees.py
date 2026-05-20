@@ -807,8 +807,6 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
     school = invoice.school
     student = invoice.student
 
-    DEFAULT_LOGO_URL = "https://rsmemorialpublicschool.com/wp-content/uploads/2026/03/logo-school.png"
-
     def get_logo_source():
         if school and hasattr(school, 'logo') and school.logo:
             candidate = school.logo.strip()
@@ -835,9 +833,18 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
             if os.path.exists(path):
                 return path
 
-        return DEFAULT_LOGO_URL
+        return None
 
     logo_src = get_logo_source()
+
+    def build_logo():
+        if not logo_src:
+            return ""
+        try:
+            ImageReader(logo_src).getSize()
+            return Image(logo_src, width=70, height=70)
+        except Exception:
+            return ""
 
     def money(val):
         return f"Rs. {float(val or 0):.2f}"
@@ -874,17 +881,7 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
 
     def build_copy(copy_name="STUDENT COPY"):
 
-        logo = ""
-
-        if logo_src:
-            try:
-                logo = Image(
-                    logo_src,
-                    width=70,
-                    height=70
-                )
-            except:
-                logo = ""
+        logo = build_logo()
 
         # =========================
         # HEADER TABLE
@@ -1090,8 +1087,6 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
                 invoice=invoice
             ).order_by("-payment_date")
         )
-
-        print("TRANSACTIONS =>", transactions)
 
         if len(transactions) > 0:
 
