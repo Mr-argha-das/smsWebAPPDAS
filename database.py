@@ -1,4 +1,5 @@
 import mongoengine
+from mongoengine.connection import get_db
 from config import settings
 import logging
 
@@ -19,9 +20,7 @@ def connect_db():
 
 
 def _relax_student_admission_no_index():
-    from models.student import Student
-
-    collection = Student._get_collection()
+    collection = get_db(alias="default")["students"]
     for name, spec in collection.index_information().items():
         keys = spec.get("key", [])
         if spec.get("unique") and keys == [("admission_no", 1)]:
