@@ -8,6 +8,7 @@ import io
 import re
 import os
 import tempfile
+from mongoengine.errors import NotUniqueError
 from models.student import Student, TransferCertificate, ParentInfo
 from models.institution import School, AcademicYear, ClassRoom, Section, User
 from models.transport import TransportRoute, StudentTransport, Vehicle
@@ -22,6 +23,18 @@ from utils.helpers import (
 from utils.student_pdf_import import convert_student_pdf_to_csv
 
 router = APIRouter(prefix="/students", tags=["Students"])
+
+
+def _active_admission_no_owner(school: School, admission_no: str, exclude_student_id: Optional[str] = None):
+    query = Student.objects(
+        school=school,
+        admission_no=admission_no,
+        is_active=True,
+        admission_status__ne="Transferred"
+    )
+    if exclude_student_id:
+        query = query.filter(id__ne=exclude_student_id)
+    return query.first()
 
 
 def _ensure_student_scope(student: Student, current_user: User):
@@ -463,8 +476,9 @@ async def admit_student(data: StudentAdmission, current_user: User = Depends(get
         classroom, section = _ensure_default_class_section(school, ay)
     
     admission_no = (data.admission_no or "").strip() or generate_admission_no(school.code)
-    if Student.objects(admission_no=admission_no).first():
-        raise HTTPException(400, f"Student with admission number {admission_no} already exists")
+    existing_student = _active_admission_no_owner(school, admission_no)
+    if existing_student:
+        raise HTTPException(400, f"Admission number {admission_no} is already used by {existing_student.full_name}")
     student_id = generate_id("STU")
     first_name = (data.first_name or "").strip() or "Student"
     last_name = (data.last_name or "").strip()
@@ -524,19 +538,22 @@ async def admit_student(data: StudentAdmission, current_user: User = Depends(get
         from models.student import MedicalInfo
         student.medical_info = MedicalInfo(**data.medical_info)
     
-    student.save()
+    try:
+        student.save()
+    except NotUniqueError:
+        raise HTTPException(400, f"Admission number {admission_no} is already registered. Restart the backend once so the old global admission number index can be removed.")
     route = None
     if data.transport_route_id:
         route = _sync_student_transport(student, data.transport_route_id, data)
         student.reload()
     
-        return success_response({
-            "id": str(student.id),
-            "admission_no": student.admission_no,
-            "student_id": student.student_id,
-            "full_name": student.full_name,
-            "transport_route_name": route.route_name if route else None
-        }, "Student admitted successfully")
+    return success_response({
+        "id": str(student.id),
+        "admission_no": student.admission_no,
+        "student_id": student.student_id,
+        "full_name": student.full_name,
+        "transport_route_name": route.route_name if route else None
+    }, "Student admitted successfully")
 
 
 @router.get("")
@@ -1113,9 +1130,10 @@ async def update_student(student_id: str, data: dict, current_user: User = Depen
             admission_no = (data.get('admission_no') or '').strip()
             if not admission_no:
                 data.pop('admission_no', None)
-            elif Student.objects(admission_no=admission_no, id__ne=student.id).first():
-                raise HTTPException(400, f"Student with admission number {admission_no} already exists")
             else:
+                owner = _active_admission_no_owner(student.school, admission_no, str(student.id))
+                if owner:
+                    raise HTTPException(400, f"Admission number {admission_no} is already used by {owner.full_name}")
                 data['admission_no'] = admission_no
         data['updated_at'] = datetime.utcnow()
         if 'academic_year_id' in data:
@@ -1146,7 +1164,10 @@ async def update_student(student_id: str, data: dict, current_user: User = Depen
         if 'permanent_address_details' in data and 'permanent_address' not in data:
             data['permanent_address'] = _normalize_address_text(data.get('permanent_address_details'))
         
-        student.update(**data)
+        try:
+            student.update(**data)
+        except NotUniqueError:
+            raise HTTPException(400, "Admission number is already registered. Restart the backend once so the old global admission number index can be removed.")
         
         if parent_info:
             from models.student import ParentInfo

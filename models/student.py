@@ -62,7 +62,7 @@ class AcademicHistory(EmbeddedDocument):
 
 class Student(Document):
     # Identification
-    admission_no = StringField(required=True, unique=True)
+    admission_no = StringField(required=True)
     roll_no = StringField()
     student_id = StringField(unique=True)
 

@@ -663,6 +663,12 @@
                   id="invEstimateDiscount" class="font-semibold text-red-500">₹0.00</span></div>
               <div class="flex justify-between text-base"><span class="font-semibold text-slate-900">Net
                   Amount</span><span id="invEstimateNet" class="font-bold text-blue-700">₹0.00</span></div>
+              <div id="invPaymentSummary" class="hidden space-y-2 border-t border-slate-100 pt-3">
+                <div class="flex justify-between"><span class="text-slate-500">Paid</span><span id="invEstimatePaid"
+                    class="font-semibold text-emerald-600">₹0.00</span></div>
+                <div class="flex justify-between"><span class="text-slate-500">Pending</span><span id="invEstimateBalance"
+                    class="font-semibold text-red-500">₹0.00</span></div>
+              </div>
             </div>
           </div>
         </div>
@@ -734,6 +740,7 @@
     let invoiceBilledTuitionMonths = new Set();
     let invoiceBilledTransportMonths = new Set();
     let invoiceEditAcademicYearId = '';
+    let invoiceEditPaidAmount = 0;
     let invoiceCurrentPage = 1;
     let invoicePerPage = 20;
     let invoicePaginationMeta = { total: 0, page: 1, per_page: 20, total_pages: 1 };
@@ -1132,12 +1139,16 @@
       document.getElementById('invEstimateGross').textContent = formatCurrency(0);
       document.getElementById('invEstimateDiscount').textContent = formatCurrency(0);
       document.getElementById('invEstimateNet').textContent = formatCurrency(0);
+      document.getElementById('invPaymentSummary').classList.add('hidden');
+      document.getElementById('invEstimatePaid').textContent = formatCurrency(0);
+      document.getElementById('invEstimateBalance').textContent = formatCurrency(0);
       document.getElementById('invEstimateStatus').textContent = 'Draft';
     }
 
     function resetInvoiceModal() {
       editingInvoiceId = '';
       invoiceEditAcademicYearId = '';
+      invoiceEditPaidAmount = 0;
       document.getElementById('invoiceModalTitle').textContent = 'Create Invoice';
       document.getElementById('invoiceSubmitBtn').textContent = 'Create';
       document.getElementById('inv_class').value = '';
@@ -1188,6 +1199,7 @@
           student = studentRes?.data || student;
         }
         editingInvoiceId = invoiceId;
+        invoiceEditPaidAmount = parseFloat(inv.paid_amount || 0) || 0;
         document.getElementById('invoiceModalTitle').textContent = 'Edit Invoice';
         document.getElementById('invoiceSubmitBtn').textContent = 'Update';
         if (student?.classroom_id) {
@@ -1301,18 +1313,26 @@
       document.querySelectorAll('.inv_tuition_month').forEach(cb => {
         const isLocked = invoiceBilledTuitionMonths.has(cb.value);
         const shouldHide = isLocked && !preselectedTuitionMonths.includes(cb.value);
+        const label = cb.closest('label');
         cb.disabled = isLocked;
         if (shouldHide) cb.checked = false;
-        cb.closest('label')?.classList.toggle('hidden', shouldHide);
-        cb.closest('label')?.classList.toggle('opacity-50', isLocked);
+        if (label) {
+          label.classList.toggle('hidden', shouldHide);
+          label.classList.toggle('opacity-50', isLocked);
+          label.style.display = shouldHide ? 'none' : '';
+        }
       });
       document.querySelectorAll('.inv_transport_month').forEach(cb => {
         const isLocked = invoiceBilledTransportMonths.has(cb.value);
         const shouldHide = isLocked && !preselectedTransportMonths.includes(cb.value);
+        const label = cb.closest('label');
         cb.disabled = isLocked;
         if (shouldHide) cb.checked = false;
-        cb.closest('label')?.classList.toggle('hidden', shouldHide);
-        cb.closest('label')?.classList.toggle('opacity-50', isLocked);
+        if (label) {
+          label.classList.toggle('hidden', shouldHide);
+          label.classList.toggle('opacity-50', isLocked);
+          label.style.display = shouldHide ? 'none' : '';
+        }
       });
     }
 
@@ -1363,7 +1383,8 @@
           student_id: studId,
           academic_year_id: academicYearId || '',
           per_page: 100,
-          include_items: true
+          include_items: true,
+          _ts: Date.now()
         });
         (res?.data || []).forEach(inv => {
           if (editingInvoiceId && inv.id === editingInvoiceId) return;
@@ -1514,6 +1535,16 @@
       document.getElementById('invEstimateGross').textContent = formatCurrency(estimate?.gross || 0);
       document.getElementById('invEstimateDiscount').textContent = formatCurrency(estimate?.manualDiscount || 0);
       document.getElementById('invEstimateNet').textContent = formatCurrency(estimate?.net || 0);
+      const paymentSummary = document.getElementById('invPaymentSummary');
+      if (editingInvoiceId) {
+        const paid = invoiceEditPaidAmount || 0;
+        const balance = Math.max(0, (estimate?.net || 0) - paid);
+        document.getElementById('invEstimatePaid').textContent = formatCurrency(paid);
+        document.getElementById('invEstimateBalance').textContent = formatCurrency(balance);
+        paymentSummary.classList.remove('hidden');
+      } else {
+        paymentSummary.classList.add('hidden');
+      }
       document.getElementById('invEstimateStatus').textContent = estimate?.lines?.length ? 'Ready to Generate' : 'Draft';
     }
 
@@ -2081,7 +2112,7 @@
         return;
       }
       try {
-        const params = { school_id: schoolId, academic_year_id: academicYearId || '', branch_code: selectedBranchCode, per_page: 100, admission_status: 'Active' };
+        const params = { school_id: schoolId, academic_year_id: academicYearId || '', branch_code: selectedBranchCode, per_page: 100, student_view: 'all' };
         if (fatherName) {
           params.search = fatherName;
         } else {
@@ -2097,7 +2128,7 @@
           if (sectionId) students = students.filter(s => s.section_id === sectionId);
         }
         document.getElementById('pay_student').innerHTML = '<option value="">Select student</option>' +
-          students.map(s => `<option value="${s.id}">${s.full_name} (${s.admission_no})${s.classroom_name ? ` • ${s.classroom_name}${s.section_name ? ' / ' + s.section_name : ''}` : ''}</option>`).join('');
+          students.map(s => `<option value="${s.id}">${s.full_name} (${s.admission_no})${s.classroom_name ? ` • ${s.classroom_name}${s.section_name ? ' / ' + s.section_name : ''}` : ''}${s.admission_status === 'Transferred' ? ' • Transferred' : ''}</option>`).join('');
         document.getElementById('pay_invoice').innerHTML = '<option value="">Select invoice</option>';
         document.getElementById('invoiceDetails').style.display = 'none';
       } catch (e) { showToast('Payment student load error: ' + e.message, 'error'); }
