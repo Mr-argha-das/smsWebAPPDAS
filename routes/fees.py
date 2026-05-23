@@ -554,12 +554,10 @@ def _invoice_transport_months(invoice: FeeInvoice) -> List[str]:
 
 
 def _successful_invoice_paid_amount(invoice: FeeInvoice) -> float:
-    transaction_paid = sum(
-        float(txn.amount or 0)
-        for txn in PaymentTransaction.objects(invoice=invoice, status="Success").only("amount")
-    )
+    transactions = list(PaymentTransaction.objects(invoice=invoice, status="Success").only("amount"))
+    transaction_paid = sum(float(txn.amount or 0) for txn in transactions)
     saved_paid = float(invoice.paid_amount or 0)
-    return max(saved_paid, transaction_paid)
+    return transaction_paid if transactions else saved_paid
 
 
 def _student_invoice_payload(student: Optional[Student]) -> dict:
@@ -1395,6 +1393,12 @@ async def update_invoice(invoice_id: str, data: InvoiceCreate, current_user: Use
     gross = sum(item['amount'] for item in items)
     net = gross - data.discount_amount
     already_paid = _successful_invoice_paid_amount(invoice)
+    payable_amount = max(0, net + float(invoice.late_fee or 0))
+    if already_paid > payable_amount:
+        raise HTTPException(
+            400,
+            f"Invoice total cannot be less than collected payment. Collected: {already_paid}, new total: {payable_amount}"
+        )
     balance_amount = max(0, net - already_paid)
     status = "Paid" if balance_amount <= 0 else ("Partial" if already_paid > 0 else "Pending")
     # Update saved student concession
@@ -1648,8 +1652,11 @@ async def record_payment(data: PaymentCreate, current_user: User = Depends(get_c
     
     if data.amount <= 0:
         raise HTTPException(400, "Payment amount must be positive")
-    if data.amount > invoice.balance_amount:
-        raise HTTPException(400, f"Payment amount exceeds balance: {invoice.balance_amount}")
+    current_paid = _successful_invoice_paid_amount(invoice)
+    payable_amount = float(invoice.net_amount or 0) + float(invoice.late_fee or 0)
+    current_balance = max(0, payable_amount - current_paid)
+    if data.amount > current_balance:
+        raise HTTPException(400, f"Payment amount exceeds balance: {current_balance}")
     
     txn_no = generate_transaction_no()
     
@@ -1668,8 +1675,8 @@ async def record_payment(data: PaymentCreate, current_user: User = Depends(get_c
     txn.save()
     
     # Update invoice
-    new_paid = invoice.paid_amount + data.amount
-    new_balance = invoice.net_amount + invoice.late_fee - new_paid
+    new_paid = current_paid + data.amount
+    new_balance = payable_amount - new_paid
     
     if new_balance <= 0:
         new_status = "Paid"
