@@ -1,0 +1,1406 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEONRIFT Hoodie Commerce</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8fb;
+      --panel: rgba(255, 255, 255, .78);
+      --panel-strong: rgba(255, 255, 255, .95);
+      --line: rgba(17, 24, 39, .1);
+      --muted: #667389;
+      --text: #101622;
+      --cyan: #00a8c9;
+      --pink: #df3caf;
+      --lime: #55b66a;
+      --amber: #b97908;
+      --shadow: 0 24px 80px rgba(34, 45, 66, .15);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Manrope, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 12% 8%, rgba(0, 168, 201, .2), transparent 28rem),
+        radial-gradient(circle at 88% 18%, rgba(223, 60, 175, .13), transparent 24rem),
+        linear-gradient(180deg, #ffffff 0%, #f7f8fb 46%, #eef2f7 100%);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(17,24,39,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(17,24,39,.035) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: linear-gradient(to bottom, #000, transparent 88%);
+      z-index: 0;
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; text-decoration: none; }
+
+    .loader {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: #f7f8fb;
+      z-index: 50;
+      transition: opacity .7s ease, visibility .7s ease;
+    }
+
+    .loader.hidden { opacity: 0; visibility: hidden; }
+    .loader-core {
+      width: min(82vw, 380px);
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background:
+        conic-gradient(from 90deg, transparent, var(--cyan), var(--pink), transparent 72%),
+        radial-gradient(circle, rgba(0,240,255,.18), transparent 60%);
+      filter: drop-shadow(0 0 32px rgba(0,240,255,.35));
+      animation: spin 1.6s linear infinite;
+    }
+
+    .loader-core span {
+      width: 72%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: #ffffff;
+      color: var(--cyan);
+      font-size: .78rem;
+      font-weight: 900;
+      letter-spacing: .28em;
+      text-align: center;
+      animation: spin 1.6s linear reverse infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      opacity: .045;
+      pointer-events: none;
+      z-index: 1;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 220 220' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1rem clamp(1rem, 4vw, 4rem);
+      backdrop-filter: blur(20px);
+      background: rgba(255,255,255,.78);
+      border-bottom: 1px solid rgba(17,24,39,.08);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+    }
+
+    .mark {
+      width: 38px;
+      height: 38px;
+      border: 1px solid rgba(17,24,39,.12);
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      color: #101622;
+      background: linear-gradient(135deg, #fff, #eaf8fb);
+      box-shadow: 0 12px 30px rgba(0,168,201,.18), inset 0 0 0 1px rgba(255,255,255,.8);
+      transform: skew(-7deg);
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: clamp(.8rem, 2.4vw, 2rem);
+      color: #2d394c;
+      font-size: .88rem;
+      font-weight: 700;
+    }
+
+    .nav-actions {
+      display: flex;
+      gap: .7rem;
+      align-items: center;
+    }
+
+    .icon-btn, .primary, .ghost {
+      border: 1px solid var(--line);
+      color: var(--text);
+      background: rgba(255,255,255,.8);
+      border-radius: 8px;
+      transition: transform .2s ease, border-color .2s ease, background .2s ease;
+    }
+
+    .icon-btn {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      position: relative;
+    }
+
+    .icon-btn:hover, .primary:hover, .ghost:hover {
+      transform: translateY(-2px);
+      border-color: rgba(0,168,201,.38);
+      background: rgba(0,168,201,.08);
+    }
+
+    .badge {
+      position: absolute;
+      top: -7px;
+      right: -7px;
+      min-width: 20px;
+      height: 20px;
+      border-radius: 99px;
+      display: grid;
+      place-items: center;
+      padding: 0 5px;
+      background: var(--pink);
+      color: white;
+      font-size: .68rem;
+      font-weight: 900;
+    }
+
+    .primary, .ghost {
+      padding: .82rem 1rem;
+      font-weight: 900;
+      letter-spacing: .02em;
+    }
+
+    .primary {
+      border-color: transparent;
+      background: linear-gradient(135deg, #101622 0%, #00a8c9 58%, #df3caf 125%);
+      color: #fff;
+      box-shadow: 0 18px 42px rgba(0,168,201,.22);
+    }
+
+    .page {
+      position: relative;
+      z-index: 2;
+    }
+
+    section {
+      padding: clamp(4rem, 8vw, 7rem) clamp(1rem, 4vw, 4rem);
+      scroll-margin-top: 5.5rem;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, .85fr) minmax(360px, 1.15fr);
+      align-items: center;
+      gap: 2rem;
+      padding-top: 6rem;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      gap: .55rem;
+      align-items: center;
+      border: 1px solid rgba(0,168,201,.22);
+      background: rgba(0,168,201,.08);
+      color: #087d95;
+      border-radius: 999px;
+      padding: .48rem .75rem;
+      font-weight: 800;
+      font-size: .76rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 1.15rem 0 1rem;
+      font-family: "Space Grotesk", Manrope, sans-serif;
+      font-size: clamp(3.2rem, 8vw, 7.6rem);
+      line-height: .86;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    .gradient-text {
+      color: transparent;
+      background: linear-gradient(100deg, #101622 5%, #009cbd, #df3caf 88%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: none;
+    }
+
+    .hero p {
+      max-width: 57ch;
+      color: #4d5a70;
+      line-height: 1.75;
+      font-size: clamp(1rem, 1.4vw, 1.15rem);
+    }
+
+    .hero-actions, .filters, .swatches, .sizes, .card-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: .75rem;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: .8rem;
+      margin-top: 1.4rem;
+      max-width: 620px;
+    }
+
+    .stat, .glass, .product-card, .dashboard-card, .cart-panel, .checkout-modal {
+      border: 1px solid var(--line);
+      background: linear-gradient(145deg, rgba(255,255,255,.94), rgba(255,255,255,.68));
+      backdrop-filter: blur(22px);
+      box-shadow: var(--shadow);
+    }
+
+    .stat {
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 92px;
+    }
+
+    .stat b {
+      display: block;
+      font-size: clamp(1.35rem, 2vw, 2rem);
+      color: #101622;
+    }
+
+    .stat span {
+      display: block;
+      margin-top: .25rem;
+      color: var(--muted);
+      font-weight: 700;
+      font-size: .8rem;
+    }
+
+    .stage-wrap {
+      min-height: min(74vh, 820px);
+      position: relative;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(17,24,39,.08);
+      background:
+        radial-gradient(circle at 50% 30%, rgba(0,168,201,.16), transparent 26rem),
+        linear-gradient(145deg, rgba(255,255,255,.98), rgba(230,237,247,.72));
+      box-shadow: inset 0 0 80px rgba(0,168,201,.08), 0 30px 90px rgba(34,45,66,.16);
+    }
+
+    canvas { display: block; }
+    #heroCanvas, #viewerCanvas {
+      width: 100%;
+      height: 100%;
+      min-height: 520px;
+    }
+
+    .stage-overlay {
+      position: absolute;
+      inset: auto 1rem 1rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      gap: .8rem;
+      align-items: end;
+      pointer-events: none;
+    }
+
+    .scan-card {
+      pointer-events: auto;
+      max-width: 260px;
+      padding: .9rem;
+      border-radius: 8px;
+      border: 1px solid rgba(0,168,201,.2);
+      background: rgba(255,255,255,.8);
+      backdrop-filter: blur(18px);
+    }
+
+    .scan-card b { color: var(--cyan); }
+    .scan-card small {
+      display: block;
+      margin-top: .35rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-family: "Space Grotesk", Manrope, sans-serif;
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: .95;
+      text-transform: uppercase;
+    }
+
+    .section-head p {
+      color: var(--muted);
+      max-width: 48ch;
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    .viewer-grid {
+      display: grid;
+      grid-template-columns: minmax(320px, 1fr) minmax(300px, 420px);
+      gap: 1.1rem;
+    }
+
+    .glass, .dashboard-card {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .viewer-controls {
+      padding: 1.1rem;
+      display: grid;
+      gap: 1rem;
+    }
+
+    .control-block {
+      border-bottom: 1px solid rgba(17,24,39,.08);
+      padding-bottom: 1rem;
+    }
+
+    .control-block:last-child {
+      border: 0;
+      padding-bottom: 0;
+    }
+
+    .label {
+      display: flex;
+      justify-content: space-between;
+      color: #1f2a3b;
+      font-weight: 800;
+      font-size: .84rem;
+      margin-bottom: .7rem;
+    }
+
+    .swatch, .size-btn {
+      border: 1px solid rgba(17,24,39,.13);
+      background: rgba(255,255,255,.9);
+      color: #101622;
+      border-radius: 8px;
+    }
+
+    .swatch {
+      width: 38px;
+      height: 38px;
+      position: relative;
+    }
+
+    .swatch.active, .size-btn.active {
+      outline: 2px solid var(--cyan);
+      box-shadow: 0 0 22px rgba(0,168,201,.18);
+    }
+
+    .size-btn {
+      min-width: 48px;
+      padding: .7rem .9rem;
+      font-weight: 900;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--cyan);
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+      perspective: 1200px;
+    }
+
+    .product-card {
+      border-radius: 14px;
+      overflow: hidden;
+      transform-style: preserve-3d;
+      transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease;
+    }
+
+    .product-card:hover {
+      border-color: rgba(0,168,201,.32);
+      box-shadow: 0 22px 70px rgba(0,168,201,.12), var(--shadow);
+    }
+
+    .product-art {
+      position: relative;
+      min-height: 260px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(255,255,255,.95), transparent 4rem),
+        linear-gradient(135deg, rgba(0,168,201,.12), rgba(223,60,175,.08));
+      overflow: hidden;
+    }
+
+    .mini-hoodie {
+      width: 118px;
+      height: 142px;
+      border-radius: 46px 46px 26px 26px;
+      background: var(--hoodie, #0bf0ff);
+      box-shadow: inset 0 -38px 50px rgba(0,0,0,.38), 0 0 50px color-mix(in srgb, var(--hoodie), transparent 52%);
+      position: relative;
+      transform: translateZ(34px) rotate(-4deg);
+    }
+
+    .mini-hoodie::before {
+      content: "";
+      position: absolute;
+      width: 80px;
+      height: 58px;
+      left: 19px;
+      top: -28px;
+      border-radius: 50px 50px 20px 20px;
+      border: 18px solid color-mix(in srgb, var(--hoodie), #000 18%);
+      border-bottom: 0;
+    }
+
+    .mini-hoodie::after {
+      content: "";
+      position: absolute;
+      inset: 62px 34px auto;
+      height: 42px;
+      border: 2px solid rgba(255,255,255,.25);
+      border-radius: 0 0 18px 18px;
+    }
+
+    .product-info {
+      padding: 1rem;
+    }
+
+    .product-info h3 {
+      margin: 0 0 .35rem;
+      font-family: "Space Grotesk", Manrope, sans-serif;
+      font-size: 1.02rem;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: .82rem;
+      line-height: 1.45;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: .9rem;
+      font-weight: 900;
+      font-size: 1.1rem;
+    }
+
+    .heart {
+      color: var(--pink);
+      border: 1px solid rgba(255,43,214,.35);
+      background: rgba(255,43,214,.08);
+      width: 38px;
+      height: 38px;
+      border-radius: 8px;
+    }
+
+    .reviews {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .review {
+      padding: 1rem;
+      border-radius: 8px;
+      border: 1px solid rgba(17,24,39,.1);
+      background: rgba(255,255,255,.78);
+      line-height: 1.65;
+      color: #4d5a70;
+    }
+
+    .review b { color: #101622; }
+    .stars { color: var(--amber); letter-spacing: .08em; }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: .9fr 1.1fr;
+      gap: 1rem;
+    }
+
+    .dashboard-card {
+      padding: 1rem;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+
+    .metric {
+      border: 1px solid rgba(17,24,39,.1);
+      border-radius: 8px;
+      padding: .9rem;
+      background: rgba(255,255,255,.7);
+    }
+
+    .metric b { display: block; font-size: 1.5rem; }
+    .metric span { color: var(--muted); font-size: .78rem; font-weight: 800; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      color: #273244;
+      font-size: .88rem;
+    }
+
+    th, td {
+      padding: .85rem .65rem;
+      border-bottom: 1px solid rgba(17,24,39,.08);
+      text-align: left;
+    }
+
+    th { color: var(--cyan); font-size: .75rem; text-transform: uppercase; letter-spacing: .08em; }
+
+    .status {
+      display: inline-flex;
+      border-radius: 999px;
+      padding: .28rem .5rem;
+      background: rgba(184,255,61,.1);
+      color: var(--lime);
+      font-weight: 900;
+      font-size: .72rem;
+    }
+
+    .cart-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      width: min(420px, 100vw);
+      z-index: 35;
+      padding: 1.1rem;
+      transform: translateX(105%);
+      transition: transform .35s ease;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 1rem;
+      background: rgba(255,255,255,.94);
+    }
+
+    .cart-panel.open { transform: translateX(0); }
+    .cart-head, .modal-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .cart-items {
+      overflow: auto;
+      display: grid;
+      align-content: start;
+      gap: .75rem;
+      padding-right: .2rem;
+    }
+
+    .cart-item {
+      display: grid;
+      grid-template-columns: 54px 1fr auto;
+      gap: .8rem;
+      align-items: center;
+      border: 1px solid rgba(17,24,39,.1);
+      border-radius: 8px;
+      padding: .75rem;
+      background: rgba(246,248,252,.92);
+    }
+
+    .thumb {
+      width: 54px;
+      height: 54px;
+      border-radius: 8px;
+      background: var(--thumb);
+      box-shadow: inset 0 -16px 26px rgba(0,0,0,.35);
+    }
+
+    .qty {
+      display: flex;
+      gap: .45rem;
+      align-items: center;
+      justify-content: end;
+    }
+
+    .qty button {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.88);
+      color: #101622;
+    }
+
+    .checkout {
+      display: grid;
+      gap: .75rem;
+      border-top: 1px solid rgba(17,24,39,.1);
+      padding-top: 1rem;
+    }
+
+    .total {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 900;
+      font-size: 1.25rem;
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      background: rgba(15,23,42,.34);
+      display: none;
+      place-items: center;
+      padding: 1rem;
+    }
+
+    .modal-backdrop.open { display: grid; }
+
+    .checkout-modal {
+      width: min(560px, 100%);
+      border-radius: 12px;
+      padding: 1rem;
+      background: rgba(255,255,255,.96);
+    }
+
+    .cart-head h2, .modal-head h2, .dashboard-card h3 {
+      font-family: "Space Grotesk", Manrope, sans-serif;
+      margin-top: 0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .75rem;
+      margin-top: 1rem;
+    }
+
+    .field {
+      display: grid;
+      gap: .35rem;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+    label {
+      color: #273244;
+      font-size: .78rem;
+      font-weight: 900;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid rgba(17,24,39,.12);
+      border-radius: 8px;
+      background: rgba(255,255,255,.9);
+      color: #101622;
+      padding: .82rem;
+      outline: none;
+    }
+
+    select option {
+      color: #101622;
+      background: #ffffff;
+    }
+
+    textarea { resize: vertical; min-height: 92px; }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 1rem;
+      z-index: 60;
+      transform: translate(-50%, 140%);
+      border: 1px solid rgba(0,168,201,.24);
+      background: rgba(255,255,255,.92);
+      backdrop-filter: blur(18px);
+      border-radius: 8px;
+      padding: .9rem 1rem;
+      color: var(--cyan);
+      font-weight: 900;
+      box-shadow: var(--shadow);
+      transition: transform .25s ease;
+    }
+
+    .toast.show { transform: translate(-50%, 0); }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .75s ease, transform .75s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1050px) {
+      .hero, .viewer-grid, .dashboard-grid { grid-template-columns: 1fr; }
+      .products { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .reviews { grid-template-columns: 1fr; }
+      .stage-wrap { min-height: 560px; }
+    }
+
+    @media (max-width: 720px) {
+      header { padding: .8rem 1rem; }
+      nav { display: none; }
+      .hero { padding-top: 5.5rem; }
+      .hero-stats, .metric-grid { grid-template-columns: 1fr; }
+      .products { grid-template-columns: 1fr; }
+      .section-head { align-items: start; flex-direction: column; }
+      .stage-wrap, #heroCanvas, #viewerCanvas { min-height: 480px; }
+      .stage-overlay { position: static; padding: 1rem; }
+      .scan-card { max-width: none; }
+      .form-grid { grid-template-columns: 1fr; }
+      h1 { font-size: clamp(3rem, 17vw, 5rem); }
+    }
+  </style>
+</head>
+<body>
+  <div class="loader" id="loader"><div class="loader-core"><span>LOADING<br>DROP</span></div></div>
+  <div class="noise"></div>
+
+  <header>
+    <a href="#top" class="brand" aria-label="NEONRIFT home"><span class="mark">NR</span><span>NEONRIFT</span></a>
+    <nav aria-label="Primary navigation">
+      <a href="#viewer">3D Viewer</a>
+      <a href="#drop">Drop</a>
+      <a href="#reviews">Reviews</a>
+      <a href="#admin">Admin</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="icon-btn" id="wishlistBtn" aria-label="Wishlist">W<span class="badge" id="wishCount">0</span></button>
+      <button class="icon-btn" id="cartBtn" aria-label="Open cart">B<span class="badge" id="cartCount">0</span></button>
+    </div>
+  </header>
+
+  <main class="page" id="top">
+    <section class="hero">
+      <div class="reveal">
+        <span class="eyebrow">Cyberpunk streetwear capsule</span>
+        <h1><span class="gradient-text">Future</span><br>Hoodies</h1>
+        <p>Premium thermal fleece, reactive neon trims, oversized techwear silhouettes, and a cinematic 3D shopping experience built for the midnight city.</p>
+        <div class="hero-actions">
+          <a class="primary" href="#drop">Shop the drop</a>
+          <a class="ghost" href="#viewer">Customize in 3D</a>
+        </div>
+        <div class="hero-stats">
+          <div class="stat"><b>4.9</b><span>average product rating</span></div>
+          <div class="stat"><b>24h</b><span>express metro dispatch</span></div>
+          <div class="stat"><b>8K</b><span>limited pieces minted</span></div>
+        </div>
+      </div>
+      <div class="stage-wrap reveal" aria-label="Rotating 3D hoodie hero">
+        <canvas id="heroCanvas"></canvas>
+        <div class="stage-overlay">
+          <div class="scan-card"><b>HDRI mood rig</b><small>Animated neon key lights, soft shadows, floating particles, and mouse-follow camera movement.</small></div>
+          <div class="scan-card"><b>GLB ready</b><small>Swap the procedural hoodie with a Sketchfab, Poly Pizza, CGTrader, or Quaternius GLB asset.</small></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="viewer">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Interactive product lab</span>
+          <h2>Build your hoodie</h2>
+        </div>
+        <p>Rotate, zoom, change color, choose a size, and add your configured piece to the cart.</p>
+      </div>
+      <div class="viewer-grid">
+        <div class="glass reveal"><canvas id="viewerCanvas" aria-label="Interactive 3D hoodie viewer"></canvas></div>
+        <aside class="glass viewer-controls reveal">
+          <div class="control-block">
+            <div class="label"><span>Colorway</span><span id="colorName">Ion Cyan</span></div>
+            <div class="swatches" id="swatches"></div>
+          </div>
+          <div class="control-block">
+            <div class="label"><span>Size</span><span id="sizeName">M</span></div>
+            <div class="sizes" id="sizes"></div>
+          </div>
+          <div class="control-block">
+            <div class="label"><span>Zoom</span><span id="zoomValue">60%</span></div>
+            <input id="zoomControl" type="range" min="35" max="90" value="60">
+          </div>
+          <div class="control-block">
+            <div class="label"><span>Viewer mode</span><span>drag enabled</span></div>
+            <p class="meta">Drag on the model to rotate. Use the slider to punch in on fabric details and neon trims.</p>
+          </div>
+          <button class="primary" id="viewerAdd">Add custom hoodie - $189</button>
+          <button class="ghost" id="saveWish">Save to wishlist</button>
+        </aside>
+      </div>
+    </section>
+
+    <section id="drop">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Live capsule</span>
+          <h2>Product drop</h2>
+        </div>
+        <div class="filters">
+          <button class="ghost" data-filter="all">All</button>
+          <button class="ghost" data-filter="oversized">Oversized</button>
+          <button class="ghost" data-filter="thermal">Thermal</button>
+        </div>
+      </div>
+      <div class="products" id="productGrid"></div>
+    </section>
+
+    <section id="reviews">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Street signal</span>
+          <h2>Reviews</h2>
+        </div>
+        <p>Built around premium texture, responsive interactions, and a storefront flow that feels like a digital fashion launch.</p>
+      </div>
+      <div class="reviews reveal">
+        <div class="review"><div class="stars">★★★★★</div><p>"The 3D viewer sold it instantly. Color swap feels smooth and the neon lighting makes the hoodie pop."</p><b>- Mira K.</b></div>
+        <div class="review"><div class="stars">★★★★★</div><p>"The checkout flow is quick, the cards feel premium, and the admin metrics are perfect for a concept pitch."</p><b>- Dev R.</b></div>
+        <div class="review"><div class="stars">★★★★☆</div><p>"Looks like a real cyberpunk drop page. I would add actual GLB scans next, but the motion is already strong."</p><b>- Sana P.</b></div>
+      </div>
+    </section>
+
+    <section id="admin">
+      <div class="section-head reveal">
+        <div>
+          <span class="eyebrow">Admin console</span>
+          <h2>Drop control</h2>
+        </div>
+        <p>Track stock, ratings, revenue, and capsule status from a responsive glass dashboard.</p>
+      </div>
+      <div class="dashboard-grid reveal">
+        <div class="dashboard-card">
+          <h3>Today</h3>
+          <div class="metric-grid">
+            <div class="metric"><b>$18.4K</b><span>revenue</span></div>
+            <div class="metric"><b>238</b><span>orders</span></div>
+            <div class="metric"><b>91%</b><span>sell-through</span></div>
+          </div>
+          <p class="meta">Low stock warning active for Shadow Magenta and Plasma White in L and XL.</p>
+        </div>
+        <div class="dashboard-card">
+          <table>
+            <thead><tr><th>Product</th><th>Stock</th><th>Rating</th><th>Status</th></tr></thead>
+            <tbody id="adminRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <aside class="cart-panel" id="cartPanel" aria-label="Shopping cart">
+    <div class="cart-head">
+      <h2>Cart</h2>
+      <button class="icon-btn" id="closeCart" aria-label="Close cart">X</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="checkout">
+      <div class="total"><span>Total</span><span id="cartTotal">$0</span></div>
+      <button class="primary" id="checkoutBtn">Checkout</button>
+      <button class="ghost" id="clearCart">Clear cart</button>
+    </div>
+  </aside>
+
+  <div class="modal-backdrop" id="checkoutModal">
+    <div class="checkout-modal">
+      <div class="modal-head">
+        <h2>Checkout</h2>
+        <button class="icon-btn" id="closeModal" aria-label="Close checkout">X</button>
+      </div>
+      <form id="checkoutForm" class="form-grid">
+        <div class="field"><label for="name">Name</label><input id="name" required placeholder="Your name"></div>
+        <div class="field"><label for="email">Email</label><input id="email" type="email" required placeholder="you@example.com"></div>
+        <div class="field full"><label for="address">Address</label><textarea id="address" required placeholder="Street, city, postal code"></textarea></div>
+        <div class="field"><label for="method">Payment</label><select id="method"><option>Card</option><option>UPI</option><option>Cash on delivery</option></select></div>
+        <div class="field"><label for="shipping">Shipping</label><select id="shipping"><option>Express neon route</option><option>Standard dispatch</option></select></div>
+        <button class="primary field full" type="submit">Place order</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Added to cart</div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+      }
+    }
+  </script>
+  <script type="module">
+    import * as THREE from "https://unpkg.com/three@0.160.0/build/three.module.js";
+    import { OrbitControls } from "https://unpkg.com/three@0.160.0/examples/jsm/controls/OrbitControls.js";
+
+    const colors = [
+      { name: "Aqua Chrome", value: "#00a8c9" },
+      { name: "Rose Circuit", value: "#df3caf" },
+      { name: "Mint Volt", value: "#55b66a" },
+      { name: "Graphite", value: "#202735" },
+      { name: "Plasma White", value: "#f5f7ff" }
+    ];
+
+    const products = [
+      { id: 1, name: "Aqua Drift Hoodie", type: "oversized", price: 189, rating: 4.9, stock: 42, color: "#00a8c9", desc: "Oversized cyber fleece with reflective rope pulls." },
+      { id: 2, name: "Rose Circuit Zip", type: "thermal", price: 214, rating: 4.8, stock: 18, color: "#df3caf", desc: "Thermal core, smoked zipper, reactive neon trim." },
+      { id: 3, name: "Ghostline Pullover", type: "oversized", price: 176, rating: 4.7, stock: 64, color: "#f5f7ff", desc: "Clean shell with hidden pocket grid and glow seams." },
+      { id: 4, name: "Mint Runner Hoodie", type: "thermal", price: 198, rating: 4.9, stock: 27, color: "#55b66a", desc: "Fast street silhouette with midnight mesh lining." }
+    ];
+
+    const sizes = ["XS", "S", "M", "L", "XL"];
+    let selectedColor = colors[0];
+    let selectedSize = "M";
+    let wishlist = new Set();
+    let cart = [];
+    let viewerMaterial;
+
+    const $ = (selector) => document.querySelector(selector);
+    const format = (value) => `$${value.toLocaleString("en-US")}`;
+
+    function showToast(message) {
+      const toast = $("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => toast.classList.remove("show"), 1800);
+    }
+
+    function createHoodie(color = "#00a8c9") {
+      const group = new THREE.Group();
+      const mat = new THREE.MeshStandardMaterial({
+        color,
+        roughness: .58,
+        metalness: .18,
+        emissive: new THREE.Color(color),
+        emissiveIntensity: .08
+      });
+      const dark = new THREE.MeshStandardMaterial({ color: "#f4f7fb", roughness: .72, metalness: .08 });
+      const trim = new THREE.MeshStandardMaterial({
+        color: "#ffffff",
+        emissive: "#00a8c9",
+        emissiveIntensity: .28,
+        roughness: .35
+      });
+
+      const body = new THREE.Mesh(new THREE.CapsuleGeometry(1.04, 1.55, 8, 22), mat);
+      body.scale.set(1.05, 1.18, .38);
+      body.position.y = -.2;
+      body.castShadow = true;
+      group.add(body);
+
+      const hood = new THREE.Mesh(new THREE.TorusGeometry(.62, .22, 18, 40, Math.PI * 1.18), mat);
+      hood.rotation.x = Math.PI * .53;
+      hood.position.set(0, 1.2, -.08);
+      hood.scale.set(1.14, .95, 1);
+      hood.castShadow = true;
+      group.add(hood);
+
+      const neck = new THREE.Mesh(new THREE.CylinderGeometry(.36, .44, .34, 28), dark);
+      neck.position.set(0, .95, .04);
+      neck.scale.z = .42;
+      group.add(neck);
+
+      const pocket = new THREE.Mesh(new THREE.BoxGeometry(.9, .34, .08), dark);
+      pocket.position.set(0, -.55, .42);
+      pocket.castShadow = true;
+      group.add(pocket);
+
+      const pocketLine = new THREE.Mesh(new THREE.TorusGeometry(.48, .015, 6, 48, Math.PI), trim);
+      pocketLine.rotation.x = Math.PI;
+      pocketLine.position.set(0, -.36, .47);
+      group.add(pocketLine);
+
+      const sleeveGeo = new THREE.CapsuleGeometry(.23, 1.45, 8, 18);
+      const leftSleeve = new THREE.Mesh(sleeveGeo, mat);
+      leftSleeve.position.set(-.95, -.15, .01);
+      leftSleeve.rotation.z = -.48;
+      leftSleeve.scale.set(1.05, 1, .82);
+      leftSleeve.castShadow = true;
+      group.add(leftSleeve);
+
+      const rightSleeve = leftSleeve.clone();
+      rightSleeve.position.x = .95;
+      rightSleeve.rotation.z = .48;
+      group.add(rightSleeve);
+
+      const cordGeo = new THREE.CylinderGeometry(.018, .018, .7, 10);
+      const cordA = new THREE.Mesh(cordGeo, trim);
+      cordA.position.set(-.14, .68, .43);
+      cordA.rotation.z = .12;
+      group.add(cordA);
+      const cordB = cordA.clone();
+      cordB.position.x = .14;
+      cordB.rotation.z = -.12;
+      group.add(cordB);
+
+      const cuffGeo = new THREE.TorusGeometry(.23, .035, 8, 28);
+      const cuffL = new THREE.Mesh(cuffGeo, trim);
+      cuffL.position.set(-1.34, -.78, .02);
+      cuffL.rotation.set(Math.PI / 2, 0, -.48);
+      group.add(cuffL);
+      const cuffR = cuffL.clone();
+      cuffR.position.x = 1.34;
+      cuffR.rotation.z = .48;
+      group.add(cuffR);
+
+      group.userData.material = mat;
+      return group;
+    }
+
+    function addParticles(scene, count = 180) {
+      const geo = new THREE.BufferGeometry();
+      const positions = new Float32Array(count * 3);
+      for (let i = 0; i < count * 3; i += 3) {
+        positions[i] = (Math.random() - .5) * 9;
+        positions[i + 1] = (Math.random() - .5) * 6;
+        positions[i + 2] = (Math.random() - .5) * 6;
+      }
+      geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      const mat = new THREE.PointsMaterial({ color: "#00a8c9", size: .025, transparent: true, opacity: .42 });
+      const particles = new THREE.Points(geo, mat);
+      scene.add(particles);
+      return particles;
+    }
+
+    function setupScene(canvas, interactive = false) {
+      const scene = new THREE.Scene();
+      scene.fog = new THREE.FogExp2("#f8fbff", .045);
+      const camera = new THREE.PerspectiveCamera(42, 1, .1, 100);
+      camera.position.set(0, .4, interactive ? 5.2 : 4.7);
+
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+      const hemi = new THREE.HemisphereLight("#ffffff", "#dbe7f4", 2.4);
+      scene.add(hemi);
+      const key = new THREE.SpotLight("#b9f5ff", 44, 18, Math.PI / 4, .45, 1.2);
+      key.position.set(-3.2, 4, 3.6);
+      key.castShadow = true;
+      scene.add(key);
+      const rim = new THREE.PointLight("#df3caf", 10, 9);
+      rim.position.set(3, 1.2, 2.2);
+      scene.add(rim);
+      const floor = new THREE.Mesh(
+        new THREE.CircleGeometry(2.4, 80),
+        new THREE.MeshStandardMaterial({ color: "#ffffff", roughness: .5, metalness: .08, transparent: true, opacity: .86 })
+      );
+      floor.rotation.x = -Math.PI / 2;
+      floor.position.y = -1.7;
+      floor.receiveShadow = true;
+      scene.add(floor);
+
+      const ring = new THREE.Mesh(
+        new THREE.TorusGeometry(1.65, .012, 8, 96),
+        new THREE.MeshStandardMaterial({ color: "#00a8c9", emissive: "#00a8c9", emissiveIntensity: .75 })
+      );
+      ring.rotation.x = Math.PI / 2;
+      ring.position.y = -1.66;
+      scene.add(ring);
+
+      const hoodie = createHoodie(selectedColor.value);
+      scene.add(hoodie);
+      const particles = addParticles(scene, interactive ? 120 : 220);
+
+      const controls = interactive ? new OrbitControls(camera, renderer.domElement) : null;
+      if (controls) {
+        controls.enableDamping = true;
+        controls.enablePan = false;
+        controls.minDistance = 3.4;
+        controls.maxDistance = 7;
+        controls.target.set(0, -.05, 0);
+      }
+
+      const pointer = { x: 0, y: 0 };
+      window.addEventListener("pointermove", (event) => {
+        pointer.x = (event.clientX / window.innerWidth - .5) * 2;
+        pointer.y = (event.clientY / window.innerHeight - .5) * 2;
+      });
+
+      function resize() {
+        const rect = canvas.getBoundingClientRect();
+        renderer.setSize(rect.width, rect.height, false);
+        camera.aspect = rect.width / Math.max(1, rect.height);
+        camera.updateProjectionMatrix();
+      }
+
+      window.addEventListener("resize", resize);
+      resize();
+
+      const clock = new THREE.Clock();
+      function animate() {
+        const t = clock.getElapsedTime();
+        if (!interactive) {
+          hoodie.rotation.y += .006;
+          camera.position.x += (pointer.x * .35 - camera.position.x) * .035;
+          camera.position.y += ((.35 - pointer.y * .12) - camera.position.y) * .035;
+          camera.lookAt(0, 0, 0);
+        } else {
+          hoodie.rotation.y += .0025;
+          controls.update();
+        }
+        hoodie.position.y = Math.sin(t * 1.4) * .055;
+        ring.rotation.z = t * .55;
+        particles.rotation.y = t * .04;
+        particles.position.y = Math.sin(t * .5) * .08;
+        key.position.x = Math.sin(t * .8) * 3.4;
+        rim.intensity = 8 + Math.sin(t * 2) * 3;
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+      animate();
+
+      return { scene, camera, hoodie, renderer, controls };
+    }
+
+    setupScene($("#heroCanvas"), false);
+    const viewer = setupScene($("#viewerCanvas"), true);
+    viewerMaterial = viewer.hoodie.userData.material;
+
+    function setViewerColor(color) {
+      selectedColor = color;
+      viewerMaterial.color.set(color.value);
+      viewerMaterial.emissive.set(color.value);
+      $("#colorName").textContent = color.name;
+      document.querySelectorAll(".swatch").forEach((btn) => btn.classList.toggle("active", btn.dataset.color === color.value));
+    }
+
+    function addToCart(item) {
+      const existing = cart.find((entry) => entry.key === item.key);
+      if (existing) existing.qty += 1;
+      else cart.push({ ...item, qty: 1 });
+      renderCart();
+      showToast("Added to cart");
+    }
+
+    function renderCart() {
+      $("#cartCount").textContent = cart.reduce((sum, item) => sum + item.qty, 0);
+      $("#cartItems").innerHTML = cart.length ? cart.map((item) => `
+        <div class="cart-item">
+          <div class="thumb" style="--thumb:${item.color}"></div>
+          <div><b>${item.name}</b><div class="meta">${item.size} / ${format(item.price)}</div></div>
+          <div class="qty">
+            <button data-dec="${item.key}">-</button><b>${item.qty}</b><button data-inc="${item.key}">+</button>
+          </div>
+        </div>
+      `).join("") : `<p class="meta">Your cart is empty. Add a hoodie from the 3D viewer or product drop.</p>`;
+      const total = cart.reduce((sum, item) => sum + item.qty * item.price, 0);
+      $("#cartTotal").textContent = format(total);
+    }
+
+    function renderWishlist() {
+      $("#wishCount").textContent = wishlist.size;
+      document.querySelectorAll(".heart").forEach((button) => {
+        button.textContent = wishlist.has(Number(button.dataset.wish)) ? "♥" : "♡";
+      });
+    }
+
+    function renderProducts(filter = "all") {
+      const visible = filter === "all" ? products : products.filter((p) => p.type === filter);
+      $("#productGrid").innerHTML = visible.map((product) => `
+        <article class="product-card reveal" data-tilt>
+          <div class="product-art">
+            <div class="mini-hoodie" style="--hoodie:${product.color}"></div>
+          </div>
+          <div class="product-info">
+            <h3>${product.name}</h3>
+            <div class="meta">${product.desc}</div>
+            <div class="price-row"><span>${format(product.price)}</span><span class="stars">★ ${product.rating}</span></div>
+            <div class="card-actions" style="margin-top:.85rem">
+              <button class="primary" data-add="${product.id}">Add</button>
+              <button class="heart" data-wish="${product.id}" aria-label="Wishlist ${product.name}">♡</button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+      renderWishlist();
+      observeReveals();
+    }
+
+    function renderAdmin() {
+      $("#adminRows").innerHTML = products.map((p) => `
+        <tr><td>${p.name}</td><td>${p.stock}</td><td>${p.rating}</td><td><span class="status">Live</span></td></tr>
+      `).join("");
+    }
+
+    function observeReveals() {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: .12 });
+      document.querySelectorAll(".reveal:not(.visible)").forEach((el) => observer.observe(el));
+    }
+
+    colors.forEach((color) => {
+      const button = document.createElement("button");
+      button.className = "swatch";
+      button.dataset.color = color.value;
+      button.style.background = color.value;
+      button.title = color.name;
+      button.setAttribute("aria-label", color.name);
+      button.addEventListener("click", () => setViewerColor(color));
+      $("#swatches").appendChild(button);
+    });
+
+    sizes.forEach((size) => {
+      const button = document.createElement("button");
+      button.className = "size-btn";
+      button.textContent = size;
+      button.addEventListener("click", () => {
+        selectedSize = size;
+        $("#sizeName").textContent = size;
+        document.querySelectorAll(".size-btn").forEach((btn) => btn.classList.toggle("active", btn.textContent === size));
+      });
+      $("#sizes").appendChild(button);
+    });
+
+    setViewerColor(colors[0]);
+    document.querySelectorAll(".size-btn").forEach((btn) => btn.classList.toggle("active", btn.textContent === selectedSize));
+
+    $("#zoomControl").addEventListener("input", (event) => {
+      const value = Number(event.target.value);
+      $("#zoomValue").textContent = `${value}%`;
+      viewer.camera.position.z = 7 - value / 18;
+    });
+
+    $("#viewerAdd").addEventListener("click", () => addToCart({
+      key: `custom-${selectedColor.value}-${selectedSize}`,
+      name: `${selectedColor.name} Custom Hoodie`,
+      price: 189,
+      color: selectedColor.value,
+      size: selectedSize
+    }));
+
+    $("#saveWish").addEventListener("click", () => {
+      wishlist.add(999);
+      renderWishlist();
+      showToast("Saved to wishlist");
+    });
+
+    document.body.addEventListener("click", (event) => {
+      const addId = event.target.dataset.add;
+      const wishId = event.target.dataset.wish;
+      const inc = event.target.dataset.inc;
+      const dec = event.target.dataset.dec;
+
+      if (addId) {
+        const product = products.find((p) => p.id === Number(addId));
+        addToCart({ key: `product-${product.id}-${selectedSize}`, name: product.name, price: product.price, color: product.color, size: selectedSize });
+      }
+      if (wishId) {
+        const id = Number(wishId);
+        wishlist.has(id) ? wishlist.delete(id) : wishlist.add(id);
+        renderWishlist();
+        showToast(wishlist.has(id) ? "Saved to wishlist" : "Removed from wishlist");
+      }
+      if (inc) {
+        const item = cart.find((entry) => entry.key === inc);
+        if (item) item.qty += 1;
+        renderCart();
+      }
+      if (dec) {
+        const item = cart.find((entry) => entry.key === dec);
+        if (item) item.qty -= 1;
+        cart = cart.filter((entry) => entry.qty > 0);
+        renderCart();
+      }
+    });
+
+    document.querySelectorAll("[data-filter]").forEach((button) => {
+      button.addEventListener("click", () => renderProducts(button.dataset.filter));
+    });
+
+    document.addEventListener("mousemove", (event) => {
+      document.querySelectorAll("[data-tilt]").forEach((card) => {
+        const rect = card.getBoundingClientRect();
+        const x = event.clientX - rect.left;
+        const y = event.clientY - rect.top;
+        if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+          const rotateX = ((y / rect.height) - .5) * -9;
+          const rotateY = ((x / rect.width) - .5) * 9;
+          card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-6px)`;
+        } else {
+          card.style.transform = "";
+        }
+      });
+    });
+
+    $("#cartBtn").addEventListener("click", () => $("#cartPanel").classList.add("open"));
+    $("#closeCart").addEventListener("click", () => $("#cartPanel").classList.remove("open"));
+    $("#clearCart").addEventListener("click", () => { cart = []; renderCart(); });
+    $("#checkoutBtn").addEventListener("click", () => {
+      if (!cart.length) return showToast("Cart is empty");
+      $("#checkoutModal").classList.add("open");
+    });
+    $("#closeModal").addEventListener("click", () => $("#checkoutModal").classList.remove("open"));
+    $("#checkoutForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      cart = [];
+      renderCart();
+      $("#checkoutModal").classList.remove("open");
+      $("#cartPanel").classList.remove("open");
+      showToast("Order placed");
+      event.target.reset();
+    });
+
+    renderProducts();
+    renderAdmin();
+    renderCart();
+    observeReveals();
+
+    window.addEventListener("load", () => {
+      setTimeout(() => $("#loader").classList.add("hidden"), 850);
+    });
+  </script>
+</body>
+</html>

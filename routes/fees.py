@@ -560,6 +560,23 @@ def _successful_invoice_paid_amount(invoice: FeeInvoice) -> float:
     return transaction_paid if transactions else saved_paid
 
 
+def _invoice_collection_summary(invoice: FeeInvoice) -> dict:
+    payable_amount = max(0, float(invoice.net_amount or 0) + float(invoice.late_fee or 0))
+    collected_amount = max(0, _successful_invoice_paid_amount(invoice))
+    paid_amount = min(collected_amount, payable_amount)
+    balance_amount = max(0, payable_amount - paid_amount)
+    excess_amount = max(0, collected_amount - payable_amount)
+    status = "Paid" if balance_amount <= 0 else ("Partial" if paid_amount > 0 else "Pending")
+    return {
+        "payable_amount": payable_amount,
+        "collected_amount": collected_amount,
+        "paid_amount": paid_amount,
+        "balance_amount": balance_amount,
+        "excess_amount": excess_amount,
+        "status": status,
+    }
+
+
 def _student_invoice_payload(student: Optional[Student]) -> dict:
     if not student:
         return {}
@@ -847,6 +864,11 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
     def money(val):
         return f"Rs. {float(val or 0):.2f}"
 
+    collection_summary = _invoice_collection_summary(invoice)
+    display_paid_amount = collection_summary["paid_amount"]
+    display_balance_amount = collection_summary["balance_amount"]
+    excess_amount = collection_summary["excess_amount"]
+
     school_name = (
         school.name.upper()
         if school and school.name
@@ -991,13 +1013,13 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
 
                 Paragraph(
                     f"<font size='10'><b>Paid Amount</b></font><br/><br/>"
-                    f"<font size='12'><b>{money(invoice.paid_amount)}</b></font>",
+                    f"<font size='12'><b>{money(display_paid_amount)}</b></font>",
                     p_center
                 ),
 
                 Paragraph(
                     f"<font size='10'><b>Pending Amount</b></font><br/><br/>"
-                    f"<font size='12'><b>{money(invoice.balance_amount)}</b></font>",
+                    f"<font size='12'><b>{money(display_balance_amount)}</b></font>",
                     p_center
                 ),
             ]
@@ -1051,14 +1073,20 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
 
             [
                 Paragraph("<b>Paid Amount</b>", bold_10),
-                Paragraph(money(invoice.paid_amount), right_bold_10)
+                Paragraph(money(display_paid_amount), right_bold_10)
             ],
 
             [
                 Paragraph("<b>Pending Amount</b>", bold_10),
-                Paragraph(money(invoice.balance_amount), right_bold_10)
+                Paragraph(money(display_balance_amount), right_bold_10)
             ],
         ])
+
+        if excess_amount > 0:
+            fee_rows.append([
+                Paragraph("<b>Excess / Credit Amount</b>", bold_10),
+                Paragraph(money(excess_amount), right_bold_10)
+            ])
 
         fee_table = Table(
             fee_rows,
@@ -1082,7 +1110,8 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
 
         transactions = list(
             PaymentTransaction.objects(
-                invoice=invoice
+                invoice=invoice,
+                status="Success"
             ).order_by("-payment_date")
         )
 
@@ -1142,7 +1171,7 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
                 ])
 
             payment_rows.append([
-                Paragraph("<b>Total Paid</b>", bold_10),
+                Paragraph("<b>Total Collected</b>", bold_10),
 
                 Paragraph(
                     f"<b>{money(total_paid_history)}</b>",
@@ -1153,6 +1182,22 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
                 "",
                 "",
             ])
+
+            if excess_amount > 0:
+                payment_rows.append([
+                    Paragraph("<b>Applied To Invoice</b>", bold_10),
+                    Paragraph(f"<b>{money(display_paid_amount)}</b>", right_bold_10),
+                    "",
+                    "",
+                    "",
+                ])
+                payment_rows.append([
+                    Paragraph("<b>Excess / Credit Amount</b>", bold_10),
+                    Paragraph(f"<b>{money(excess_amount)}</b>", right_bold_10),
+                    "",
+                    "",
+                    "",
+                ])
 
             payment_table = Table(
                 payment_rows,
@@ -1504,6 +1549,7 @@ async def list_invoices(
     
     result = []
     for inv in invoices:
+        collection_summary = _invoice_collection_summary(inv)
         row = {
             "id": str(inv.id),
             "invoice_no": inv.invoice_no,
@@ -1523,9 +1569,11 @@ async def list_invoices(
             "concession_name": inv.concession_name,
             "concession_percent": inv.concession_percent,
             "net_amount": inv.net_amount,
-            "paid_amount": inv.paid_amount,
-            "balance_amount": inv.balance_amount,
-            "status": inv.status
+            "paid_amount": collection_summary["paid_amount"],
+            "balance_amount": collection_summary["balance_amount"],
+            "collected_amount": collection_summary["collected_amount"],
+            "excess_amount": collection_summary["excess_amount"],
+            "status": collection_summary["status"]
         }
         row["tuition_months"] = _invoice_tuition_months(inv)
         row["transport_months"] = _invoice_transport_months(inv)
@@ -1549,6 +1597,7 @@ async def get_invoice(invoice_id: str, current_user: User = Depends(get_current_
             raise HTTPException(403, "Access denied for this branch")
         # Get transactions
         transactions = PaymentTransaction.objects(invoice=inv).order_by('-payment_date')
+        collection_summary = _invoice_collection_summary(inv)
         
         data = {
             "id": str(inv.id),
@@ -1568,9 +1617,11 @@ async def get_invoice(invoice_id: str, current_user: User = Depends(get_current_
             "discount_amount": inv.discount_amount,
             "late_fee": inv.late_fee,
             "net_amount": inv.net_amount,
-            "paid_amount": inv.paid_amount,
-            "balance_amount": inv.balance_amount,
-            "status": inv.status,
+            "paid_amount": collection_summary["paid_amount"],
+            "balance_amount": collection_summary["balance_amount"],
+            "collected_amount": collection_summary["collected_amount"],
+            "excess_amount": collection_summary["excess_amount"],
+            "status": collection_summary["status"],
             "remarks": inv.remarks,
             "transactions": [{
                 "id": str(t.id),
@@ -1646,6 +1697,8 @@ async def record_payment(data: PaymentCreate, current_user: User = Depends(get_c
     school = School.objects.get(id=data.school_id)
     student = Student.objects.get(id=data.student_id)
     invoice = FeeInvoice.objects.get(id=data.invoice_id)
+    if str(invoice.school.id) != str(school.id) or str(invoice.student.id) != str(student.id):
+        raise HTTPException(400, "Selected invoice does not belong to this student/school")
     scoped_branch = resolve_branch_scope(current_user, None)
     if scoped_branch and student.branch_code != scoped_branch:
         raise HTTPException(403, "Access denied for this branch")
