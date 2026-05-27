@@ -231,7 +231,7 @@ def parse_student_pdf_text(text: str) -> List[ParsedStudentRow]:
         lines = [line.strip() for line in page.splitlines()]
         current: List[str] = []
         for line in lines:
-            if not line or line.startswith("Page ") or line.startswith("Student List Detailed") or line.startswith("R.S MEMORIAL"):
+            if not line or line.startswith("Page ") or line.startswith("Student List Detailed"):
                 continue
             if ROW_START.match(line):
                 if current:

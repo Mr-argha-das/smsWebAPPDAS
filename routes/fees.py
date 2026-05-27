@@ -872,7 +872,7 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
     school_name = (
         school.name.upper()
         if school and school.name
-        else 'R.S MEMORIAL PUBLIC SCHOOL'
+        else 'SCHOOL'
     )
 
     school_phone = (

@@ -16,7 +16,7 @@ var NAV_GROUPS = [
     items: [
       { icon: 'users',      label: 'Students',      href: '/students',      module: 'students',      color: '#10b981' },
       { icon: 'user-tie',   label: 'Staff & HR',    href: '/staff',         module: 'staff',         color: '#f59e0b' },
-      { icon: 'graduation', label: 'Admissions',    href: 'https://rsmemorialpublicschool.com/admission-enquiry/',    module: 'admissions',    color: '#f97316' },
+      { icon: 'graduation', label: 'Admissions',    href: '/admissions',    module: 'admissions',    color: '#f97316' },
     ]
   },
   {
@@ -250,12 +250,12 @@ display:flex;align-items:center;gap:10px">
   <div style="width:36px;height:36px;border-radius:10px;
   
   display:flex;align-items:center;justify-content:center;font-weight:700">
-      <img src="/public/rs.jpeg" style="width:100%;height:100%;object-fit:cover; border-radius:8px"/>
+      <img src="/public/logo.png" style="width:100%;height:100%;object-fit:cover; border-radius:8px"/>
   </div>
 
   <div>
     <div style="font-weight:800;font-size:14px;color:#111827">
-      R S Memorial Public School
+      School Management System
     </div>
     <div style="font-size:10px;color:#9ca3af">
       Learn Today for a Better Tomorrow

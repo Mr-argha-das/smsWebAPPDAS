@@ -5,8 +5,8 @@ class Settings(BaseSettings):
     APP_NAME: str = "Scholar Desk"
     APP_VERSION: str = "3.0.0"
     DEBUG: bool = True
-    MONGODB_URL: str = "mongodb+srv://infozodex_db_user:absolutions@data.yycywiw.mongodb.net/school_management3"
-    DB_NAME: str = "school_management3"
+    MONGODB_URL: str = "mongodb+srv://infozodex_db_user:absolutions@data.yycywiw.mongodb.net/school_management3_test"
+    DB_NAME: str = "school_management3_test"
     SECRET_KEY: str = "edumanage-pro-secret-key-2024-change-in-production"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 1440
