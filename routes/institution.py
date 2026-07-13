@@ -143,6 +143,25 @@ async def list_schools(current_user: User = Depends(get_current_user)):
     return success_response(result)
 
 
+@router.get("/public-brand")
+async def public_school_brand(school_id: Optional[str] = None):
+    query = School.objects(is_active=True)
+    school = query.filter(id=school_id).first() if school_id else query.first()
+    if not school:
+        return success_response({
+            "name": "School Management System",
+            "logo": "/public/logo.png",
+            "tagline": "Learn Today for a Better Tomorrow",
+        })
+    return success_response({
+        "id": str(school.id),
+        "name": school.name,
+        "logo": _normalize_logo_url(school.logo) or "/public/logo.png",
+        "tagline": school.tagline or "Learn Today for a Better Tomorrow",
+        "phone": school.phone,
+    })
+
+
 @router.get("/school/{school_id}")
 async def get_school(school_id: str, current_user: User = Depends(get_current_user)):
     try:

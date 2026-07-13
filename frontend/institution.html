@@ -940,6 +940,7 @@
       if (!schoolId) return;
       try {
         const r = await SchoolAPI.get(schoolId); const s = r.data;
+        if (typeof setCachedSchoolBrand === 'function') setCachedSchoolBrand(s);
         schoolBranchOptions = s.branches || [];
         document.getElementById('s_name').value = s.name || '';
         document.getElementById('s_code').value = s.code || '';
@@ -1015,7 +1016,10 @@
           location.reload();
           return;
         }
-        showToast('School saved!'); document.getElementById('schoolForm').style.display = 'none'; loadSchool();
+        showToast('School saved!');
+        document.getElementById('schoolForm').style.display = 'none';
+        await loadSchool();
+        if (typeof refreshSidebarBrand === 'function') refreshSidebarBrand();
       } catch (e) { showToast('Error: ' + e.message, 'error'); }
     }
 

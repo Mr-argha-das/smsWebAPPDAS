@@ -134,11 +134,84 @@ function hasModuleAccess(module) {
   return accessibleModules.indexOf(String(module || '').toLowerCase()) !== -1;
 }
 
+function escapeLayoutText(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function getCachedSchoolBrand() {
+  try {
+    return JSON.parse(localStorage.getItem('school_brand') || 'null') || {};
+  } catch (e) {
+    return {};
+  }
+}
+
+function setCachedSchoolBrand(school) {
+  if (!school) return;
+  var brand = {
+    id: school.id || localStorage.getItem('school_id') || '',
+    name: school.name || '',
+    logo: school.logo || '',
+    tagline: school.tagline || 'Learn Today for a Better Tomorrow'
+  };
+  localStorage.setItem('school_brand', JSON.stringify(brand));
+}
+
+function applySidebarBrand(brand) {
+  brand = brand || getCachedSchoolBrand();
+  var name = brand.name || 'School Management System';
+  var logo = brand.logo || '/public/logo.png';
+  var tagline = brand.tagline || 'Learn Today for a Better Tomorrow';
+
+  var nameEl = document.getElementById('edu-sb-school-name');
+  var tagEl = document.getElementById('edu-sb-school-tagline');
+  var logoEl = document.getElementById('edu-sb-school-logo');
+  if (nameEl) nameEl.textContent = name;
+  if (tagEl) tagEl.textContent = tagline;
+  if (logoEl) {
+    logoEl.src = logo;
+    logoEl.alt = name + ' Logo';
+  }
+}
+
+async function refreshSidebarBrand() {
+  applySidebarBrand();
+  if (!Auth.isLoggedIn()) return;
+  var user = getUser() || {};
+  var schoolId = localStorage.getItem('school_id') || user.assigned_school_id || '';
+  try {
+    var school = null;
+    if (schoolId) {
+      var res = await API.get('/institution/school/' + schoolId);
+      school = res && res.data;
+    } else {
+      var listRes = await API.get('/institution/school');
+      var schools = (listRes && listRes.data) || [];
+      school = schools[0] || null;
+      if (school && school.id) localStorage.setItem('school_id', school.id);
+    }
+    if (!school) return;
+    setCachedSchoolBrand(school);
+    applySidebarBrand(getCachedSchoolBrand());
+  } catch (e) {
+    applySidebarBrand();
+  }
+}
+
 function renderSidebar(activeModule) {
   var user = getUser() || {};
   var nameParts = (user.full_name || 'Admin').split(' ');
   var initials = nameParts.map(w => w[0] || '').join('').substring(0, 2).toUpperCase();
   var accessibleModules = getAccessibleModules(user);
+  var schoolBrand = getCachedSchoolBrand();
+  var schoolName = escapeLayoutText(schoolBrand.name || 'School Management System');
+  var schoolTagline = escapeLayoutText(schoolBrand.tagline || 'Learn Today for a Better Tomorrow');
+  var schoolLogo = escapeLayoutText(schoolBrand.logo || '/public/logo.png');
 
   var navHTML = NAV_GROUPS.map(group => {
     var items = group.items.map(item => {
@@ -196,6 +269,7 @@ function renderSidebar(activeModule) {
     </div>`;
   }).join('');
 
+  setTimeout(refreshSidebarBrand, 0);
   return `
   <style>
     #edu-sidebar{
@@ -250,15 +324,15 @@ display:flex;align-items:center;gap:10px">
   <div style="width:36px;height:36px;border-radius:10px;
   
   display:flex;align-items:center;justify-content:center;font-weight:700">
-      <img src="/public/logo.png" style="width:100%;height:100%;object-fit:cover; border-radius:8px"/>
+      <img id="edu-sb-school-logo" src="${schoolLogo}" alt="${schoolName} Logo" style="width:100%;height:100%;object-fit:cover; border-radius:8px"/>
   </div>
 
   <div>
-    <div style="font-weight:800;font-size:14px;color:#111827">
-      School Management System
+    <div id="edu-sb-school-name" style="font-weight:800;font-size:14px;color:#111827;line-height:1.2">
+      ${schoolName}
     </div>
-    <div style="font-size:10px;color:#9ca3af">
-      Learn Today for a Better Tomorrow
+    <div id="edu-sb-school-tagline" style="font-size:10px;color:#9ca3af;margin-top:2px">
+      ${schoolTagline}
     </div>
   </div>
 

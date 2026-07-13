@@ -725,6 +725,50 @@
     </div>
   </div>
 
+  <!-- Payment Edit Modal -->
+  <div id="paymentEditModal" class="modal-overlay" style="display:none">
+    <div class="modal-box w-full max-w-md">
+      <div class="flex justify-between items-center px-6 py-4 border-b">
+        <h3 class="font-bold text-gray-900">Edit Payment</h3>
+        <button onclick="closePaymentEditModal()" class="p-2 text-gray-400 hover:text-gray-600 rounded-xl text-lg">×</button>
+      </div>
+      <div class="px-6 py-5 space-y-4">
+        <input id="edit_payment_id" type="hidden" />
+        <div class="rounded-xl bg-slate-50 border border-slate-200 p-3 text-sm">
+          <div class="font-semibold text-slate-900" id="edit_payment_student">-</div>
+          <div class="text-slate-500" id="edit_payment_invoice">-</div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label class="lbl">Amount *</label><input id="edit_payment_amount" type="number" class="finput" /></div>
+          <div><label class="lbl">Date & Time</label><input id="edit_payment_date" type="datetime-local" class="finput" /></div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label class="lbl">Payment Mode *</label>
+            <select id="edit_payment_mode" class="finput">
+              <option>Cash</option>
+              <option>UPI</option>
+              <option>Online</option>
+              <option>Cheque</option>
+              <option>DD</option>
+              <option>NEFT</option>
+              <option>Card</option>
+            </select>
+          </div>
+          <div><label class="lbl">Collected By *</label><input id="edit_payment_collected_by" class="finput" /></div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div><label class="lbl">Instrument No</label><input id="edit_payment_instrument" class="finput" /></div>
+          <div><label class="lbl">Bank Name</label><input id="edit_payment_bank" class="finput" /></div>
+        </div>
+        <div><label class="lbl">Remarks</label><input id="edit_payment_remarks" class="finput" /></div>
+      </div>
+      <div class="flex gap-3 px-6 py-4 border-t justify-end">
+        <button onclick="closePaymentEditModal()" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
+        <button onclick="savePaymentEdit()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Save</button>
+      </div>
+    </div>
+  </div>
+
   <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl">
   </div>
 
@@ -760,6 +804,7 @@
     let estimateRouteCache = [];
     let editingFeeStructureId = '';
     let editingInvoiceId = '';
+    let paymentHistoryRows = [];
     const invoiceConcessionOptions = [
       { label: 'Select', percent: 0 },
       { label: '20% per month concession in Tuition Fees on Each Girls Student', percent: 20 },
@@ -2256,6 +2301,78 @@
       } catch (e) { showToast('Error: ' + e.message, 'error'); }
     }
 
+    function toDateTimeLocal(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '';
+      const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+      return local.toISOString().slice(0, 16);
+    }
+
+    function getPaymentHistoryRow(paymentId) {
+      return paymentHistoryRows.find(row => row.id === paymentId);
+    }
+
+    function closePaymentEditModal() {
+      document.getElementById('paymentEditModal').style.display = 'none';
+      document.getElementById('edit_payment_id').value = '';
+    }
+
+    function openPaymentEdit(paymentId) {
+      const row = getPaymentHistoryRow(paymentId);
+      if (!row) { showToast('Payment row not found', 'error'); return; }
+      document.getElementById('edit_payment_id').value = row.id;
+      document.getElementById('edit_payment_student').textContent = row.student_name || '-';
+      document.getElementById('edit_payment_invoice').textContent = row.invoice_no || '-';
+      document.getElementById('edit_payment_amount').value = row.amount || 0;
+      document.getElementById('edit_payment_date').value = toDateTimeLocal(row.payment_date);
+      document.getElementById('edit_payment_mode').value = row.payment_mode || 'Cash';
+      document.getElementById('edit_payment_collected_by').value = row.collected_by || '';
+      document.getElementById('edit_payment_instrument').value = row.instrument_no || '';
+      document.getElementById('edit_payment_bank').value = row.bank_name || '';
+      document.getElementById('edit_payment_remarks').value = row.remarks || '';
+      document.getElementById('paymentEditModal').style.display = 'flex';
+    }
+
+    async function savePaymentEdit() {
+      const paymentId = document.getElementById('edit_payment_id').value;
+      const amount = parseFloat(document.getElementById('edit_payment_amount').value);
+      const collectedBy = document.getElementById('edit_payment_collected_by').value.trim();
+      if (!paymentId || !amount || amount <= 0 || !collectedBy) {
+        showToast('Fill amount and collected by', 'error');
+        return;
+      }
+      try {
+        await FeesAPI.updatePayment(paymentId, {
+          amount,
+          payment_mode: document.getElementById('edit_payment_mode').value,
+          payment_date: document.getElementById('edit_payment_date').value || null,
+          instrument_no: document.getElementById('edit_payment_instrument').value || null,
+          bank_name: document.getElementById('edit_payment_bank').value || null,
+          collected_by_name: collectedBy,
+          remarks: document.getElementById('edit_payment_remarks').value || null,
+        });
+        closePaymentEditModal();
+        showToast('Payment updated');
+        await Promise.allSettled([loadPaymentHistory(), loadInvoices(), loadFeeStats()]);
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
+    async function deletePaymentHistoryRow(paymentId) {
+      const row = getPaymentHistoryRow(paymentId);
+      if (!row) { showToast('Payment row not found', 'error'); return; }
+      if (!confirm(`Delete payment ${formatCurrency(row.amount || 0)} for ${row.student_name || 'this student'}?`)) return;
+      try {
+        await FeesAPI.deletePayment(paymentId);
+        showToast('Payment deleted');
+        await Promise.allSettled([loadPaymentHistory(), loadInvoices(), loadFeeStats()]);
+      } catch (e) {
+        showToast('Error: ' + e.message, 'error');
+      }
+    }
+
     async function loadPaymentHistory() {
       if (!schoolId) {
         document.getElementById('paymentHistoryTable').innerHTML = '<p class="text-gray-400 text-sm p-4">Configure school first</p>';
@@ -2270,7 +2387,8 @@
         if (search) params.search = search;
         const r = await FeesAPI.paymentHistory(params);
         const rows = r?.data || [];
-        const hdrs = ['Student Name', 'Father Name', 'Invoice No', 'Payment Credit', 'Date & Time', 'Balance', 'Collected By', 'View'];
+        paymentHistoryRows = rows;
+        const hdrs = ['Student Name', 'Father Name', 'Invoice No', 'Payment Credit', 'Date & Time', 'Balance', 'Collected By', 'Actions'];
         document.getElementById('paymentHistoryTable').innerHTML = buildTable(hdrs, rows.map(row => `
           <td class="px-4 py-3 text-sm font-medium text-gray-900">${row.student_name || '-'}</td>
           <td class="px-4 py-3 text-sm text-gray-600">${row.father_name || '-'}</td>
@@ -2291,8 +2409,15 @@
 </td>
           <td class="px-4 py-3 text-sm font-semibold text-red-500">${formatCurrency(row.balance_amount || 0)}</td>
           <td class="px-4 py-3 text-sm text-gray-600">${row.collected_by || '-'}</td>
-          <td class="px-4 py-3"><button onclick="printStudentYearStatement('${row.student_id}')" class="px-3 py-1.5 rounded-lg bg-blue-50 text-blue-700 text-xs font-semibold hover:bg-blue-100">View</button></td>
+          <td class="px-4 py-3">
+            <div class="flex items-center gap-1">
+              <button onclick="printStudentYearStatement('${row.student_id}')" class="p-2 rounded-lg text-blue-600 hover:bg-blue-50" title="View"><i data-lucide="eye" class="w-4 h-4"></i></button>
+              <button onclick="openPaymentEdit('${row.id}')" class="p-2 rounded-lg text-amber-600 hover:bg-amber-50" title="Edit"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+              <button onclick="deletePaymentHistoryRow('${row.id}')" class="p-2 rounded-lg text-red-600 hover:bg-red-50" title="Delete"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+            </div>
+          </td>
         `), 'No payment history found');
+        if (window.lucide) lucide.createIcons();
       } catch (e) {
         document.getElementById('paymentHistoryTable').innerHTML = `<div class="text-center py-8 text-red-400">Error: ${e.message}</div>`;
       }

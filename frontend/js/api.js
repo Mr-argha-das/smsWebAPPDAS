@@ -348,6 +348,7 @@ const StudentAPI = {
     return API.upload(`/students/import/csv?${params.toString()}`, fd);
   },
   promote:    (id,d)  => API.post(`/students/${id}/promote`, d),
+  rejoin:     (id)    => API.post(`/students/${id}/rejoin`, {}),
   generateTC: (id,d)  => API.post(`/students/${id}/transfer-certificate`, d),
   getTC:      (id)    => API.get(`/students/${id}/transfer-certificate`),
   stats:      (sid, ayid, branchCode)   => API.get('/students/stats/summary', { school_id: sid, academic_year_id: ayid, branch_code: branchCode }),
@@ -414,6 +415,8 @@ const FeesAPI = {
   sendInvoiceEmail: (id, d) => API.post(`/fees/invoice/${id}/send-email`, d),
   recordPayment:  (d)    => API.post('/fees/payment', d),
   collectPayment: (d)    => API.post('/fees/payment', d),  // POST /fees/payment
+  updatePayment:  (id,d) => API.put(`/fees/payment/${id}`, d),
+  deletePayment:  (id)   => API.delete(`/fees/payment/${id}`),
   paymentHistory: (p)    => API.get('/fees/payment/history', p),
   getDues:        (p)    => API.get('/fees/dues', p),
   duesReport:     (p)    => API.get('/fees/dues', p),

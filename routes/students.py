@@ -1269,6 +1269,37 @@ async def promote_student(
     }, "Student promoted successfully")
 
 
+@router.post("/{student_id}/rejoin")
+async def rejoin_student(student_id: str, current_user: User = Depends(get_current_user)):
+    try:
+        student = Student.objects.get(id=student_id)
+        _ensure_student_scope(student, current_user)
+    except Student.DoesNotExist:
+        raise HTTPException(404, "Student not found")
+
+    if student.admission_status != "Transferred":
+        raise HTTPException(400, "Only transferred students can be rejoined")
+
+    owner = _active_admission_no_owner(student.school, student.admission_no, str(student.id))
+    if owner:
+        raise HTTPException(400, f"Admission number {student.admission_no} is already used by {owner.full_name}")
+
+    existing_remarks = (student.remarks or "").strip()
+    rejoin_note = f"Rejoined on {datetime.utcnow().strftime('%Y-%m-%d')}"
+    student.admission_status = "Active"
+    student.admission_type = "Re-Admission"
+    student.is_active = True
+    student.updated_at = datetime.utcnow()
+    student.remarks = f"{existing_remarks}\n{rejoin_note}".strip() if existing_remarks else rejoin_note
+    student.save()
+
+    return success_response({
+        "id": str(student.id),
+        "admission_status": student.admission_status,
+        "admission_type": student.admission_type,
+    }, "Student rejoined successfully")
+
+
 @router.post("/import/csv")
 async def import_students_csv(
     school_id: str,

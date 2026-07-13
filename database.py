@@ -1,4 +1,5 @@
 import mongoengine
+import certifi
 from mongoengine.connection import get_db
 from config import settings
 import logging
@@ -10,7 +11,8 @@ def connect_db():
         mongoengine.connect(
             db=settings.DB_NAME,
             host=settings.MONGODB_URL,
-            alias="default"
+            alias="default",
+            tlsCAFile=certifi.where()
         )
         _relax_student_admission_no_index()
         logger.info(f"✅ Connected to MongoDB: {settings.DB_NAME}")

@@ -577,6 +577,30 @@ def _invoice_collection_summary(invoice: FeeInvoice) -> dict:
     }
 
 
+def _sync_invoice_collection_totals(invoice: FeeInvoice) -> dict:
+    payable_amount = max(0, float(invoice.net_amount or 0) + float(invoice.late_fee or 0))
+    collected_amount = sum(
+        float(txn.amount or 0)
+        for txn in PaymentTransaction.objects(invoice=invoice, status="Success").only("amount")
+    )
+    paid_amount = min(max(0, collected_amount), payable_amount)
+    balance_amount = max(0, payable_amount - paid_amount)
+    summary = {
+        "payable_amount": payable_amount,
+        "collected_amount": collected_amount,
+        "paid_amount": paid_amount,
+        "balance_amount": balance_amount,
+        "excess_amount": max(0, collected_amount - payable_amount),
+        "status": "Paid" if balance_amount <= 0 else ("Partial" if paid_amount > 0 else "Pending"),
+    }
+    invoice.update(
+        paid_amount=summary["paid_amount"],
+        balance_amount=summary["balance_amount"],
+        status=summary["status"],
+    )
+    return summary
+
+
 def _student_invoice_payload(student: Optional[Student]) -> dict:
     if not student:
         return {}
@@ -1691,6 +1715,29 @@ class PaymentCreate(BaseModel):
     remarks: Optional[str] = None
 
 
+class PaymentUpdate(BaseModel):
+    amount: float
+    payment_mode: str
+    payment_date: Optional[datetime] = None
+    instrument_no: Optional[str] = None
+    bank_name: Optional[str] = None
+    collected_by_name: Optional[str] = None
+    remarks: Optional[str] = None
+
+
+def _get_payment_for_write(payment_id: str, current_user: User) -> PaymentTransaction:
+    txn = PaymentTransaction.objects(id=payment_id).first()
+    if not txn:
+        raise HTTPException(404, "Payment not found")
+    if txn.status != "Success":
+        raise HTTPException(400, "Only successful payments can be changed")
+    resolve_school_access(current_user, str(txn.school.id) if txn.school else None)
+    scoped_branch = resolve_branch_scope(current_user, None)
+    if scoped_branch and txn.student and txn.student.branch_code != scoped_branch:
+        raise HTTPException(403, "Access denied for this branch")
+    return txn
+
+
 @router.post("/payment")
 async def record_payment(data: PaymentCreate, current_user: User = Depends(get_current_user)):
     data.school_id = resolve_school_access(current_user, data.school_id)
@@ -1753,6 +1800,57 @@ async def record_payment(data: PaymentCreate, current_user: User = Depends(get_c
     }, "Payment recorded successfully")
 
 
+@router.put("/payment/{payment_id}")
+async def update_payment(payment_id: str, data: PaymentUpdate, current_user: User = Depends(get_current_user)):
+    txn = _get_payment_for_write(payment_id, current_user)
+    invoice = txn.invoice
+    if not invoice:
+        raise HTTPException(400, "Payment invoice not found")
+    if data.amount <= 0:
+        raise HTTPException(400, "Payment amount must be positive")
+
+    payable_amount = float(invoice.net_amount or 0) + float(invoice.late_fee or 0)
+    other_paid = sum(
+        float(other.amount or 0)
+        for other in PaymentTransaction.objects(invoice=invoice, status="Success", id__ne=txn.id).only("amount")
+    )
+    max_allowed = max(0, payable_amount - other_paid)
+    if data.amount > max_allowed:
+        raise HTTPException(400, f"Payment amount exceeds balance: {max_allowed}")
+
+    txn.update(
+        payment_date=data.payment_date or txn.payment_date or datetime.utcnow(),
+        amount=data.amount,
+        payment_mode=data.payment_mode,
+        instrument_no=data.instrument_no,
+        bank_name=data.bank_name,
+        remarks=data.remarks,
+        collected_by=(data.collected_by_name or current_user.full_name),
+    )
+    txn.reload()
+    summary = _sync_invoice_collection_totals(invoice)
+    return success_response({
+        "id": str(txn.id),
+        "receipt_no": txn.receipt_no,
+        "amount": txn.amount,
+        "balance": summary["balance_amount"],
+        "status": summary["status"],
+    }, "Payment updated successfully")
+
+
+@router.delete("/payment/{payment_id}")
+async def delete_payment(payment_id: str, current_user: User = Depends(get_current_user)):
+    txn = _get_payment_for_write(payment_id, current_user)
+    invoice = txn.invoice
+    txn.update(status="Refunded", remarks=((txn.remarks or "").strip() + "\nDeleted from payment history").strip())
+    summary = _sync_invoice_collection_totals(invoice) if invoice else {}
+    return success_response({
+        "id": payment_id,
+        "balance": summary.get("balance_amount"),
+        "status": summary.get("status"),
+    }, "Payment deleted successfully")
+
+
 @router.get("/payment/history")
 async def payment_history(
     school_id: str,
@@ -1806,6 +1904,7 @@ async def payment_history(
         result.append({
             "id": str(txn.id),
             "student_id": str(student.id) if student else None,
+            "invoice_id": str(invoice.id) if invoice else None,
             "student_name": student.full_name if student else None,
             "father_name": student.parent_info.father_name if student and student.parent_info else None,
             "invoice_no": invoice.invoice_no if invoice else None,
@@ -1814,6 +1913,9 @@ async def payment_history(
             "balance_amount": invoice.balance_amount if invoice else 0,
             "collected_by": txn.collected_by,
             "payment_mode": txn.payment_mode,
+            "instrument_no": txn.instrument_no,
+            "bank_name": txn.bank_name,
+            "remarks": txn.remarks,
             "receipt_no": txn.receipt_no,
         })
     return success_response(result, meta={

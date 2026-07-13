@@ -1187,6 +1187,10 @@
         <button onclick="editStudent('${s.id}')" class="p-1.5 text-emerald-600 hover:bg-emerald-50 rounded-lg" title="Edit">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
         </button>
+        ${currentStudentTab === 'transferred' ? `
+        <button onclick="rejoinStudent('${s.id}','${s.full_name.replace(/'/g, "\\'")}')" class="p-1.5 text-indigo-600 hover:bg-indigo-50 rounded-lg" title="Rejoin">
+          <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/></svg>
+        </button>` : ''}
         <button onclick="delStudent('${s.id}','${s.full_name.replace(/'/g, "\'")}')" class="p-1.5 text-red-500 hover:bg-red-50 rounded-lg" title="Delete">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
         </button>
@@ -1458,6 +1462,7 @@
         <div class="flex gap-3">
           <button onclick="editStudent('${id}'); document.getElementById('detModal').style.display = 'none';" class="px-4 py-2 bg-blue-100 text-blue-700 rounded-xl text-sm font-medium hover:bg-blue-200">Edit Student</button>
           <button onclick="openPromoteModal('${id}','${(s.full_name || '').replace(/'/g, "\\'")}','${s.academic_year_id || ''}','${s.classroom_id || ''}','${s.section_id || ''}','${(s.classroom_name || '').replace(/'/g, "\\'")}','${(s.section_name || '').replace(/'/g, "\\'")}','${s.branch_code || ''}')" class="px-4 py-2 bg-emerald-100 text-emerald-700 rounded-xl text-sm font-medium hover:bg-emerald-200">Promote Student</button>
+          ${s.admission_status === 'Transferred' ? `<button onclick="rejoinStudent('${id}','${(s.full_name || '').replace(/'/g, "\\'")}')" class="px-4 py-2 bg-indigo-100 text-indigo-700 rounded-xl text-sm font-medium hover:bg-indigo-200">Rejoin Student</button>` : ''}
           <button onclick="genTC('${id}','${(s.full_name || '').replace(/'/g, "\\'")}')" class="px-4 py-2 bg-orange-100 text-orange-700 rounded-xl text-sm font-medium hover:bg-orange-200">Generate TC</button>
         </div>
       </div>`;
@@ -1469,6 +1474,18 @@
       if (!confirm('Generate TC for ' + name + '?')) return;
       try { const r = await StudentAPI.generateTC(id, { conduct: 'Good', fee_clearance: false }); showToast('TC ' + r.data.tc_number + ' generated!'); document.getElementById('detModal').style.display = 'none'; loadStudents(1); loadStats(); }
       catch (e) { showToast('TC failed: ' + e.message, 'error'); }
+    }
+
+    async function rejoinStudent(id, name) {
+      if (!confirm('Rejoin "' + name + '" as an active student?')) return;
+      try {
+        await StudentAPI.rejoin(id);
+        showToast('Student rejoined successfully');
+        document.getElementById('detModal').style.display = 'none';
+        await Promise.allSettled([loadStudents(curPage), loadStats()]);
+      } catch (e) {
+        showToast('Rejoin failed: ' + e.message, 'error');
+      }
     }
 
     async function delStudent(id, name) {

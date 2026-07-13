@@ -201,9 +201,9 @@
     <div class="corner-deco"></div>
 
     <div class="logo-area  ">
-      <img src="/public/logo.png" alt="Logo" class="logo-svg">
-      <div class="school-name">School Management System</div>
-      <div class="text-[13px] text-gray-500">Learn Today for a Better Tomorrow</div>
+      <img id="loginSchoolLogo" src="/public/logo.png" alt="School Logo" class="logo-svg">
+      <div id="loginSchoolName" class="school-name">School Management System</div>
+      <div id="loginSchoolTagline" class="text-[13px] text-gray-500">Learn Today for a Better Tomorrow</div>
     </div>
 
     <div class="wave-container">
@@ -270,6 +270,51 @@
 </div>
 
 <script>
+  function getCachedLoginBrand() {
+    try {
+      return JSON.parse(localStorage.getItem('school_brand') || 'null') || {};
+    } catch {
+      return {};
+    }
+  }
+
+  function setCachedLoginBrand(brand) {
+    if (!brand) return;
+    localStorage.setItem('school_brand', JSON.stringify({
+      id: brand.id || localStorage.getItem('school_id') || '',
+      name: brand.name || '',
+      logo: brand.logo || '',
+      tagline: brand.tagline || 'Learn Today for a Better Tomorrow'
+    }));
+  }
+
+  function applyLoginBrand(brand) {
+    brand = brand || getCachedLoginBrand();
+    const name = brand.name || 'School Management System';
+    const logo = brand.logo || '/public/logo.png';
+    const tagline = brand.tagline || 'Learn Today for a Better Tomorrow';
+    document.getElementById('loginSchoolName').textContent = name;
+    document.getElementById('loginSchoolTagline').textContent = tagline;
+    const logoEl = document.getElementById('loginSchoolLogo');
+    logoEl.src = logo;
+    logoEl.alt = `${name} Logo`;
+  }
+
+  async function loadLoginBrand() {
+    applyLoginBrand();
+    try {
+      const schoolId = localStorage.getItem('school_id') || '';
+      const response = await fetch(`/api/v1/institution/public-brand${schoolId ? `?school_id=${encodeURIComponent(schoolId)}` : ''}`);
+      const result = await response.json();
+      if (response.ok && result?.data) {
+        setCachedLoginBrand(result.data);
+        applyLoginBrand(result.data);
+      }
+    } catch {}
+  }
+
+  loadLoginBrand();
+
   document.querySelector('.eye-icon').addEventListener('click', function() {
     const input = document.getElementById('password');
     input.type = input.type === 'password' ? 'text' : 'password';
@@ -318,6 +363,11 @@
       if (data.user?.assigned_school_id) {
         localStorage.setItem('school_id', data.user.assigned_school_id);
       }
+      try {
+        const brandResponse = await fetch(`/api/v1/institution/public-brand${data.user?.assigned_school_id ? `?school_id=${encodeURIComponent(data.user.assigned_school_id)}` : ''}`);
+        const brandResult = await brandResponse.json();
+        if (brandResponse.ok && brandResult?.data) setCachedLoginBrand(brandResult.data);
+      } catch {}
 
       showLoginMessage('Login successful. Opening dashboard...', 'success');
       window.location.href = '/dashboard';
