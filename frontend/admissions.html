@@ -265,7 +265,9 @@
               </div>
             </div>
             <div class="bg-blue-50 border border-blue-200 rounded-xl px-5 py-3 mb-5 text-sm">
-              <strong>Public URL:</strong> <span id="pubLink" class="text-blue-700 font-mono"></span>
+              <strong>Public URL:</strong>
+              <a id="pubLink" href="https://rsmemorialpublicschool.com/admission-enquiry/" target="_blank"
+                rel="noopener noreferrer" class="text-blue-700 font-mono hover:underline">https://rsmemorialpublicschool.com/admission-enquiry/</a>
               <p class="text-gray-500 mt-1">Share this link with parents/applicants</p>
             </div>
             <div class="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center text-gray-400">
@@ -320,13 +322,18 @@
     document.getElementById('sidebarContainer').innerHTML = renderSidebar('admissions');
     document.getElementById('topbarContainer').innerHTML = renderTopbar('Online Admissions', 'Manage admission applications');
     const schoolId = localStorage.getItem('school_id');
-    document.getElementById('pubLink').textContent = `${location.origin}/apply.html?school=${schoolId}`;
+    const publicAdmissionUrl = 'https://rsmemorialpublicschool.com/admission-enquiry/';
+    document.getElementById('pubLink').textContent = publicAdmissionUrl;
+    document.getElementById('pubLink').href = publicAdmissionUrl;
     let currentAppId = null;
 
     function switchTab(i) {
       document.querySelectorAll('.adtab').forEach((b, j) => { b.classList.toggle('border-blue-600', j === i); b.classList.toggle('text-blue-600', j === i); b.classList.toggle('border-transparent', j !== i); b.classList.toggle('text-gray-500', j !== i); });
       document.querySelectorAll('[id^="adtab"]').forEach(t => { t.classList.toggle('hidden', parseInt(t.id.replace('adtab', '')) !== i); });
-      if (i === 0) loadApplications(); if (i === 1) loadSettings(); if (i === 2) { document.getElementById('pubLink').textContent = `${location.origin}/apply.html?school=${schoolId}`; }
+      if (i === 0) loadApplications(); if (i === 1) loadSettings(); if (i === 2) {
+        document.getElementById('pubLink').textContent = publicAdmissionUrl;
+        document.getElementById('pubLink').href = publicAdmissionUrl;
+      }
     }
 
       async function loadStats() {

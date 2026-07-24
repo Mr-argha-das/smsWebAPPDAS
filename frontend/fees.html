@@ -1314,6 +1314,28 @@
       }
     }
 
+    async function openInvoiceModalForStudent(studentId) {
+      if (!studentId) return;
+      try {
+        const studentRes = await StudentAPI.get(studentId);
+        const student = studentRes?.data;
+        if (!student) throw new Error('Student not found');
+
+        await openInvoiceModal();
+        if (student.classroom_id) {
+          document.getElementById('inv_class').value = student.classroom_id;
+          loadInvoiceSections();
+          document.getElementById('inv_section').value = student.section_id || '';
+          upsertInvoiceStudentOption(student);
+          await loadInvStudents(student);
+          await loadInvoiceStudentMeta(student);
+        }
+      } catch (e) {
+        document.getElementById('invModal').style.display = 'none';
+        showToast(`Unable to prepare invoice: ${e.message}`, 'error');
+      }
+    }
+
     async function deleteInvoice(invoiceId) {
       if (!confirm('Delete this invoice?')) return;
       try {
@@ -2804,6 +2826,10 @@
       if (initialFeeTab === 'dues') switchFeeTab(3);
       if (initialFeeTab === 'estimate') switchFeeTab(4);
       if (initialFeeTab === 'payment-history') switchFeeTab(5);
+      if (feePageParams.get('create_invoice') === '1' && feePageParams.get('student_id')) {
+        switchFeeTab(0);
+        await openInvoiceModalForStudent(feePageParams.get('student_id'));
+      }
     })();
   </script>
 </body>

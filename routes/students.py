@@ -24,6 +24,37 @@ from utils.student_pdf_import import convert_student_pdf_to_csv
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
+INVOICE_MONTH_NAMES = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"
+]
+
+
+def _invoice_item_months(invoice: FeeInvoice, item_type: str) -> List[str]:
+    stored_months = (
+        invoice.tuition_months if item_type == "tuition"
+        else invoice.transport_months
+    ) or []
+    if stored_months:
+        return [month for month in INVOICE_MONTH_NAMES if month in stored_months]
+
+    found_months = set()
+    for item in invoice.items or []:
+        label = f"{item.get('category_name', '')} {item.get('category', '')} {item.get('description', '')}".lower()
+        is_matching_item = (
+            ("tuition" in label or "class fee" in label)
+            if item_type == "tuition"
+            else "transport" in label
+        )
+        if not is_matching_item:
+            continue
+        found_months.update(item.get("months") or [])
+        found_months.update(
+            month for month in INVOICE_MONTH_NAMES
+            if re.search(rf"\b{re.escape(month)}\b", label, re.IGNORECASE)
+        )
+    return [month for month in INVOICE_MONTH_NAMES if month in found_months]
+
 
 def _active_admission_no_owner(school: School, admission_no: str, exclude_student_id: Optional[str] = None):
     query = Student.objects(
@@ -948,7 +979,7 @@ async def get_student_profile_summary(student_id: str, current_user: User = Depe
 
     attendance_percentage = round((present_days / total_days * 100), 2) if total_days else 0
 
-    invoices = list(FeeInvoice.objects(student=student).order_by('-invoice_date')[:10])
+    invoices = list(FeeInvoice.objects(student=student).order_by('-invoice_date'))
     payments = list(PaymentTransaction.objects(student=student, status="Success").order_by('-payment_date')[:10])
     fee_summary = {
         "total_invoices": FeeInvoice.objects(student=student).count(),
@@ -960,6 +991,13 @@ async def get_student_profile_summary(student_id: str, current_user: User = Depe
             "invoice_no": inv.invoice_no,
             "invoice_date": inv.invoice_date.isoformat() if inv.invoice_date else None,
             "due_date": inv.due_date.isoformat() if inv.due_date else None,
+            "items": inv.items or [],
+            "tuition_months": _invoice_item_months(inv, "tuition"),
+            "transport_months": _invoice_item_months(inv, "transport"),
+            "transport_route": inv.transport_route,
+            "gross_amount": inv.gross_amount,
+            "discount_amount": inv.discount_amount,
+            "late_fee": inv.late_fee,
             "net_amount": inv.net_amount,
             "paid_amount": inv.paid_amount,
             "balance_amount": inv.balance_amount,

@@ -796,10 +796,10 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
     doc = SimpleDocTemplate(
         buffer,
         pagesize=A4,
-        rightMargin=12,
-        leftMargin=12,
-        topMargin=12,
-        bottomMargin=12,
+        rightMargin=10,
+        leftMargin=10,
+        topMargin=8,
+        bottomMargin=8,
     )
 
     elements = []
@@ -808,39 +808,39 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
     p_center = ParagraphStyle(
         "p_center",
         fontName="Helvetica",
-        fontSize=9,
+        fontSize=6,
         alignment=TA_CENTER,
-        leading=12
+        leading=7
     )
 
     normal_10 = ParagraphStyle(
         "normal_10",
         fontName="Helvetica",
-        fontSize=9,
-        leading=12
+        fontSize=6,
+        leading=7
     )
 
     bold_10 = ParagraphStyle(
         "bold_10",
         fontName="Helvetica-Bold",
-        fontSize=9,
-        leading=12
+        fontSize=6,
+        leading=7
     )
 
     right_bold_10 = ParagraphStyle(
         "right_bold_10",
         fontName="Helvetica-Bold",
-        fontSize=9,
+        fontSize=6,
         alignment=TA_RIGHT,
-        leading=12
+        leading=7
     )
 
     right_normal_10 = ParagraphStyle(
         "right_normal_10",
         fontName="Helvetica",
-        fontSize=9,
+        fontSize=6,
         alignment=TA_RIGHT,
-        leading=12
+        leading=7
     )
 
     school = invoice.school
@@ -881,7 +881,7 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
             return ""
         try:
             ImageReader(logo_src).getSize()
-            return Image(logo_src, width=70, height=70)
+            return Image(logo_src, width=36, height=36)
         except Exception:
             return ""
 
@@ -936,9 +936,9 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
                 logo,
 
                 Paragraph(
-                    f"<font size='14'><b>{school_name}</b></font><br/><br/>"
-                    f"<font size='10'>Village Tatarpur, Teh. Tapukara, Distt. Khairthal Tijara(Raj.)</font><br/><br/>"
-                    f"<font size='10'>Phone No. : {school_phone}</font>",
+                    f"<font size='9'><b>{school_name}</b></font><br/>"
+                    f"<font size='6'>Village Tatarpur, Teh. Tapukara, Distt. Khairthal Tijara(Raj.)</font><br/>"
+                    f"<font size='6'>Phone No. : {school_phone}</font>",
                     p_center
                 ),
 
@@ -1016,12 +1016,12 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
             ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
             ("ALIGN", (1, 0), (2, 0), "CENTER"),
             ("ALIGN", (3, 0), (3, 0), "RIGHT"),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-            ("TOPPADDING", (0, 0), (-1, -1), 6),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+            ("TOPPADDING", (0, 0), (-1, -1), 2),
         ]))
 
         elements.append(details_table)
-        elements.append(Spacer(1, 10))
+        elements.append(Spacer(1, 3))
 
         # =========================
         # AMOUNT SUMMARY
@@ -1030,20 +1030,20 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
         amount_table = Table([
             [
                 Paragraph(
-                    f"<font size='10'><b>Total Amount</b></font><br/><br/>"
-                    f"<font size='12'><b>{money(invoice.net_amount)}</b></font>",
+                    f"<font size='6'><b>Total Amount</b></font><br/>"
+                    f"<font size='8'><b>{money(invoice.net_amount)}</b></font>",
                     p_center
                 ),
 
                 Paragraph(
-                    f"<font size='10'><b>Paid Amount</b></font><br/><br/>"
-                    f"<font size='12'><b>{money(display_paid_amount)}</b></font>",
+                    f"<font size='6'><b>Paid Amount</b></font><br/>"
+                    f"<font size='8'><b>{money(display_paid_amount)}</b></font>",
                     p_center
                 ),
 
                 Paragraph(
-                    f"<font size='10'><b>Pending Amount</b></font><br/><br/>"
-                    f"<font size='12'><b>{money(display_balance_amount)}</b></font>",
+                    f"<font size='6'><b>Pending Amount</b></font><br/>"
+                    f"<font size='8'><b>{money(display_balance_amount)}</b></font>",
                     p_center
                 ),
             ]
@@ -1053,12 +1053,12 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
             ("GRID", (0, 0), (-1, -1), 1, HexColor("#dddddd")),
             ("BACKGROUND", (0, 0), (-1, -1), HexColor("#f1f3f5")),
             ("ALIGN", (0, 0), (-1, -1), "CENTER"),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 12),
-            ("TOPPADDING", (0, 0), (-1, -1), 12),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
+            ("TOPPADDING", (0, 0), (-1, -1), 3),
         ]))
 
         elements.append(amount_table)
-        elements.append(Spacer(1, 10))
+        elements.append(Spacer(1, 3))
 
         # =========================
         # FEE BREAKDOWN
@@ -1121,12 +1121,12 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
             ("GRID", (0, 0), (-1, -1), 1, colors.black),
             ("SPAN", (0, 0), (1, 0)),
             ("BACKGROUND", (0, 0), (1, 0), HexColor("#f5f5f5")),
-            ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-            ("TOPPADDING", (0, 0), (-1, -1), 6),
+            ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+            ("TOPPADDING", (0, 0), (-1, -1), 2),
         ]))
 
         elements.append(fee_table)
-        elements.append(Spacer(1, 10))
+        elements.append(Spacer(1, 3))
 
         # =========================
         # PAYMENT HISTORY
@@ -1148,7 +1148,7 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
                 )
             )
 
-            elements.append(Spacer(1, 6))
+            elements.append(Spacer(1, 2))
 
             payment_rows = [
                 [
@@ -1233,15 +1233,15 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
                 ("BACKGROUND", (0, 0), (-1, 0), HexColor("#f5f5f5")),
                 ("BACKGROUND", (0, -1), (-1, -1), HexColor("#eeeeee")),
                 ("ALIGN", (1, 1), (1, -1), "RIGHT"),
-                ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
-                ("TOPPADDING", (0, 0), (-1, -1), 6),
+                ("BOTTOMPADDING", (0, 0), (-1, -1), 2),
+                ("TOPPADDING", (0, 0), (-1, -1), 2),
                 ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
                 ("FONTNAME", (0, -1), (-1, -1), "Helvetica-Bold"),
                 ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
             ]))
 
             elements.append(payment_table)
-            elements.append(Spacer(1, 10))
+            elements.append(Spacer(1, 3))
 
         else:
 
@@ -1252,7 +1252,7 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
                 )
             )
 
-            elements.append(Spacer(1, 10))
+            elements.append(Spacer(1, 3))
 
         # =========================
         # FOOTER
@@ -1261,14 +1261,14 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
         footer_table = Table([
             [
                 Paragraph(
-                    "<b>NOTE :</b><br/><br/>"
+                    "<b>NOTE :</b><br/>"
                     "1. Fee once paid is not refundable.<br/>"
                     "2. Keep this receipt safely.",
                     normal_10
                 ),
 
                 Paragraph(
-                    "<br/><br/><br/><b>(Signature)</b>",
+                    "<br/><b>(Signature)</b>",
                     p_center
                 )
             ]
@@ -1284,7 +1284,7 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
     # STUDENT COPY
     build_copy("STUDENT COPY")
 
-    elements.append(Spacer(1, 20))
+    elements.append(Spacer(1, 4))
 
     elements.append(
         HRFlowable(
@@ -1295,7 +1295,7 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
         )
     )
 
-    elements.append(Spacer(1, 20))
+    elements.append(Spacer(1, 4))
 
     # OFFICE COPY
     build_copy("OFFICE COPY")
