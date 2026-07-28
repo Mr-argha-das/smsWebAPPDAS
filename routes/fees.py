@@ -808,39 +808,39 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
     p_center = ParagraphStyle(
         "p_center",
         fontName="Helvetica",
-        fontSize=6,
+        fontSize=7,
         alignment=TA_CENTER,
-        leading=7
+        leading=8.5
     )
 
     normal_10 = ParagraphStyle(
         "normal_10",
         fontName="Helvetica",
-        fontSize=6,
-        leading=7
+        fontSize=7,
+        leading=8.5
     )
 
     bold_10 = ParagraphStyle(
         "bold_10",
         fontName="Helvetica-Bold",
-        fontSize=6,
-        leading=7
+        fontSize=7,
+        leading=8.5
     )
 
     right_bold_10 = ParagraphStyle(
         "right_bold_10",
         fontName="Helvetica-Bold",
-        fontSize=6,
+        fontSize=7,
         alignment=TA_RIGHT,
-        leading=7
+        leading=8.5
     )
 
     right_normal_10 = ParagraphStyle(
         "right_normal_10",
         fontName="Helvetica",
-        fontSize=6,
+        fontSize=7,
         alignment=TA_RIGHT,
-        leading=7
+        leading=8.5
     )
 
     school = invoice.school
@@ -936,9 +936,9 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
                 logo,
 
                 Paragraph(
-                    f"<font size='9'><b>{school_name}</b></font><br/>"
-                    f"<font size='6'>Village Tatarpur, Teh. Tapukara, Distt. Khairthal Tijara(Raj.)</font><br/>"
-                    f"<font size='6'>Phone No. : {school_phone}</font>",
+                    f"<font size='10'><b>{school_name}</b></font><br/>"
+                    f"<font size='7'>Village Tatarpur, Teh. Tapukara, Distt. Khairthal Tijara(Raj.)</font><br/>"
+                    f"<font size='7'>Phone No. : {school_phone}</font>",
                     p_center
                 ),
 
@@ -1030,20 +1030,20 @@ def _generate_invoice_pdf_bytes(invoice) -> bytes:
         amount_table = Table([
             [
                 Paragraph(
-                    f"<font size='6'><b>Total Amount</b></font><br/>"
-                    f"<font size='8'><b>{money(invoice.net_amount)}</b></font>",
+                    f"<font size='7'><b>Total Amount</b></font><br/>"
+                    f"<font size='9'><b>{money(invoice.net_amount)}</b></font>",
                     p_center
                 ),
 
                 Paragraph(
-                    f"<font size='6'><b>Paid Amount</b></font><br/>"
-                    f"<font size='8'><b>{money(display_paid_amount)}</b></font>",
+                    f"<font size='7'><b>Paid Amount</b></font><br/>"
+                    f"<font size='9'><b>{money(display_paid_amount)}</b></font>",
                     p_center
                 ),
 
                 Paragraph(
-                    f"<font size='6'><b>Pending Amount</b></font><br/>"
-                    f"<font size='8'><b>{money(display_balance_amount)}</b></font>",
+                    f"<font size='7'><b>Pending Amount</b></font><br/>"
+                    f"<font size='9'><b>{money(display_balance_amount)}</b></font>",
                     p_center
                 ),
             ]
