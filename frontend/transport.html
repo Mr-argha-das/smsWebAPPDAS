@@ -58,8 +58,7 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
             <button onclick="switchTab(0)" class="ttab px-5 py-4 text-sm font-semibold border-b-2 border-blue-600 text-blue-600 whitespace-nowrap">Routes</button>
             <button onclick="switchTab(1)" class="ttab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Vehicles</button>
             <button onclick="switchTab(2)" class="ttab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Drivers</button>
-            <button onclick="switchTab(3)" class="ttab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Student Routes</button>
-            <button onclick="switchTab(4)" class="ttab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Maintenance</button>
+            <button onclick="switchTab(3)" class="ttab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Maintenance</button>
           </div>
 
           <!-- Routes -->
@@ -83,15 +82,8 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
             <div id="driverTable"></div>
           </div>
 
-          <!-- Student Mapping -->
-          <div id="ttab3" class="p-5 hidden">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4"><h4 class="font-bold text-gray-900">Student Transport Assignment</h4>
-              <div class="text-xs text-blue-600 bg-blue-50 px-3 py-2 rounded-xl">Student route mapping now happens inside the Add Student form.</div></div>
-            <div id="stTable"></div>
-          </div>
-
           <!-- Maintenance -->
-          <div id="ttab4" class="p-5 hidden">
+          <div id="ttab3" class="p-5 hidden">
             <div class="flex justify-between mb-4"><h4 class="font-bold text-gray-900">Vehicle Maintenance</h4>
               <button onclick="document.getElementById('maintModal').style.display='flex';loadMaintVehicles()" class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium hover:bg-blue-700">+ Add Record</button></div>
             <div id="maintVehicleSelect" class="mb-4">
@@ -193,29 +185,6 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
     </div>
   </div>
 
-  <!-- Student Transport Modal -->
-  <div id="stModal" class="modal-overlay" style="display:none">
-    <div class="modal-box w-full max-w-md">
-      <div class="flex justify-between items-center px-6 py-4 border-b"><h3 class="font-bold text-gray-900">Assign Student to Route</h3><button onclick="document.getElementById('stModal').style.display='none'" class="text-gray-400 hover:text-gray-600 text-xl px-2">×</button></div>
-      <div class="px-6 py-5 space-y-4">
-        <div><label class="lbl">Student *</label><select id="st_student" class="finput"><option value="">Select student</option></select></div>
-        <div><label class="lbl">Route *</label><select id="st_route" class="finput" onchange="updateStopOptions()"><option value="">Select route</option></select></div>
-        <div class="grid grid-cols-2 gap-4">
-          <div><label class="lbl">Pickup Stop</label><input id="st_pickup" class="finput" placeholder="Pickup stop"/></div>
-          <div><label class="lbl">Drop Stop</label><input id="st_drop" class="finput" placeholder="Drop stop"/></div>
-        </div>
-        <div class="grid grid-cols-2 gap-4">
-          <div><label class="lbl">Pickup Time</label><input id="st_ptime" type="time" class="finput"/></div>
-          <div><label class="lbl">Drop Time</label><input id="st_dtime" type="time" class="finput"/></div>
-        </div>
-      </div>
-      <div class="flex gap-3 px-6 py-4 border-t justify-end">
-        <button onclick="document.getElementById('stModal').style.display='none'" class="px-5 py-2.5 bg-gray-100 text-gray-700 rounded-xl text-sm">Cancel</button>
-        <button onclick="saveStudentTransport()" class="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-medium">Assign</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Maintenance Modal -->
   <div id="maintModal" class="modal-overlay" style="display:none">
     <div class="modal-box w-full max-w-md">
@@ -295,7 +264,7 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
 
     async function refreshTransportViews() {
       await Promise.allSettled([loadStats(), loadRoutes()]);
-      if (!document.getElementById('ttab3').classList.contains('hidden')) await loadStudentTransport();
+      if (!document.getElementById('ttab3').classList.contains('hidden')) await loadMaintVehicles();
     }
 
     function switchTab(idx) {
@@ -304,8 +273,7 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
       if (idx === 0) loadRoutes();
       if (idx === 1) { loadVehicles(); loadRouteOptions(); }
       if (idx === 2) loadDrivers();
-      if (idx === 3) { loadStudentTransport(); }
-      if (idx === 4) loadMaintVehicles();
+      if (idx === 3) loadMaintVehicles();
     }
 
    async function loadStats() {
@@ -410,7 +378,7 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
       try {
         const r = await TransportAPI.getRoutes(schoolId, selectedBranchCode);
         const opts = '<option value="">Select route</option>' + (r?.data || []).map(rt => `<option value="${rt.id}">${rt.route_name}</option>`).join('');
-        ['vh_route', 'st_route'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = opts; });
+        ['vh_route'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = opts; });
       } catch (e) {}
     }
 
@@ -471,43 +439,6 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
       try {
         await TransportAPI.createDriver({ school_id: schoolId, name, phone: ph, license_no: lic, license_expiry: document.getElementById('dr_licexp').value || null, aadhar_number: document.getElementById('dr_aad').value || null, address: document.getElementById('dr_addr').value || null, experience_years: parseInt(document.getElementById('dr_exp').value) || 0 });
         showToast('Driver added!'); document.getElementById('driverModal').style.display = 'none'; loadDrivers();
-      } catch (e) { showToast('Error: ' + e.message, 'error'); }
-    }
-
-    async function loadStAssignForm() {
-      if (!schoolId) return;
-      try {
-        const [sr, rr] = await Promise.allSettled([StudentAPI.list({ school_id: schoolId, branch_code: selectedBranchCode, per_page: 200, admission_status: 'Active' }), TransportAPI.getRoutes(schoolId, selectedBranchCode)]);
-        if (sr.status === 'fulfilled') document.getElementById('st_student').innerHTML = '<option value="">Select student</option>' + (sr.value?.data || []).map(s => `<option value="${s.id}">${s.full_name} (${s.admission_no})</option>`).join('');
-        if (rr.status === 'fulfilled') document.getElementById('st_route').innerHTML = '<option value="">Select route</option>' + (rr.value?.data || []).map(r => `<option value="${r.id}">${r.route_name}</option>`).join('');
-      } catch (e) {}
-    }
-
-    async function loadStudentTransport() {
-      if (!schoolId) return;
-      try {
-        const r = await TransportAPI.getStudentTransport(schoolId, null, selectedBranchCode); const data = r?.data || [];
-        const hdrs = ['Student', 'Admission No', 'Route', 'Pickup Stop', 'Drop Stop', 'Pickup Time', 'Monthly Fee'];
-        const rows = data.map(st => `
-          <td class="px-4 py-3 font-medium text-gray-900 text-sm">${st.student_name || '-'}</td>
-          <td class="px-4 py-3 font-mono text-xs text-gray-500">${st.admission_no || '-'}</td>
-          <td class="px-4 py-3 text-sm text-gray-600">${st.route_name || '-'}</td>
-          <td class="px-4 py-3 text-sm text-gray-600">${st.pickup_stop || '-'}</td>
-          <td class="px-4 py-3 text-sm text-gray-600">${st.drop_stop || '-'}</td>
-          <td class="px-4 py-3 text-sm text-gray-600">${st.pickup_time || '-'}</td>
-          <td class="px-4 py-3 font-medium text-gray-900 text-sm">${formatCurrency(st.fee_per_month)}</td>
-        `);
-        document.getElementById('stTable').innerHTML = buildTable(hdrs, rows, 'No students assigned to transport');
-      } catch (e) {}
-    }
-
-    async function saveStudentTransport() {
-      if (!schoolId) { showToast('Configure school first', 'error'); return; }
-      const stId = document.getElementById('st_student').value, rtId = document.getElementById('st_route').value;
-      if (!stId || !rtId) { showToast('Select student and route', 'error'); return; }
-      try {
-        await TransportAPI.assignStudent({ school_id: schoolId, student_id: stId, route_id: rtId, pickup_stop: document.getElementById('st_pickup').value || null, drop_stop: document.getElementById('st_drop').value || null, pickup_time: document.getElementById('st_ptime').value || null, drop_time: document.getElementById('st_dtime').value || null });
-        showToast('Student assigned to transport!'); document.getElementById('stModal').style.display = 'none'; loadStudentTransport(); loadStats();
       } catch (e) { showToast('Error: ' + e.message, 'error'); }
     }
 

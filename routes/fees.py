@@ -1859,6 +1859,9 @@ async def payment_history(
     classroom_id: Optional[str] = None,
     student_id: Optional[str] = None,
     search: Optional[str] = None,
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+    payment_mode: Optional[str] = None,
     page: int = Query(1, ge=1),
     per_page: int = Query(50, ge=1, le=200),
     current_user: User = Depends(get_current_user)
@@ -1868,13 +1871,15 @@ async def payment_history(
     school = School.objects.get(id=school_id)
     query = PaymentTransaction.objects(school=school, status="Success")
 
+    invoices = None
+    branch_students = None
     if academic_year_id:
         ay = _resolve_academic_year(school, academic_year_id)
         invoices = list(FeeInvoice.objects(school=school, academic_year=ay))
         query = query.filter(invoice__in=invoices)
     if branch_code:
-        students = list(Student.objects(school=school, branch_code=branch_code, is_active=True))
-        query = query.filter(student__in=students)
+        branch_students = list(Student.objects(school=school, branch_code=branch_code, is_active=True))
+        query = query.filter(student__in=branch_students)
     if classroom_id:
         classroom = ClassRoom.objects.get(id=classroom_id)
         students = list(Student.objects(school=school, classroom=classroom, is_active=True))
@@ -1894,8 +1899,40 @@ async def payment_history(
             ]}
         ))
         query = query.filter(student__in=students)
+    if start_date:
+        query = query.filter(payment_date__gte=datetime.fromisoformat(start_date))
+    if end_date:
+        query = query.filter(payment_date__lt=datetime.fromisoformat(end_date) + timedelta(days=1))
+    if payment_mode:
+        query = query.filter(payment_mode=payment_mode)
 
     total = query.count()
+
+    # Totals for the filtered set (ignores pagination)
+    total_amount = 0.0
+    amount_by_mode = {}
+    for txn in query.only("amount", "payment_mode"):
+        amt = txn.amount or 0
+        total_amount += amt
+        mode = txn.payment_mode or "Other"
+        amount_by_mode[mode] = round(amount_by_mode.get(mode, 0) + amt, 2)
+
+    # This-month and today totals for the same school/branch/AY scope (ignores date/mode filters)
+    month_start = datetime.now().replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    scope_query = PaymentTransaction.objects(school=school, status="Success", payment_date__gte=month_start)
+    if invoices is not None:
+        scope_query = scope_query.filter(invoice__in=invoices)
+    if branch_students is not None:
+        scope_query = scope_query.filter(student__in=branch_students)
+    this_month_amount = 0.0
+    today_amount = 0.0
+    for txn in scope_query.only("amount", "payment_date"):
+        amt = txn.amount or 0
+        this_month_amount += amt
+        if txn.payment_date and txn.payment_date >= today_start:
+            today_amount += amt
+
     transactions = query.order_by("-payment_date").skip((page - 1) * per_page).limit(per_page).select_related(max_depth=2)
     result = []
     for txn in transactions:
@@ -1922,7 +1959,11 @@ async def payment_history(
         "total": total,
         "page": page,
         "per_page": per_page,
-        "total_pages": (total + per_page - 1) // per_page
+        "total_pages": (total + per_page - 1) // per_page,
+        "total_amount": round(total_amount, 2),
+        "amount_by_mode": amount_by_mode,
+        "this_month_amount": round(this_month_amount, 2),
+        "today_amount": round(today_amount, 2)
     })
 
 
@@ -2014,4 +2055,37 @@ async def fee_summary(
             "pending": query.filter(status="Pending").count(),
             "overdue": query.filter(status="Overdue").count()
         }
+    })
+
+
+@router.get("/reports/today-collection")
+async def today_collection(
+    school_id: str,
+    branch_code: Optional[str] = None,
+    current_user: User = Depends(get_current_user)
+):
+    """Total fee collected today (successful transactions), optionally scoped to a branch."""
+    school_id = resolve_school_access(current_user, school_id)
+    branch_code = resolve_branch_scope(current_user, branch_code)
+    school = School.objects.get(id=school_id)
+
+    today_start = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    tomorrow_start = today_start + timedelta(days=1)
+
+    query = PaymentTransaction.objects(
+        school=school,
+        status="Success",
+        payment_date__gte=today_start,
+        payment_date__lt=tomorrow_start
+    )
+    if branch_code:
+        students = list(Student.objects(school=school, branch_code=branch_code, is_active=True))
+        query = query.filter(student__in=students)
+
+    total_collected = sum(txn.amount or 0 for txn in query)
+
+    return success_response({
+        "today_collected": total_collected,
+        "transaction_count": query.count(),
+        "date": today_start.date().isoformat()
     })
