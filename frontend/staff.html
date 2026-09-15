@@ -40,8 +40,6 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
       <div id="topbarContainer"></div>
       <div class="p-6 space-y-6">
 
-        <div id="staffStats" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
-
         <div style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
           <div class="flex border-b border-gray-100 px-2 gap-1">
             <button id="staffTabAll" onclick="switchTab(0)" class="stab px-5 py-4 text-sm font-semibold border-b-2 border-blue-600 text-blue-600">All Staff</button>
@@ -265,29 +263,6 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
       }
     }
 
-   async function loadStaffStats() {
-  if (!schoolId) return;
-
-  try {
-    const r = await StaffAPI.list({ school_id: schoolId, per_page: 100, active_status: '' });
-    const all = r?.data || [];
-
-    const teaching = all.filter(s => s.staff_type === 'Teaching').length;
-    const nonTeaching = all.filter(s => s.staff_type === 'Non-Teaching').length;
-    const admin = all.filter(s => s.staff_type === 'Administrative').length;
-
-    document.getElementById('staffStats').innerHTML =
-      statCard('Total Staff', all.length, 'users', 'blue') +
-      statCard('Teaching', teaching, 'book-open', 'green') +
-      statCard('Non-Teaching', nonTeaching, 'briefcase', 'purple') +
-      statCard('Administrative', admin, 'clipboard-list', 'orange');
-
-    // 🔥 IMPORTANT
-    lucide.createIcons();
-
-  } catch (e) {}
-}
-
     async function loadStaff() {
       if (!schoolId) { document.getElementById('staffTable').innerHTML = '<div class="text-center py-12 text-gray-400">Configure school first</div>'; return; }
       const params = { school_id: schoolId, per_page: 20 };
@@ -327,7 +302,6 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
         await StaffAPI.setActive(id, { is_active: activate });
         showToast(`Staff ${activate ? 'activated' : 'deactivated'} successfully`);
         loadStaff();
-        loadStaffStats();
       } catch (e) {
         showToast('Error: ' + e.message, 'error');
       }
@@ -401,7 +375,7 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
         const r = editingStaffId ? await StaffAPI.update(editingStaffId, payload) : await StaffAPI.create(payload);
         showToast(editingStaffId ? 'Staff updated successfully' : 'Staff added! ID: ' + r.data.employee_id);
         document.getElementById('addStaffModal').style.display = 'none';
-        loadStaff(); loadStaffStats();
+        loadStaff();
       } catch (e) { showToast('Error: ' + e.message, 'error'); }
     }
 
@@ -761,26 +735,8 @@ h1,h2,h3,h4,.font-outfit{font-family:"Outfit",sans-serif}
       document.getElementById('leaveSubtitle').textContent = isTeacherSide
         ? 'Apply leave and track your leave application status'
         : 'Staff leave requests and approvals';
-      loadStaffStats();
       loadStaff();
     })();
-
-    function statCard(title, value, icon, color) {
-  return `
-    <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
-      
-      <div>
-        <p class="text-sm text-gray-400">${title}</p>
-        <h3 class="text-xl font-bold text-gray-900">${value}</h3>
-      </div>
-
-      <div class="p-3 rounded-xl bg-${color}-100 text-${color}-600">
-        <i data-lucide="${icon}" class="w-5 h-5"></i>
-      </div>
-
-    </div>
-  `;
-}
 
 lucide.createIcons();
   </script>

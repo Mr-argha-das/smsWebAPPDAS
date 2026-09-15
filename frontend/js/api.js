@@ -422,6 +422,7 @@ const FeesAPI = {
   duesReport:     (p)    => API.get('/fees/dues', p),
   getSummary:     (sid, branchCode)  => API.get('/fees/reports/summary', { school_id: sid, branch_code: branchCode }),
   stats:          (sid, branchCode)  => API.get('/fees/reports/summary', { school_id: sid, branch_code: branchCode }),
+  todayCollection:(sid, branchCode)  => API.get('/fees/reports/today-collection', { school_id: sid, branch_code: branchCode }),
 };
 
 // EXAMS  → prefix: /exams

@@ -11,6 +11,29 @@ from utils.helpers import success_response
 router = APIRouter(prefix="/transport", tags=["Transport"])
 
 
+def _active_transport_students(school, branch_code: Optional[str] = None) -> List:
+    """Students who should count towards transport numbers — mirrors the
+    criteria the Students page uses for 'current' students."""
+    scope = Student.objects(school=school, is_active=True, admission_status="Active")
+    if branch_code:
+        scope = scope.filter(branch_code=branch_code)
+    return list(scope.only("id"))
+
+
+def _route_student_count_map(school, branch_code: Optional[str] = None) -> dict:
+    """Map of route_id -> set of distinct student ids with an active assignment
+    on that route. Counting DISTINCT students keeps badges correct even if a
+    duplicate assignment row ever slipped into the database."""
+    scope_ids = {s.id for s in _active_transport_students(school, branch_code)}
+    counts = {}
+    for a in StudentTransport.objects(school=school, is_active=True).only("route", "student"):
+        sid = a.student.id if a.student else None
+        rid = a.route.id if a.route else None
+        if sid and rid and sid in scope_ids:
+            counts.setdefault(rid, set()).add(sid)
+    return counts
+
+
 # ─── Routes ──────────────────────────────────────────────────────────────────
 @router.post("/route")
 async def create_route(data: dict, current_user: User = Depends(get_current_user)):
@@ -44,13 +67,10 @@ async def list_routes(school_id: str, branch_code: Optional[str] = None, current
     branch_code = resolve_branch_scope(current_user, branch_code)
     school = School.objects.get(id=school_id)
     routes = TransportRoute.objects(school=school, is_active=True)
+    count_map = _route_student_count_map(school, branch_code)
     result = []
     for r in routes:
-        student_query = StudentTransport.objects(route=r, is_active=True)
-        if branch_code:
-            branch_students = list(Student.objects(school=school, branch_code=branch_code, is_active=True, admission_status="Active"))
-            student_query = student_query.filter(student__in=branch_students)
-        student_count = student_query.count()
+        student_count = len(count_map.get(r.id, ()))
         result.append({
             "id": str(r.id),
             "route_name": r.route_name,
@@ -93,7 +113,15 @@ async def update_route(route_id: str, data: dict, current_user: User = Depends(g
 @router.delete("/route/{route_id}")
 async def delete_route(route_id: str, current_user: User = Depends(get_current_user)):
     try:
-        TransportRoute.objects.get(id=route_id).update(is_active=False)
+        route = TransportRoute.objects.get(id=route_id)
+        route.update(is_active=False)
+        # Deactivate this route's student assignments too, otherwise they stay
+        # counted in stats even though the route no longer exists.
+        active_assignments = StudentTransport.objects(route=route, is_active=True)
+        assigned_students = [st.student for st in active_assignments if st.student]
+        active_assignments.update(set__is_active=False)
+        for student in assigned_students:
+            student.update(uses_transport=False, transport_route=None)
         return success_response(message="Route deleted")
     except TransportRoute.DoesNotExist:
         raise HTTPException(404, "Route not found")
@@ -226,12 +254,17 @@ async def list_student_transport(school_id: str, route_id: Optional[str] = None,
     school_id = resolve_school_access(current_user, school_id)
     branch_code = resolve_branch_scope(current_user, branch_code)
     school = School.objects.get(id=school_id)
+    scope_ids = {s.id for s in _active_transport_students(school, branch_code)}
     query = StudentTransport.objects(school=school, is_active=True)
     if route_id:
         query = query.filter(route=TransportRoute.objects.get(id=route_id))
-    if branch_code:
-        branch_students = list(Student.objects(school=school, branch_code=branch_code, is_active=True))
-        query = query.filter(student__in=branch_students)
+    assignments = [st for st in query.select_related() if st.student and st.student.id in scope_ids]
+    # One row per student — if a duplicate assignment ever slipped in, show the latest only
+    latest_by_student = {}
+    for st in assignments:
+        sid = str(st.student.id)
+        if sid not in latest_by_student or (st.assigned_date or datetime.min) > (latest_by_student[sid].assigned_date or datetime.min):
+            latest_by_student[sid] = st
     result = [{
         "id": str(st.id),
         "student_name": st.student.full_name if st.student else None,
@@ -241,7 +274,7 @@ async def list_student_transport(school_id: str, route_id: Optional[str] = None,
         "drop_stop": st.drop_stop,
         "pickup_time": st.pickup_time,
         "fee_per_month": st.fee_per_month
-    } for st in query]
+    } for st in latest_by_student.values()]
     return success_response(result)
 
 
@@ -288,14 +321,17 @@ async def get_maintenance(vehicle_id: str, current_user: User = Depends(get_curr
 @router.get("/stats/{school_id}")
 async def transport_stats(school_id: str, branch_code: Optional[str] = None, current_user: User = Depends(get_current_user)):
     school = School.objects.get(id=school_id)
-    student_transport_query = StudentTransport.objects(school=school, is_active=True)
-    if branch_code:
-        branch_students = list(Student.objects(school=school, branch_code=branch_code, is_active=True))
-        student_transport_query = student_transport_query.filter(student__in=branch_students)
+    active_routes = list(TransportRoute.objects(school=school, is_active=True).only("id"))
+    active_route_ids = {r.id for r in active_routes}
+    # Students box = sum of all per-route badges (distinct active students on active routes)
+    count_map = _route_student_count_map(school, branch_code)
+    students_using_transport = len({
+        sid for rid, sids in count_map.items() if rid in active_route_ids for sid in sids
+    })
     return success_response({
-        "total_routes": TransportRoute.objects(school=school, is_active=True).count(),
+        "total_routes": len(active_routes),
         "total_vehicles": Vehicle.objects(school=school, is_active=True).count(),
         "active_vehicles": Vehicle.objects(school=school, is_active=True, status='Active').count(),
         "total_drivers": Driver.objects(school=school, is_active=True).count(),
-        "students_using_transport": student_transport_query.count(),
+        "students_using_transport": students_using_transport,
     })

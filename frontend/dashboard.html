@@ -170,7 +170,7 @@
           </div>
         </div>
 
-       <div id="overviewCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+       <div id="overviewCards" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 
   <!-- Total Students -->
   <div id="overviewStudentsCard" class=" rounded-2xl p-6 bg-white  border border-grey-50  hover:shadow-sm cursor-pointer transition">
@@ -203,6 +203,24 @@
     </div>
     <span id="overviewPendingFeeText" class="text-xs text-gray-500">
       Total pending fee from students
+    </span>
+    </div>
+
+  </div>
+
+  <!-- Today Collection -->
+  <div id="overviewTodayCollectionCard" class=" rounded-2xl p-6 bg-white  border border-grey-50  hover:shadow-sm cursor-pointer transition">
+ <div class="">
+     <div class="flex items-center justify-between">      <div>
+        <p class="text-black text-sm">Today Collection</p>
+        <h2 id="overviewTodayCollectionValue" class="text-3xl font-bold text-black mt-1">₹0</h2>
+      </div>
+      <div class="bg-emerald-500/20 text-emerald-500 p-3 rounded-xl">
+        <span id="icon-today-collection"></span>
+      </div>
+    </div>
+    <span id="overviewTodayCollectionText" class="text-xs text-gray-500">
+      Fee collected today
     </span>
     </div>
 
@@ -334,8 +352,15 @@
         url.searchParams.set('tab', 'dues');
         window.location.href = url.pathname + url.search;
       });
+      document.getElementById('overviewTodayCollectionCard').addEventListener('click', () => {
+        const url = new URL('/fees', window.location.origin);
+        if (selectedBranchCode) url.searchParams.set('branch_code', selectedBranchCode);
+        url.searchParams.set('tab', 'payment-history');
+        window.location.href = url.pathname + url.search;
+      });
     } else {
       document.getElementById('overviewPendingFeeCard').style.display = 'none';
+      document.getElementById('overviewTodayCollectionCard').style.display = 'none';
       document.getElementById('feeSummaryCard').style.display = 'none';
     }
     document.getElementById('overviewStaffCard').addEventListener('click', () => {
@@ -368,6 +393,15 @@
       document.getElementById('branchContextLabel').textContent = selectedBranch
         ? `${selectedBranch.name} branch`
         : 'All branches in logged-in school';
+    }
+
+    function renderTodayCollection(tc = {}) {
+      if (!canAccessFees) return;
+      document.getElementById('overviewTodayCollectionValue').textContent = formatCurrency(tc.today_collected || 0);
+      const count = Number(tc.transaction_count || 0);
+      const scope = selectedBranchCode ? 'selected branch' : 'all branches';
+      document.getElementById('overviewTodayCollectionText').textContent =
+        count > 0 ? `${count} payment${count > 1 ? 's' : ''} received today (${scope})` : `No payment received today (${scope})`;
     }
 
     function renderDashboardStats(ds = {}, fs = {}) {
@@ -433,11 +467,22 @@
       }
     }
 
+    async function loadTodayCollection() {
+      if (!canAccessFees || !schoolId) { renderTodayCollection({}); return; }
+      try {
+        const r = await FeesAPI.todayCollection(schoolId, selectedBranchCode);
+        renderTodayCollection(r?.data || {});
+      } catch (e) {
+        renderTodayCollection({});
+      }
+    }
+
     async function load() {
       schoolId = await initializeSchoolContext();
       renderDashboardStats({}, {});
+      renderTodayCollection({});
       if (!schoolId) {
-        document.getElementById('overviewCards').innerHTML = `<div style="grid-column:span 3;background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px dashed #fcd34d;border-radius:1.25rem;padding:2.5rem;text-align:center">
+        document.getElementById('overviewCards').innerHTML = `<div style="grid-column:1/-1;background:linear-gradient(135deg,#fffbeb,#fef3c7);border:2px dashed #fcd34d;border-radius:1.25rem;padding:2.5rem;text-align:center">
       <div style="font-size:3rem;margin-bottom:.75rem">🏫</div>
       <p style="font-family:Outfit,sans-serif;font-weight:800;color:#92400e;font-size:1.25rem">School not configured yet</p>
       <p style="color:#b45309;margin:.5rem 0 1.25rem;font-size:.9375rem">Set up your school to start managing</p>
@@ -448,7 +493,8 @@
       try {
         if (!schoolBranches.length) await loadBranchOptions();
         const [d] = await Promise.allSettled([
-          SchoolAPI.dashboard(schoolId, selectedBranchCode)
+          SchoolAPI.dashboard(schoolId, selectedBranchCode),
+          loadTodayCollection()
         ]);
         let statsData = d.status === 'fulfilled' ? (d.value?.data || {}) : {};
         const hasMeaningfulStats = ['total_students', 'total_staff', 'total_classes', 'pending_fees']
@@ -522,6 +568,7 @@
 
     document.getElementById("icon-students").innerHTML = getIcon("student", 22);
     document.getElementById("icon-staff").innerHTML = getIcon("staff", 22);
+    document.getElementById("icon-today-collection").innerHTML = getIcon("money", 22);
   document.getElementById("icon-recent-students").innerHTML = getIcon("student", 18);
   document.getElementById("icon-empty-students").innerHTML = getIcon("student", 40);
 document.getElementById("icon-fee").innerHTML = getIcon("rupee", 22);  

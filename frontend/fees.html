@@ -178,7 +178,7 @@
         </div>
 
         <!-- Fee Stats -->
-        <div id="feeStats" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+        <div id="feeStats" class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4"></div>
 
         <div
           style="background:#fff;border-radius:1.25rem;border:1.5px solid #f1f5f9;box-shadow:0 1px 3px rgba(0,0,0,.04)">
@@ -200,6 +200,9 @@
             <button onclick="switchFeeTab(5)"
               class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Payment
               History</button>
+            <button onclick="switchFeeTab(6)"
+              class="ftab px-5 py-4 text-sm font-semibold border-b-2 border-transparent text-gray-500 hover:text-gray-700 whitespace-nowrap">Payment
+              Report</button>
           </div>
 
           <!-- Invoices -->
@@ -507,6 +510,54 @@
               </div>
             </div>
             <div id="paymentHistoryTable"></div>
+          </div>
+
+          <!-- Payment Report -->
+          <div id="ftab6" class="p-5 hidden">
+            <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-4">
+              <div>
+                <h4 class="font-bold text-gray-900">Payment Collection Report</h4>
+                <p class="text-sm text-slate-500 mt-1">Ab tak aaye saare payments — date wise aur mode wise filter ke saath.</p>
+              </div>
+              <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
+                <div>
+                  <label class="lbl">From Date</label>
+                  <input id="pr_start" type="date" class="finput" />
+                </div>
+                <div>
+                  <label class="lbl">To Date</label>
+                  <input id="pr_end" type="date" class="finput" />
+                </div>
+                <div class="min-w-[160px]">
+                  <label class="lbl">Payment Mode</label>
+                  <select id="pr_mode" class="finput">
+                    <option value="">All Modes</option>
+                    <option value="Cash">Cash</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Online">Online</option>
+                    <option value="Cheque">Cheque</option>
+                    <option value="DD">DD</option>
+                    <option value="NEFT">NEFT</option>
+                    <option value="Card">Card</option>
+                  </select>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="applyPaymentReportFilters()"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-xl text-sm font-medium">Apply</button>
+                  <button onclick="resetPaymentReportFilters()"
+                    class="px-4 py-2 bg-gray-100 text-gray-700 rounded-xl text-sm font-medium">Reset</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Summary cards -->
+            <div id="prSummary" class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4"></div>
+
+            <!-- Mode wise chips -->
+            <div id="prModeChips" class="flex flex-wrap gap-2 mb-4"></div>
+
+            <div id="paymentReportTable"></div>
+            <div id="prPagination" class="mt-4"></div>
           </div>
         </div>
 
@@ -900,6 +951,9 @@
         await loadPaymentHistoryClasses();
         await loadPaymentHistory();
       }
+      if (!document.getElementById('ftab6').classList.contains('hidden')) {
+        await loadPaymentReport();
+      }
     }
 
     function switchFeeTab(idx) {
@@ -918,6 +972,7 @@
       if (idx === 3) { loadDuesClasses(); loadDues(); }
       if (idx === 4) loadEstimateModule();
       if (idx === 5) { loadPaymentHistoryClasses(); loadPaymentHistory(); }
+      if (idx === 6) loadPaymentReport();
     }
 
     function resetInvoicePagination() {
@@ -968,10 +1023,16 @@
       if (!schoolId) return;
 
       try {
-        const r = await FeesAPI.getSummary(schoolId, selectedBranchCode);
-        const d = r?.data || {};
+        const [summaryRes, todayRes] = await Promise.allSettled([
+          FeesAPI.getSummary(schoolId, selectedBranchCode),
+          FeesAPI.todayCollection(schoolId, selectedBranchCode)
+        ]);
+        const d = summaryRes.status === 'fulfilled' ? (summaryRes.value?.data || {}) : {};
+        const tc = todayRes.status === 'fulfilled' ? (todayRes.value?.data || {}) : {};
+        const todayCount = Number(tc.transaction_count || 0);
 
         document.getElementById('feeStats').innerHTML =
+          statCard('Today Collection', formatCurrency(tc.today_collected || 0), 'indian-rupee', 'emerald', todayCount > 0 ? `${todayCount} payment${todayCount > 1 ? 's' : ''} today` : 'No payment today') +
           statCard('Total Billed', formatCurrency(d.total_billed || 0), 'wallet', 'blue') +
           statCard('Collected', formatCurrency(d.total_collected || 0), 'check-circle', 'green') +
           statCard('Pending', formatCurrency(d.total_due || 0), 'clock', 'orange') +
@@ -985,12 +1046,13 @@
       }
     }
 
-    function statCard(title, value, icon, color) {
+    function statCard(title, value, icon, color, subtitle = '') {
       return `
     <div class="bg-white p-4 rounded-2xl border border-gray-100 flex items-center justify-between">
       <div>
         <p class="text-sm text-gray-400">${title}</p>
         <h3 class="text-xl font-bold text-gray-900">${value}</h3>
+        ${subtitle ? `<p class="text-xs text-gray-400 mt-1">${subtitle}</p>` : ''}
       </div>
       <div class="p-3 rounded-xl bg-${color}-100 text-${color}-600">
         <i data-lucide="${icon}" class="w-5 h-5"></i>
@@ -2319,6 +2381,7 @@
         const r = await FeesAPI.recordPayment({ school_id: schoolId, student_id: studId, invoice_id: invId, amount, payment_mode: document.getElementById('pay_mode').value, collected_by_name: collectedBy, remarks: document.getElementById('pay_remarks').value || null });
         showToast('Payment recorded! Receipt: ' + r.data.receipt_no + ' | Balance: ' + formatCurrency(r.data.balance));
         loadInvoices(); loadFeeStats(); loadPaymentHistory();
+        if (!document.getElementById('ftab6').classList.contains('hidden')) loadPaymentReport();
         document.getElementById('pay_invoice').value = ''; document.getElementById('invoiceDetails').style.display = 'none';
       } catch (e) { showToast('Error: ' + e.message, 'error'); }
     }
@@ -2377,6 +2440,7 @@
         closePaymentEditModal();
         showToast('Payment updated');
         await Promise.allSettled([loadPaymentHistory(), loadInvoices(), loadFeeStats()]);
+        if (!document.getElementById('ftab6').classList.contains('hidden')) loadPaymentReport();
       } catch (e) {
         showToast('Error: ' + e.message, 'error');
       }
@@ -2390,6 +2454,7 @@
         await FeesAPI.deletePayment(paymentId);
         showToast('Payment deleted');
         await Promise.allSettled([loadPaymentHistory(), loadInvoices(), loadFeeStats()]);
+        if (!document.getElementById('ftab6').classList.contains('hidden')) loadPaymentReport();
       } catch (e) {
         showToast('Error: ' + e.message, 'error');
       }
@@ -2446,6 +2511,114 @@
     }
 
     const debounceLoadPaymentHistory = debounce(() => loadPaymentHistory());
+
+    // ─── Payment Report tab ───────────────────────────────────────────────
+    const paymentReportState = { page: 1, perPage: 50 };
+
+    function applyPaymentReportFilters() {
+      paymentReportState.page = 1;
+      loadPaymentReport();
+    }
+
+    function resetPaymentReportFilters() {
+      document.getElementById('pr_start').value = '';
+      document.getElementById('pr_end').value = '';
+      document.getElementById('pr_mode').value = '';
+      paymentReportState.page = 1;
+      loadPaymentReport();
+    }
+
+    function renderPaymentReportPagination(meta = {}) {
+      const container = document.getElementById('prPagination');
+      if (!container) return;
+      const total = Number(meta.total || 0);
+      const page = Number(meta.page || 1);
+      const totalPages = Math.max(Number(meta.total_pages || 1), 1);
+      if (total <= 0) { container.innerHTML = ''; return; }
+      const startItem = ((page - 1) * paymentReportState.perPage) + 1;
+      const endItem = Math.min(page * paymentReportState.perPage, total);
+      container.innerHTML = `
+        <div class="flex flex-col gap-3 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <div class="text-sm text-slate-600">
+            Showing <span class="font-semibold text-slate-900">${startItem}-${endItem}</span> of
+            <span class="font-semibold text-slate-900">${total}</span> payments
+            <span class="ml-2 font-semibold text-emerald-700">• Total: ${formatCurrency(meta.total_amount || 0)}</span>
+          </div>
+          <div class="flex items-center gap-2 self-start sm:self-auto">
+            <button onclick="changePaymentReportPage(${page - 1})" ${page <= 1 ? 'disabled' : ''} class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed">Previous</button>
+            <span class="text-sm font-semibold text-slate-700 min-w-[92px] text-center">Page ${page} / ${totalPages}</span>
+            <button onclick="changePaymentReportPage(${page + 1})" ${page >= totalPages ? 'disabled' : ''} class="px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed">Next</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function changePaymentReportPage(nextPage) {
+      if (nextPage < 1) return;
+      paymentReportState.page = nextPage;
+      loadPaymentReport();
+    }
+
+    async function loadPaymentReport() {
+      if (!schoolId) {
+        document.getElementById('paymentReportTable').innerHTML = '<p class="text-gray-400 text-sm p-4">Configure school first</p>';
+        return;
+      }
+      try {
+        const academicYearId = await resolveFeeAcademicYearId();
+        const params = {
+          school_id: schoolId,
+          academic_year_id: academicYearId || '',
+          branch_code: selectedBranchCode,
+          page: paymentReportState.page,
+          per_page: paymentReportState.perPage
+        };
+        const start = document.getElementById('pr_start').value;
+        const end = document.getElementById('pr_end').value;
+        const mode = document.getElementById('pr_mode').value;
+        if (start) params.start_date = start;
+        if (end) params.end_date = end;
+        if (mode) params.payment_mode = mode;
+
+        const r = await FeesAPI.paymentHistory(params);
+        const rows = r?.data || [];
+        const meta = r?.meta || {};
+
+        document.getElementById('prSummary').innerHTML =
+          statCard('Total Collection', formatCurrency(meta.total_amount || 0), 'wallet', 'blue', 'selected filter ka total') +
+          statCard('Transactions', Number(meta.total || 0).toLocaleString('en-IN'), 'receipt', 'purple', 'total payment entries') +
+          statCard('This Month', formatCurrency(meta.this_month_amount || 0), 'calendar', 'green', new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) + ' ka collection') +
+          statCard('Today', formatCurrency(meta.today_amount || 0), 'indian-rupee', 'emerald', 'aaj ka collection');
+
+        const byMode = meta.amount_by_mode || {};
+        const modeKeys = Object.keys(byMode).sort((a, b) => byMode[b] - byMode[a]);
+        document.getElementById('prModeChips').innerHTML = modeKeys.length
+          ? modeKeys.map(m => `<span class="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 text-xs font-semibold">${m}: ${formatCurrency(byMode[m])}</span>`).join('')
+          : '<span class="text-xs text-gray-400">Selected filter me koi payment nahi mila</span>';
+
+        const hdrs = ['Date & Time', 'Receipt No', 'Student', 'Father', 'Invoice No', 'Mode', 'Amount'];
+        document.getElementById('paymentReportTable').innerHTML = buildTable(hdrs, rows.map(row => `
+          <td class="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">
+            ${row.payment_date ? new Date(row.payment_date).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }) : '-'}
+          </td>
+          <td class="px-4 py-3 font-mono text-xs text-gray-500">${row.receipt_no || '-'}</td>
+          <td class="px-4 py-3 text-sm font-medium text-gray-900">${row.student_name || '-'}</td>
+          <td class="px-4 py-3 text-sm text-gray-600">${row.father_name || '-'}</td>
+          <td class="px-4 py-3 font-mono text-xs text-gray-500">${row.invoice_no || '-'}</td>
+          <td class="px-4 py-3"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-700">${row.payment_mode || '-'}</span></td>
+          <td class="px-4 py-3 text-sm font-semibold text-emerald-600">${formatCurrency(row.amount || 0)}</td>
+        `), 'No payments found for selected filters') + `
+          <div class="flex justify-between items-center mt-3 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-100">
+            <span class="text-sm font-semibold text-emerald-900">Total (${Number(meta.total || 0)} payments)</span>
+            <span class="text-lg font-bold text-emerald-700">${formatCurrency(meta.total_amount || 0)}</span>
+          </div>`;
+        if (window.lucide) lucide.createIcons();
+
+        renderPaymentReportPagination(meta);
+      } catch (e) {
+        document.getElementById('paymentReportTable').innerHTML = `<div class="text-center py-8 text-red-400">Error: ${e.message}</div>`;
+      }
+    }
 
     async function printStudentYearStatement(studentId) {
       if (!studentId) { showToast('Student not found for this payment', 'error'); return; }
@@ -2826,6 +2999,7 @@
       if (initialFeeTab === 'dues') switchFeeTab(3);
       if (initialFeeTab === 'estimate') switchFeeTab(4);
       if (initialFeeTab === 'payment-history') switchFeeTab(5);
+      if (initialFeeTab === 'payment-report') switchFeeTab(6);
       if (feePageParams.get('create_invoice') === '1' && feePageParams.get('student_id')) {
         switchFeeTab(0);
         await openInvoiceModalForStudent(feePageParams.get('student_id'));
