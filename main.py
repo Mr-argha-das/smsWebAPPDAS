@@ -30,6 +30,7 @@ from routes.payroll import router as payroll_router
 from routes.phase3_modules import admissions_router, cert_router
 from routes.parent_portal import router as parent_router
 from routes.admin import router as admin_router
+from routes.id_cards import router as idcard_router
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -101,7 +102,7 @@ for r in [
     transport_router, library_router, inventory_router, health_router,
     communication_router, reports_router,
     hostel_router, payroll_router, admissions_router, cert_router,
-    parent_router
+    parent_router, idcard_router
 ]:
     app.include_router(r, prefix=PREFIX)
 
@@ -117,7 +118,7 @@ HTML_PAGES = [
     "login", "dashboard", "institution", "students", "staff", "academics",
     "exams", "fees", "attendance", "transport", "library", "inventory",
     "health", "communication", "reports", "hostel", "payroll", "admissions",
-    "certificates", "parent-portal", "parent-login", "apply"
+    "certificates", "parent-portal", "parent-login", "apply", "idcards"
 ]
 
 @app.get("/", include_in_schema=False)

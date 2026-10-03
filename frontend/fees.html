@@ -517,7 +517,7 @@
             <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-4">
               <div>
                 <h4 class="font-bold text-gray-900">Payment Collection Report</h4>
-                <p class="text-sm text-slate-500 mt-1">Ab tak aaye saare payments — date wise aur mode wise filter ke saath.</p>
+                <p class="text-sm text-slate-500 mt-1">All payments received so far — filter by date and payment mode.</p>
               </div>
               <div class="flex flex-col sm:flex-row gap-3 sm:items-end">
                 <div>
@@ -2585,16 +2585,16 @@
         const meta = r?.meta || {};
 
         document.getElementById('prSummary').innerHTML =
-          statCard('Total Collection', formatCurrency(meta.total_amount || 0), 'wallet', 'blue', 'selected filter ka total') +
+          statCard('Total Collection', formatCurrency(meta.total_amount || 0), 'wallet', 'blue', 'total for selected filter') +
           statCard('Transactions', Number(meta.total || 0).toLocaleString('en-IN'), 'receipt', 'purple', 'total payment entries') +
-          statCard('This Month', formatCurrency(meta.this_month_amount || 0), 'calendar', 'green', new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) + ' ka collection') +
-          statCard('Today', formatCurrency(meta.today_amount || 0), 'indian-rupee', 'emerald', 'aaj ka collection');
+          statCard('This Month', formatCurrency(meta.this_month_amount || 0), 'calendar', 'green', new Date().toLocaleDateString('en-IN', { month: 'long', year: 'numeric' }) + ' collection') +
+          statCard('Today', formatCurrency(meta.today_amount || 0), 'indian-rupee', 'emerald', "today's collection");
 
         const byMode = meta.amount_by_mode || {};
         const modeKeys = Object.keys(byMode).sort((a, b) => byMode[b] - byMode[a]);
         document.getElementById('prModeChips').innerHTML = modeKeys.length
           ? modeKeys.map(m => `<span class="px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-700 text-xs font-semibold">${m}: ${formatCurrency(byMode[m])}</span>`).join('')
-          : '<span class="text-xs text-gray-400">Selected filter me koi payment nahi mila</span>';
+          : '<span class="text-xs text-gray-400">No payments found for the selected filter</span>';
 
         const hdrs = ['Date & Time', 'Receipt No', 'Student', 'Father', 'Invoice No', 'Mode', 'Amount'];
         document.getElementById('paymentReportTable').innerHTML = buildTable(hdrs, rows.map(row => `

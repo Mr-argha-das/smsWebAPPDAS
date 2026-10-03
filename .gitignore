@@ -5,3 +5,6 @@ app/
 
 __pycache__/
 *.pyc
+# preview/scratch files
+_preview_*.png
+uploads/

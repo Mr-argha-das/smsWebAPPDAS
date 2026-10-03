@@ -787,12 +787,20 @@ async def student_stats(school_id: str, academic_year_id: Optional[str] = None,
         active_query = query.filter(admission_status="Active")
         transferred_query = query.filter(admission_status="Transferred")
 
+        total_count = active_query.count()
+        # Case-insensitive gender match so "male"/"MALE"/"Male" all count correctly
+        male_count = active_query.filter(gender__iexact="male").count()
+        female_count = active_query.filter(gender__iexact="female").count()
+        # Everything else (Other / blank / null / unexpected values) goes to "other"
+        # so that male + female + other ALWAYS equals total
+        other_count = max(total_count - male_count - female_count, 0)
+
         stats = {
-            "total": active_query.count(),
+            "total": total_count,
             "by_gender": {
-                "male": active_query.filter(gender="Male").count(),
-                "female": active_query.filter(gender="Female").count(),
-                "other": active_query.filter(gender="Other").count()
+                "male": male_count,
+                "female": female_count,
+                "other": other_count
             },
             "by_status": {
                 "active": active_query.filter(admission_status="Active").count(),

@@ -18,7 +18,9 @@ async def school_overview(school_id: str, academic_year_id: Optional[str] = None
     school = School.objects.get(id=school_id)
     ay = AcademicYear.objects.get(id=academic_year_id) if academic_year_id else AcademicYear.objects(school=school, is_current=True).first()
 
-    students = Student.objects(school=school, is_active=True)
+    # Same filters as /students/stats/summary and /institution/dashboard
+    # so every page shows the same student count
+    students = Student.objects(school=school, is_active=True, admission_status="Active")
     if ay: students = students.filter(academic_year=ay)
     total_students = students.count()
 
@@ -54,9 +56,10 @@ async def school_overview(school_id: str, academic_year_id: Optional[str] = None
             "avg_last_7_days": att_pct
         },
         "gender_distribution": {
-            "male": students.filter(gender='Male').count(),
-            "female": students.filter(gender='Female').count(),
-            "other": students.filter(gender='Other').count()
+            "male": (male_count := students.filter(gender__iexact='male').count()),
+            "female": (female_count := students.filter(gender__iexact='female').count()),
+            # blank/null/unexpected genders bhi count ho — male+female+other == total_students
+            "other": max(total_students - male_count - female_count, 0)
         },
         "staff_type_distribution": {
             "teaching": Staff.objects(school=school, staff_type='Teaching', is_active=True).count(),
@@ -204,12 +207,15 @@ async def students_class_wise(school_id: str, academic_year_id: Optional[str] = 
             ay = AcademicYear.objects.get(id=academic_year_id)
             query = query.filter(academic_year=ay)
         total = query.count()
+        male = query.filter(gender__iexact='male').count()
+        female = query.filter(gender__iexact='female').count()
         result.append({
             "class_name": cls.name,
             "class_id": str(cls.id),
             "total": total,
-            "male": query.filter(gender='Male').count(),
-            "female": query.filter(gender='Female').count()
+            "male": male,
+            "female": female,
+            "other": max(total - male - female, 0)
         })
     return success_response(result)
 

@@ -293,7 +293,7 @@ const SchoolAPI = {
   get:          (id)  => API.get(`/institution/school/${id}`),
   update:       (id,d)=> API.put(`/institution/school/${id}`, d),
   uploadLogo:   (fd)  => API.upload('/institution/upload-logo', fd),
-  dashboard:    (id, branchCode)  => API.get(`/institution/dashboard/${id}`, { branch_code: branchCode }),
+  dashboard:    (id, branchCode, ayId)  => API.get(`/institution/dashboard/${id}`, { branch_code: branchCode, academic_year_id: ayId }),
   createAY:     (d)   => API.post('/institution/academic-year', d),
   listAY:       (sid) => API.get(`/institution/academic-year?school_id=${sid}`),
   updateAY:     (id,d)=> API.put(`/institution/academic-year/${id}`, d),

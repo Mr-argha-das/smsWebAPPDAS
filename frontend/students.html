@@ -704,10 +704,12 @@
         if (r?.data) {
           const d = r.data;
 
+          const otherCount = d.by_gender?.other || 0;
           document.getElementById('statsRow').innerHTML =
             statCard('Total', d.total || 0, 'users', 'blue') +
             statCard('Male', d.by_gender?.male || 0, 'user', 'indigo') +
             statCard('Female', d.by_gender?.female || 0, 'user-round', 'purple') +
+            (otherCount > 0 ? statCard('Other/Not Set', otherCount, 'user-x', 'gray') : '') +
             statCard('Transferred', d.by_status?.transferred || 0, 'send', 'orange');
 
           // 🔥 IMPORTANT

@@ -667,7 +667,9 @@ async def delete_grading_system(grading_id: str, current_user: User = Depends(ge
 # ─── Dashboard Stats ──────────────────────────────────────────────────────────
 
 @router.get("/dashboard/{school_id}")
-async def get_dashboard_stats(school_id: str, branch_code: Optional[str] = None, current_user: User = Depends(get_current_user)):
+async def get_dashboard_stats(school_id: str, branch_code: Optional[str] = None,
+                              academic_year_id: Optional[str] = None,
+                              current_user: User = Depends(get_current_user)):
     from models.student import Student
     from models.staff import Staff
     from models.fees import FeeInvoice
@@ -680,6 +682,14 @@ async def get_dashboard_stats(school_id: str, branch_code: Optional[str] = None,
         today = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
         
         student_query = Student.objects(school=school, is_active=True, admission_status="Active")
+        # Same academic-year scoping as /students/stats/summary so the
+        # dashboard total always matches the Students page total
+        if academic_year_id:
+            try:
+                ay = AcademicYear.objects.get(id=academic_year_id)
+                student_query = student_query.filter(academic_year=ay)
+            except AcademicYear.DoesNotExist:
+                pass
         if branch_code:
             student_query = student_query.filter(branch_code=branch_code)
 
