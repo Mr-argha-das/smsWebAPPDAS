@@ -493,7 +493,7 @@
       try {
         if (!schoolBranches.length) await loadBranchOptions();
         const [d] = await Promise.allSettled([
-          SchoolAPI.dashboard(schoolId, selectedBranchCode),
+          SchoolAPI.dashboard(schoolId, selectedBranchCode, ayId),
           loadTodayCollection()
         ]);
         let statsData = d.status === 'fulfilled' ? (d.value?.data || {}) : {};

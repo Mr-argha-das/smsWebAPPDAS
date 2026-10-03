@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="icon" type="image/png" href="/public/circlelogo.png" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ID Cards — EduManage Pro</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap"
+    rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { box-sizing: border-box }
+    body { font-family: "DM Sans", sans-serif; background: #f0f2f8; color: #1e293b }
+    h1, h2, h3, h4, .font-outfit { font-family: "Outfit", sans-serif }
+    .finput { width: 100%; padding: .625rem .875rem; border-radius: .75rem; border: 1.5px solid #e2e8f0; background: #f0f2f8; font-size: .875rem; outline: none; transition: all .15s; color: #1e293b }
+    .finput:focus { background: #fff; border-color: #6366f1; box-shadow: 0 0 0 3px rgba(99, 102, 241, .12) }
+    .lbl { display: block; font-size: .8125rem; font-weight: 600; color: #475569; margin-bottom: .375rem }
+    .stu-row { display: flex; align-items: center; gap: .65rem; padding: .5rem .75rem; border-radius: .65rem; cursor: pointer; transition: background .12s }
+    .stu-row:hover { background: #f1f5f9 }
+    .stu-row.checked { background: #eef2ff }
+
+    /* mini live preview of the card */
+    .card-preview { background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; overflow: hidden; position: relative; margin: 0 auto; box-shadow: 0 6px 18px rgba(15, 23, 42, .12) }
+    .cp-head { background: #f5c518; display: flex; align-items: center; gap: 6px; padding: 6px 8px 10px }
+    .cp-logo { width: 26px; height: 26px; border-radius: 50%; background: #fff; color: #1e40af; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 9px; border: 1.5px solid #1e40af; flex-shrink: 0 }
+    .cp-name { color: #1e40af; font-weight: 800; font-size: 10px; line-height: 1.15; text-transform: uppercase; text-align: center; flex: 1 }
+    .cp-wave { height: 7px; background: linear-gradient(180deg, #f5c518 0, #f5c518 35%, transparent 36%); position: relative }
+    .cp-wave::after { content: ''; position: absolute; inset: 0; border-radius: 0 0 60% 40%/0 0 100% 70%; border-bottom: 2px solid #38bdf8 }
+    .cp-addr { color: #dc2626; font-size: 6.2px; font-weight: 700; text-align: center; padding: 2px 6px; line-height: 1.35 }
+    .cp-photo { width: 42%; aspect-ratio: 3.4/4; margin: 4px auto; background: #bfdbfe; border: 1px solid #9ca3af; display: flex; align-items: center; justify-content: center; color: #64748b }
+    .cp-fields { padding: 2px 9px; font-size: 6.4px; font-weight: 700; color: #111827 }
+    .cp-fields div { display: flex; gap: 3px; margin-bottom: 2.6px }
+    .cp-fields span:first-child { width: 42%; flex-shrink: 0 }
+    .cp-foot { height: 9px; background: #f5c518; border-top: 2px solid #38bdf8; position: absolute; bottom: 0; left: 0; right: 0 }
+  </style>
+</head>
+
+<body>
+  <div>
+    <div id="sidebarContainer"></div>
+    <main class="min-h-screen lg:ml-[260px]">
+      <div id="topbarContainer"></div>
+
+      <div class="p-4 lg:p-6 space-y-5">
+
+        <div class="grid grid-cols-1 xl:grid-cols-5 gap-5">
+
+          <!-- ── LEFT: student selection ─────────────────────────────── -->
+          <div class="xl:col-span-3 bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="text-lg font-bold text-gray-900">Select Students</h3>
+                <p class="text-sm text-gray-500 mt-0.5">Single, multiple ya puri class/section choose karo</p>
+              </div>
+              <span id="selCount" class="px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-600 text-sm font-bold">0 selected</span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
+              <div>
+                <label class="lbl">Class</label>
+                <select id="f_class" class="finput" onchange="onClassChange()"></select>
+              </div>
+              <div>
+                <label class="lbl">Section</label>
+                <select id="f_section" class="finput" onchange="loadStudents()"></select>
+              </div>
+              <div class="col-span-2 sm:col-span-1">
+                <label class="lbl">Search</label>
+                <input id="f_search" class="finput" placeholder="Name / Adm no..." oninput="renderList()" />
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3 mb-2 px-1">
+              <label class="flex items-center gap-2 text-sm font-semibold text-gray-600 cursor-pointer">
+                <input type="checkbox" id="chkAll" onchange="toggleAll(this.checked)" class="w-4 h-4 rounded accent-indigo-600" />
+                Select all (filtered)
+              </label>
+            </div>
+
+            <div id="stuList" class="max-h-[420px] overflow-y-auto rounded-xl border border-gray-100 divide-y divide-gray-50">
+              <div class="p-6 text-center text-gray-400 text-sm">Loading students…</div>
+            </div>
+          </div>
+
+          <!-- ── RIGHT: card settings ────────────────────────────────── -->
+          <div class="xl:col-span-2 space-y-5">
+
+            <!-- School logo (card ke header me yahi lagta hai) -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+              <h3 class="text-lg font-bold text-gray-900 mb-1">School Logo</h3>
+              <p class="text-sm text-gray-500 mb-4">Ye logo card ke header me (left circle me) print hoga</p>
+              <div class="flex items-center gap-4">
+                <div id="logoThumb"
+                  class="w-16 h-16 rounded-full border-2 border-blue-700 bg-white flex items-center justify-center overflow-hidden shrink-0 font-bold text-blue-700 text-sm">
+                  —</div>
+                <div class="flex-1">
+                  <input id="logoFile" type="file" accept="image/*" class="finput" onchange="uploadSchoolLogo()" />
+                  <p class="text-xs text-gray-400 mt-1.5">PNG/JPG — square image best rahegi. Logo nahi hoga to school ke initials print honge.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+              <h3 class="text-lg font-bold text-gray-900 mb-4">Card Size & Page Settings</h3>
+
+              <label class="lbl">Preset</label>
+              <select id="s_preset" class="finput mb-3" onchange="applyPreset()">
+                <option value="54x86">Standard ID (54 × 86 mm) — CR80 portrait</option>
+                <option value="57x89">Large ID (57 × 89 mm) — sample jaisa</option>
+                <option value="64x100">Extra Large (64 × 100 mm)</option>
+                <option value="custom">Custom size…</option>
+              </select>
+
+              <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label class="lbl">Width (mm)</label>
+                  <input id="s_w" type="number" class="finput" value="54" min="30" max="210" onchange="customized(); updateLayout()" />
+                </div>
+                <div>
+                  <label class="lbl">Height (mm)</label>
+                  <input id="s_h" type="number" class="finput" value="86" min="40" max="297" onchange="customized(); updateLayout()" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label class="lbl">Page</label>
+                  <select id="s_page" class="finput" onchange="updateLayout()">
+                    <option value="A4">A4</option>
+                    <option value="A3">A3</option>
+                    <option value="LETTER">Letter</option>
+                  </select>
+                </div>
+                <div>
+                  <label class="lbl">Orientation</label>
+                  <select id="s_orient" class="finput" onchange="updateLayout()">
+                    <option value="portrait">Portrait</option>
+                    <option value="landscape">Landscape</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label class="lbl">Page margin (mm)</label>
+                  <input id="s_margin" type="number" class="finput" value="8" min="0" max="30" onchange="updateLayout()" />
+                </div>
+                <div>
+                  <label class="lbl">Gap between cards (mm)</label>
+                  <input id="s_gap" type="number" class="finput" value="4" min="0" max="20" onchange="updateLayout()" />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="lbl">Session label (optional — card ke bottom pe)</label>
+                <input id="s_session" class="finput" placeholder="e.g. Session 2025-26" />
+              </div>
+
+              <label class="flex items-center gap-2 text-sm font-semibold text-gray-600 cursor-pointer mb-4">
+                <input type="checkbox" id="s_cut" checked class="w-4 h-4 rounded accent-indigo-600" />
+                Show cut lines (card border)
+              </label>
+
+              <div id="layoutInfo" class="rounded-xl bg-sky-50 text-sky-700 text-sm font-semibold px-4 py-3 mb-4">
+                Calculating layout…
+              </div>
+
+              <div class="space-y-2">
+                <button onclick="generate('selected')" id="btnSel"
+                  class="w-full py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition">
+                  🪪 Generate Selected Students
+                </button>
+                <button onclick="generate('class')" id="btnCls"
+                  class="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition">
+                  🏫 Generate Whole Class / Section
+                </button>
+              </div>
+            </div>
+
+            <!-- live mini preview -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+              <h3 class="text-lg font-bold text-gray-900 mb-3">Design Preview</h3>
+              <div class="card-preview" style="width:180px; height:287px">
+                <div class="cp-head">
+                  <div class="cp-logo" id="pv_logo">SC</div>
+                  <div class="cp-name" id="pv_school">SCHOOL NAME</div>
+                </div>
+                <div class="cp-wave"></div>
+                <div class="cp-addr" id="pv_addr">Add: School address • Contact No.: —</div>
+                <div class="cp-photo"><svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 22c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg></div>
+                <div class="cp-fields">
+                  <div><span>STUDENT'S NAME</span><span>: JAANSHI</span></div>
+                  <div><span>FATHER'S NAME</span><span>: JAI BHAGWAN</span></div>
+                  <div><span>MOTHER'S NAME</span><span>: POOJA</span></div>
+                  <div><span>D.O.B.</span><span>: 04.12.2016</span></div>
+                  <div><span>CLASS</span><span>: FIFTH</span></div>
+                  <div><span>MOB. NO.</span><span>: 9887091167</span></div>
+                  <div><span>ADDRESS</span><span>: V.P.O SEETHAL</span></div>
+                </div>
+                <div class="cp-foot"></div>
+              </div>
+              <p class="text-xs text-gray-400 text-center mt-3">PDF exact isi design me generate hoga — school ka naam, logo, address automatically aayega</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/layout.js"></script>
+  <script>
+    requireAuth();
+    document.getElementById('sidebarContainer').innerHTML = renderSidebar('idcards');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('ID Cards', 'Student ID card generate karo — single, multiple ya class-wise, custom size PDF me');
+
+    let schoolId = localStorage.getItem('school_id');
+    let ayId = localStorage.getItem('academic_year_id') || '';
+    let students = [];
+    let selected = new Set();
+
+    function showToast(msg, ok = true) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `fixed bottom-6 right-6 z-50 px-6 py-3 rounded-xl text-white font-medium shadow-2xl ${ok ? 'bg-emerald-600' : 'bg-rose-600'}`;
+      setTimeout(() => t.className = 'hidden', 3500);
+    }
+
+    async function init() {
+      schoolId = await initializeSchoolContext() || schoolId;
+      if (!schoolId) { showToast('School context nahi mila — pehle Institution setup karo', false); return; }
+      loadSchoolPreview();
+      await loadClasses();
+      await loadStudents();
+      updateLayout();
+    }
+
+    async function loadSchoolPreview() {
+      try {
+        const r = await API.get(`/institution/school/${schoolId}`);
+        const s = r?.data;
+        if (s) {
+          document.getElementById('pv_school').textContent = s.name || 'SCHOOL NAME';
+          const initials = (s.name || 'SC').split(' ').map(w => w[0]).slice(0, 3).join('').toUpperCase();
+          setLogoPreview(s.logo, initials);
+          const addr = [s.address?.line1, s.address?.city, s.address?.state, s.address?.pincode].filter(Boolean).join(', ');
+          document.getElementById('pv_addr').textContent = `Add: ${addr || '—'} • Contact No.: ${s.phone || '—'}`;
+        }
+      } catch (e) { }
+    }
+
+    function setLogoPreview(logoUrl, initials) {
+      const thumb = document.getElementById('logoThumb');
+      const pv = document.getElementById('pv_logo');
+      if (logoUrl) {
+        const img = `<img src="${logoUrl}" style="width:100%;height:100%;object-fit:cover" onerror="this.parentElement.textContent='${initials || 'SC'}'">`;
+        thumb.innerHTML = img;
+        pv.innerHTML = img;
+      } else {
+        thumb.textContent = initials || '—';
+        pv.textContent = initials || 'SC';
+      }
+    }
+
+    async function uploadSchoolLogo() {
+      const file = document.getElementById('logoFile').files[0];
+      if (!file) return;
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        const up = await SchoolAPI.uploadLogo(fd);
+        const path = up?.data?.file_path || up?.data?.file_url;
+        if (!path) { showToast('Logo upload fail hua', false); return; }
+        await SchoolAPI.update(schoolId, { logo: path });
+        API.clearCache();
+        showToast('✅ Logo save ho gaya — ab cards pe yahi print hoga');
+        loadSchoolPreview();
+      } catch (e) {
+        showToast('Logo upload fail hua', false);
+      }
+    }
+
+    async function loadClasses() {
+      try {
+        const r = await ClassAPI.list(schoolId, ayId);
+        const classes = r?.data || [];
+        document.getElementById('f_class').innerHTML = '<option value="">All Classes</option>' +
+          classes.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+        document.getElementById('f_section').innerHTML = '<option value="">All Sections</option>';
+      } catch (e) { }
+    }
+
+    async function onClassChange() {
+      const cid = document.getElementById('f_class').value;
+      const secEl = document.getElementById('f_section');
+      secEl.innerHTML = '<option value="">All Sections</option>';
+      if (cid) {
+        try {
+          const r = await SectionAPI.list(schoolId, cid);
+          secEl.innerHTML = '<option value="">All Sections</option>' +
+            (r?.data || []).map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+        } catch (e) { }
+      }
+      loadStudents();
+    }
+
+    async function loadStudents() {
+      const cid = document.getElementById('f_class').value;
+      const sid = document.getElementById('f_section').value;
+      try {
+        const params = { school_id: schoolId, per_page: 500, admission_status: 'Active' };
+        if (ayId) params.academic_year_id = ayId;
+        if (cid) params.classroom_id = cid;
+        if (sid) params.section_id = sid;
+        const r = await StudentAPI.list(params);
+        students = r?.data || [];
+        selected.clear();
+        document.getElementById('chkAll').checked = false;
+        renderList();
+      } catch (e) {
+        document.getElementById('stuList').innerHTML = '<div class="p-6 text-center text-rose-400 text-sm">Students load nahi hue</div>';
+      }
+    }
+
+    function filteredStudents() {
+      const q = (document.getElementById('f_search').value || '').toLowerCase();
+      if (!q) return students;
+      return students.filter(s =>
+        (s.full_name || '').toLowerCase().includes(q) ||
+        (s.admission_no || '').toLowerCase().includes(q));
+    }
+
+    function renderList() {
+      const list = filteredStudents();
+      const el = document.getElementById('stuList');
+      if (!list.length) {
+        el.innerHTML = '<div class="p-6 text-center text-gray-400 text-sm">Koi student nahi mila</div>';
+        updateCount();
+        return;
+      }
+      el.innerHTML = list.map(s => `
+        <label class="stu-row ${selected.has(s.id) ? 'checked' : ''}">
+          <input type="checkbox" ${selected.has(s.id) ? 'checked' : ''} onchange="toggleOne('${s.id}', this.checked)"
+            class="w-4 h-4 rounded accent-indigo-600" />
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-semibold text-gray-800 truncate">${s.full_name || '-'}</p>
+            <p class="text-xs text-gray-400">${s.admission_no || ''} ${s.classroom_name ? '• ' + s.classroom_name : ''}${s.section_name ? ' - ' + s.section_name : ''}</p>
+          </div>
+          <button onclick="event.preventDefault(); generateSingle('${s.id}')"
+            class="px-2.5 py-1.5 rounded-lg bg-sky-50 text-sky-600 text-xs font-bold hover:bg-sky-100 transition shrink-0">PDF</button>
+        </label>`).join('');
+      updateCount();
+    }
+
+    function toggleOne(id, on) {
+      on ? selected.add(id) : selected.delete(id);
+      renderList();
+    }
+    function toggleAll(on) {
+      filteredStudents().forEach(s => on ? selected.add(s.id) : selected.delete(s.id));
+      renderList();
+    }
+    function updateCount() {
+      document.getElementById('selCount').textContent = `${selected.size} selected`;
+    }
+
+    // ── Size presets & layout info ───────────────────────────────────────────
+    function applyPreset() {
+      const v = document.getElementById('s_preset').value;
+      if (v !== 'custom') {
+        const [w, h] = v.split('x').map(Number);
+        document.getElementById('s_w').value = w;
+        document.getElementById('s_h').value = h;
+      }
+      updateLayout();
+    }
+    function customized() { document.getElementById('s_preset').value = 'custom'; }
+
+    const PAGES_MM = { A4: [210, 297], A3: [297, 420], LETTER: [215.9, 279.4] };
+    function updateLayout() {
+      let [pw, ph] = PAGES_MM[document.getElementById('s_page').value] || PAGES_MM.A4;
+      if (document.getElementById('s_orient').value === 'landscape') [pw, ph] = [ph, pw];
+      const cw = +document.getElementById('s_w').value || 54;
+      const chh = +document.getElementById('s_h').value || 86;
+      const m = +document.getElementById('s_margin').value || 0;
+      const g = +document.getElementById('s_gap').value || 0;
+      const cols = Math.floor((pw - 2 * m + g) / (cw + g));
+      const rows = Math.floor((ph - 2 * m + g) / (chh + g));
+      const el = document.getElementById('layoutInfo');
+      if (cols < 1 || rows < 1) {
+        el.className = 'rounded-xl bg-rose-50 text-rose-600 text-sm font-semibold px-4 py-3 mb-4';
+        el.textContent = '⚠️ Card page se bada hai — size ya margin kam karo';
+      } else {
+        el.className = 'rounded-xl bg-sky-50 text-sky-700 text-sm font-semibold px-4 py-3 mb-4';
+        el.textContent = `📄 Ek page pe ${cols} × ${rows} = ${cols * rows} cards aayenge (${cw}×${chh} mm)`;
+      }
+    }
+
+    // ── PDF generation ───────────────────────────────────────────────────────
+    function buildPayload(extra) {
+      return Object.assign({
+        school_id: schoolId,
+        academic_year_id: ayId || null,
+        card_width_mm: +document.getElementById('s_w').value || 54,
+        card_height_mm: +document.getElementById('s_h').value || 86,
+        page_size: document.getElementById('s_page').value,
+        orientation: document.getElementById('s_orient').value,
+        margin_mm: +document.getElementById('s_margin').value || 0,
+        gap_mm: +document.getElementById('s_gap').value || 0,
+        show_cut_lines: document.getElementById('s_cut').checked,
+        session_label: document.getElementById('s_session').value || null
+      }, extra);
+    }
+
+    async function requestPdf(payload, label) {
+      showToast(`${label} — PDF ban rahi hai…`);
+      const resp = await fetch(`${API_BASE}/id-cards/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
+        body: JSON.stringify(payload)
+      });
+      if (!resp.ok) {
+        let msg = 'PDF generate nahi hui';
+        try { msg = (await resp.json()).detail || (await resp.json()).message || msg; } catch (e) { }
+        showToast(msg, false);
+        return;
+      }
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      window.open(url, '_blank');
+      const a = document.createElement('a');
+      a.href = url; a.download = 'id_cards.pdf'; a.click();
+      showToast('✅ ID Card PDF ready!');
+    }
+
+    async function generate(mode) {
+      if (mode === 'selected') {
+        if (!selected.size) { showToast('Pehle students select karo', false); return; }
+        await requestPdf(buildPayload({ student_ids: [...selected] }), `${selected.size} students`);
+      } else {
+        const cid = document.getElementById('f_class').value;
+        const sid = document.getElementById('f_section').value;
+        if (!cid) { showToast('Class select karo pehle', false); return; }
+        await requestPdf(buildPayload({ classroom_id: cid, section_id: sid || null }), 'Class-wise');
+      }
+    }
+
+    async function generateSingle(id) {
+      await requestPdf(buildPayload({ student_ids: [id] }), 'Single card');
+    }
+
+    init();
+  </script>
+</body>
+
+</html>
