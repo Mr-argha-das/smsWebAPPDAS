@@ -55,7 +55,7 @@
             <div class="flex items-center justify-between mb-4">
               <div>
                 <h3 class="text-lg font-bold text-gray-900">Select Students</h3>
-                <p class="text-sm text-gray-500 mt-0.5">Single, multiple ya puri class/section choose karo</p>
+                <p class="text-sm text-gray-500 mt-0.5">Choose single, multiple or an entire class/section</p>
               </div>
               <span id="selCount" class="px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-600 text-sm font-bold">0 selected</span>
             </div>
@@ -90,17 +90,17 @@
           <!-- ── RIGHT: card settings ────────────────────────────────── -->
           <div class="xl:col-span-2 space-y-5">
 
-            <!-- School logo (card ke header me yahi lagta hai) -->
+            <!-- School logo (printed in the card header) -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
               <h3 class="text-lg font-bold text-gray-900 mb-1">School Logo</h3>
-              <p class="text-sm text-gray-500 mb-4">Ye logo card ke header me (left circle me) print hoga</p>
+              <p class="text-sm text-gray-500 mb-4">This logo will be printed in the card header (left circle)</p>
               <div class="flex items-center gap-4">
                 <div id="logoThumb"
                   class="w-16 h-16 rounded-full border-2 border-blue-700 bg-white flex items-center justify-center overflow-hidden shrink-0 font-bold text-blue-700 text-sm">
                   —</div>
                 <div class="flex-1">
                   <input id="logoFile" type="file" accept="image/*" class="finput" onchange="uploadSchoolLogo()" />
-                  <p class="text-xs text-gray-400 mt-1.5">PNG/JPG — square image best rahegi. Logo nahi hoga to school ke initials print honge.</p>
+                  <p class="text-xs text-gray-400 mt-1.5">PNG/JPG — a square image works best. If no logo is set, the school initials will be printed.</p>
                 </div>
               </div>
             </div>
@@ -157,7 +157,7 @@
               </div>
 
               <div class="mb-3">
-                <label class="lbl">Session label (optional — card ke bottom pe)</label>
+                <label class="lbl">Session label (optional — printed at the bottom of the card)</label>
                 <input id="s_session" class="finput" placeholder="e.g. Session 2025-26" />
               </div>
 
@@ -204,7 +204,7 @@
                 </div>
                 <div class="cp-foot"></div>
               </div>
-              <p class="text-xs text-gray-400 text-center mt-3">PDF exact isi design me generate hoga — school ka naam, logo, address automatically aayega</p>
+              <p class="text-xs text-gray-400 text-center mt-3">The PDF is generated in this exact design — school name, logo and address are added automatically</p>
             </div>
 
           </div>
@@ -220,7 +220,7 @@
   <script>
     requireAuth();
     document.getElementById('sidebarContainer').innerHTML = renderSidebar('idcards');
-    document.getElementById('topbarContainer').innerHTML = renderTopbar('ID Cards', 'Student ID card generate karo — single, multiple ya class-wise, custom size PDF me');
+    document.getElementById('topbarContainer').innerHTML = renderTopbar('ID Cards', 'Generate student ID cards — single, multiple or class-wise, as a custom-size PDF');
 
     let schoolId = localStorage.getItem('school_id');
     let ayId = localStorage.getItem('academic_year_id') || '';
@@ -236,7 +236,7 @@
 
     async function init() {
       schoolId = await initializeSchoolContext() || schoolId;
-      if (!schoolId) { showToast('School context nahi mila — pehle Institution setup karo', false); return; }
+      if (!schoolId) { showToast('School context not found — please set up the Institution first', false); return; }
       loadSchoolPreview();
       await loadClasses();
       await loadStudents();
@@ -278,13 +278,13 @@
         fd.append('file', file);
         const up = await SchoolAPI.uploadLogo(fd);
         const path = up?.data?.file_path || up?.data?.file_url;
-        if (!path) { showToast('Logo upload fail hua', false); return; }
+        if (!path) { showToast('Logo upload failed', false); return; }
         await SchoolAPI.update(schoolId, { logo: path });
         API.clearCache();
-        showToast('✅ Logo save ho gaya — ab cards pe yahi print hoga');
+        showToast('✅ Logo saved — it will now be printed on the cards');
         loadSchoolPreview();
       } catch (e) {
-        showToast('Logo upload fail hua', false);
+        showToast('Logo upload failed', false);
       }
     }
 
@@ -326,7 +326,7 @@
         document.getElementById('chkAll').checked = false;
         renderList();
       } catch (e) {
-        document.getElementById('stuList').innerHTML = '<div class="p-6 text-center text-rose-400 text-sm">Students load nahi hue</div>';
+        document.getElementById('stuList').innerHTML = '<div class="p-6 text-center text-rose-400 text-sm">Failed to load students</div>';
       }
     }
 
@@ -342,7 +342,7 @@
       const list = filteredStudents();
       const el = document.getElementById('stuList');
       if (!list.length) {
-        el.innerHTML = '<div class="p-6 text-center text-gray-400 text-sm">Koi student nahi mila</div>';
+        el.innerHTML = '<div class="p-6 text-center text-gray-400 text-sm">No students found</div>';
         updateCount();
         return;
       }
@@ -397,10 +397,10 @@
       const el = document.getElementById('layoutInfo');
       if (cols < 1 || rows < 1) {
         el.className = 'rounded-xl bg-rose-50 text-rose-600 text-sm font-semibold px-4 py-3 mb-4';
-        el.textContent = '⚠️ Card page se bada hai — size ya margin kam karo';
+        el.textContent = '⚠️ Card is larger than the page — reduce card size or margins';
       } else {
         el.className = 'rounded-xl bg-sky-50 text-sky-700 text-sm font-semibold px-4 py-3 mb-4';
-        el.textContent = `📄 Ek page pe ${cols} × ${rows} = ${cols * rows} cards aayenge (${cw}×${chh} mm)`;
+        el.textContent = `📄 ${cols} × ${rows} = ${cols * rows} cards per page (${cw}×${chh} mm)`;
       }
     }
 
@@ -421,14 +421,14 @@
     }
 
     async function requestPdf(payload, label) {
-      showToast(`${label} — PDF ban rahi hai…`);
+      showToast(`${label} — generating PDF…`);
       const resp = await fetch(`${API_BASE}/id-cards/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${Auth.getToken()}` },
         body: JSON.stringify(payload)
       });
       if (!resp.ok) {
-        let msg = 'PDF generate nahi hui';
+        let msg = 'PDF generation failed';
         try { msg = (await resp.json()).detail || (await resp.json()).message || msg; } catch (e) { }
         showToast(msg, false);
         return;
@@ -443,12 +443,12 @@
 
     async function generate(mode) {
       if (mode === 'selected') {
-        if (!selected.size) { showToast('Pehle students select karo', false); return; }
+        if (!selected.size) { showToast('Please select students first', false); return; }
         await requestPdf(buildPayload({ student_ids: [...selected] }), `${selected.size} students`);
       } else {
         const cid = document.getElementById('f_class').value;
         const sid = document.getElementById('f_section').value;
-        if (!cid) { showToast('Class select karo pehle', false); return; }
+        if (!cid) { showToast('Please select a class first', false); return; }
         await requestPdf(buildPayload({ classroom_id: cid, section_id: sid || null }), 'Class-wise');
       }
     }
